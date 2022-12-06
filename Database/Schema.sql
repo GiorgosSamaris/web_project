@@ -35,7 +35,7 @@ CREATE TABLE customer (
 --
 
 CREATE TABLE category (
-  category_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  category_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(45) NOT NULL DEFAULT 'Uknown',  
   PRIMARY KEY  (category_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -46,8 +46,8 @@ CREATE TABLE category (
 --
 
 CREATE TABLE subcategory (
-  subcategory_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  category_id SMALLINT UNSIGNED NOT NULL,
+  subcategory_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  category_id TINYINT UNSIGNED NOT NULL,
   name VARCHAR(45) NOT NULL DEFAULT 'Uknown',  
   PRIMARY KEY  (subcategory_id),
   CONSTRAINT `fk_subcategory_category_id)` FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -60,8 +60,8 @@ CREATE TABLE subcategory (
 
 CREATE TABLE product (
   product_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  subcategory_id SMALLINT UNSIGNED NOT NULL,
-  name VARCHAR(45) NOT NULL DEFAULT 'Uknown',  
+  subcategory_id TINYINT UNSIGNED NOT NULL,
+  name VARCHAR(128) NOT NULL DEFAULT 'Uknown',  
   PRIMARY KEY  (product_id),
   CONSTRAINT `fk_product_subcategory_id` FOREIGN KEY (subcategory_id) REFERENCES subcategory (subcategory_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -87,7 +87,7 @@ CREATE TABLE price_history (
 --
 
 CREATE TABLE store_group (
-  store_group_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  store_group_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   group_name VARCHAR(45) NOT NULL DEFAULT 'Uknown',
   number_of_stores SMALLINT UNSIGNED NOT NULL DEFAULT 0,    
   PRIMARY KEY  (store_group_id)
@@ -101,8 +101,8 @@ CREATE TABLE store_group (
 --
 
 CREATE TABLE store (
-  store_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  store_group_id SMALLINT UNSIGNED NOT NULL,
+  store_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  store_group_id TINYINT UNSIGNED NOT NULL,
   store_name VARCHAR(45) NOT NULL DEFAULT 'Uknown',
   longitude DECIMAL(5,3) NOT NULL,
   latitude DECIMAL(5,3) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE store (
 
 CREATE TABLE inventory (
   inventory_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  store_id SMALLINT UNSIGNED NOT NULL,
+  store_id TINYINT UNSIGNED NOT NULL,
   product_id SMALLINT UNSIGNED NOT NULL,
   inventory_price DECIMAL (3,2) NOT NULL DEFAULT 0,
   PRIMARY KEY  (inventory_id),
@@ -133,7 +133,7 @@ CREATE TABLE inventory (
 CREATE TABLE offer (
   offer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   product_id SMALLINT UNSIGNED NOT NULL,
-  store_id SMALLINT UNSIGNED NOT NULL,
+  store_id TINYINT UNSIGNED NOT NULL,
   customer_id SMALLINT UNSIGNED NOT NULL,
   offer_price DECIMAL (3,2) NOT NULL DEFAULT 0,
   number_of_likes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
