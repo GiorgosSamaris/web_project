@@ -88,8 +88,7 @@ CREATE TABLE price_history (
 
 CREATE TABLE store_group (
   store_group_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  group_name VARCHAR(45) NOT NULL DEFAULT 'Uknown',
-  number_of_stores SMALLINT UNSIGNED NOT NULL DEFAULT 0,    
+  group_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
   PRIMARY KEY  (store_group_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -103,9 +102,9 @@ CREATE TABLE store_group (
 CREATE TABLE store (
   store_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   store_group_id TINYINT UNSIGNED NOT NULL,
-  store_name VARCHAR(45) NOT NULL DEFAULT 'Uknown',
-  longitude DECIMAL(5,3) NOT NULL,
-  latitude DECIMAL(5,3) NOT NULL,
+  store_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
+  longitude DECIMAL(7,6) NOT NULL,
+  latitude DECIMAL(7,6) NOT NULL,
   PRIMARY KEY  (store_id),
   CONSTRAINT `fk_store_store_grup_id` FOREIGN KEY (store_group_id) REFERENCES store_group (store_group_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -131,7 +130,7 @@ CREATE TABLE inventory (
 --
 
 CREATE TABLE offer (
-  offer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  offer_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   product_id SMALLINT UNSIGNED NOT NULL,
   store_id TINYINT UNSIGNED NOT NULL,
   customer_id SMALLINT UNSIGNED NOT NULL,
@@ -149,14 +148,5 @@ CREATE TABLE offer (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
---
--- Table structure for table `Offer History`
---
 
-CREATE TABLE offer_history (
-  offer_history_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  offer_id SMALLINT UNSIGNED NOT NULL,
-  PRIMARY KEY  (offer_history_id),
-  CONSTRAINT `fk_offer_history_offer_id` FOREIGN KEY (offer_id) REFERENCES offer (offer_id) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
