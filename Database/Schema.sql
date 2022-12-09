@@ -1,7 +1,7 @@
 
-DROP SCHEMA IF EXISTS tbdProject;
-CREATE SCHEMA tbdProject;
-USE tbdProject;
+DROP SCHEMA IF EXISTS GoCart;
+CREATE SCHEMA GoCart;
+USE GoCart;
 
 --
 -- Table structure for table `User`
