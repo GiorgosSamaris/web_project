@@ -5,13 +5,13 @@
 }
 
 .left_side{
-    width: 60%;
+    width: 70%;
     height: 100%;
     background-color: cadetblue;
 }
 
 .right_side{
-    width: 40%;
+    width: 30%;
     background-color: aqua;
     height: 100%;
     background-color: white;
@@ -37,17 +37,42 @@
     margin-top: 2vh;
     width: fit-content;
     align-self: center;
+    border-radius: 7px;
 }
 
 .input{
     border: 2px solid black;
     border-radius: 7px;
-    margin: 0 10vh 0;
+    margin: 0 5vh 0;
 }
+
 
 ::placeholder{
     text-align: center;
 }
+
+#message{
+    font-family: 'Poppins', sans-serif;
+    font-size: small;
+    /* display: none; */
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+
+}
+
+#characters, #uppercase, #symbol, #number{
+    margin-top: -2px;
+}
+
+.valid{
+    color: green;
+}
+
+.invalid {
+    color: red;
+}
+
 
 
 
