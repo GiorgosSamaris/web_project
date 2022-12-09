@@ -44,7 +44,9 @@ foreach($parsed_categories as $category){
 }
 
 //iterate and insert all products
+$product_count = 0;
 foreach($parsed_products as $product){
+    $product_count++;
     $subcat_index = 1;
     foreach($parsed_categories as $category){
         foreach($category['subcategories'] as $subcategory){
@@ -59,6 +61,9 @@ foreach($parsed_products as $product){
         }
     }
 }
+print_r("Number of products inserted: ");
+print_r($product_count);
+print_r("\n");
 
 //close statements and connection
 $cat_insert->close();

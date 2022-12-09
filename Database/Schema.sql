@@ -11,7 +11,9 @@ CREATE TABLE user (
   user_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   email VARCHAR(45) NOT NULL,
   password VARCHAR(45) NOT NULL,
-  PRIMARY KEY  (user_id)
+  isAdmin BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY  (user_id),
+  CONSTRAINT `unq_user_email` UNIQUE(email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -26,6 +28,7 @@ CREATE TABLE customer (
   current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (customer_id),
+  CONSTRAINT `unq_customer_username` UNIQUE(username),
   CONSTRAINT `fk_customer_client_id` FOREIGN KEY (customer_id) REFERENCES user (user_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -36,8 +39,9 @@ CREATE TABLE customer (
 
 CREATE TABLE category (
   category_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(45) NOT NULL DEFAULT 'Uknown',  
-  PRIMARY KEY  (category_id)
+  name VARCHAR(60) NOT NULL,  
+  PRIMARY KEY  (category_id),
+  CONSTRAINT `unq_category_name` UNIQUE(name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -48,7 +52,7 @@ CREATE TABLE category (
 CREATE TABLE subcategory (
   subcategory_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   category_id TINYINT UNSIGNED NOT NULL,
-  name VARCHAR(45) NOT NULL DEFAULT 'Uknown',  
+  name VARCHAR(80) NOT NULL,  
   PRIMARY KEY  (subcategory_id),
   CONSTRAINT `fk_subcategory_category_id)` FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -61,7 +65,7 @@ CREATE TABLE subcategory (
 CREATE TABLE product (
   product_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   subcategory_id TINYINT UNSIGNED NOT NULL,
-  name VARCHAR(128) NOT NULL DEFAULT 'Uknown',  
+  name VARCHAR(128) NOT NULL,  
   PRIMARY KEY  (product_id),
   CONSTRAINT `fk_product_subcategory_id` FOREIGN KEY (subcategory_id) REFERENCES subcategory (subcategory_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -89,7 +93,8 @@ CREATE TABLE price_history (
 CREATE TABLE store_group (
   store_group_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   group_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
-  PRIMARY KEY  (store_group_id)
+  PRIMARY KEY  (store_group_id),
+  CONSTRAINT `unq_store_group_group_name` UNIQUE(group_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
