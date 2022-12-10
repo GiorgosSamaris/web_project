@@ -51,14 +51,16 @@
     text-align: center;
 }
 
-#message{
+#message_vis{
     font-family: 'Poppins', sans-serif;
     font-size: small;
-    /* display: none; */
     display: flex; 
     flex-direction: column;
     align-items: center;
+}
 
+#message_invis{
+    display: none;
 }
 
 #characters, #uppercase, #symbol, #number{

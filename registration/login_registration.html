@@ -16,11 +16,11 @@
             <form class="log_container">
                 <h1 >Shop It</h1>
 
-                <label for="usrn">Enter your new username</label>      
+                <label for="usrn">Enter your username</label>      
                 <input type="text" name="usrn" class="input" id="usrn">
 
-                <label for="Pswr">Enter your new password</label>
-                <input type="password" name="Pswr" class="input" id="Pswr" pattern="(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_])(?=.[a-z]).{8,}"
+                <label for="Pswr">Enter your password</label>
+                <input type="password" name="Pswr" class="input" id="Pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
                 title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
 
                 <label for="Email">Enter your email</label>
@@ -28,7 +28,7 @@
 
                 <input type="button" value="Create Account" id="submit" >
             </form>
-            <div id="message">
+            <div id="message_invis">
                 <h3>Password must contain the following:</h3>
                 <p id="characters" class="invalid">At least <b>8 characters</b></p>
                 <p id="uppercase" class="invalid">At least <b>one uppercase</b></p>
