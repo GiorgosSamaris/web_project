@@ -19,8 +19,6 @@ $parsed_file = json_decode($file, true);
 $parsed_products = $parsed_file['products'];
 $parsed_categories = $parsed_file['categories'];
 
-$cat_index = 1;
-$subcat_index = 1;
 
 //Prepared insert statements
 $cat_insert = $conn->prepare("INSERT INTO `category` (`name`) VALUES (?);");
@@ -30,6 +28,8 @@ $subcat_insert->bind_param("is", $cat_id, $subcat_name);
 $prod_insert = $conn->prepare("INSERT INTO `product` (`subcategory_id`, `name`) VALUES (?, ?);");
 $prod_insert->bind_param("is", $subcat_id, $prod_name);
 
+$cat_index = 1;
+$subcat_index = 1;
 //iterate and insert all categories and subcategories
 foreach($parsed_categories as $category){
     $cat_id = $cat_index;
