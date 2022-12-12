@@ -87,31 +87,16 @@ CREATE TABLE price_history (
 
 
 --
--- Table structure for table `Store Group`
---
-
-CREATE TABLE store_group (
-  store_group_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  group_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
-  PRIMARY KEY  (store_group_id),
-  CONSTRAINT `unq_store_group_group_name` UNIQUE(group_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-
---
 -- Table structure for table `Store`
 --
 
 CREATE TABLE store (
   store_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  store_group_id TINYINT UNSIGNED NOT NULL,
   store_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
-  longitude DECIMAL(7,6) NOT NULL,
-  latitude DECIMAL(7,6) NOT NULL,
-  PRIMARY KEY  (store_id),
-  CONSTRAINT `fk_store_store_grup_id` FOREIGN KEY (store_group_id) REFERENCES store_group (store_group_id) ON DELETE RESTRICT ON UPDATE CASCADE
+  longtitude DECIMAL(11,8) NOT NULL,
+  latitude DECIMAL(10,8) NOT NULL,
+  map_id VARCHAR(16) NOT NULL,
+  PRIMARY KEY  (store_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
