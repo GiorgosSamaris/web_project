@@ -3,16 +3,16 @@ var char = document.getElementById("characters");
 var uppercase = document.getElementById("uppercase");
 var symbol  = document.getElementById("symbol");
 var number  = document.getElementById("number");
-var invis = document.getElementById("message_invis");
+var mess_inv = document.getElementById("message_inv");
 var reg_btn = document.getElementById("reg");
 var reg_container = document.getElementById("reg_cont");
 var email_btn = document.getElementById("submit");
-var i = 0;
+
+
 reg_btn.onclick = function(){
     document.getElementById("email_cont_inv").id = "email_cont_vis";
     reg_container.classList.remove("reg_vis");
     reg_container.classList.add("reg_inv");
-    i = 1;
 
 
     password.onfocus = function(){
@@ -65,3 +65,16 @@ reg_btn.onclick = function(){
         }
     }
 }
+
+if(char.classList.contains("valid") == true && 
+    uppercase.classList.contains("valid") == true && 
+    symbol.classList.contains("valid") == true && 
+    number.classList.contains("valid") == true)
+    {
+        document.getElementById("message_vis").id = "message_inv";
+    } else {
+        if(mess_inv.hasAttribute("message_inv") == true)
+        {
+            mess_inv.id = "message_vis";
+        }
+    }
