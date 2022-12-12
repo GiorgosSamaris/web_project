@@ -7,7 +7,7 @@
 .left_side{
     width: 70%;
     height: 100%;
-    background-color: cadetblue;
+    background-color: grey;
 }
 
 .right_side{
@@ -18,6 +18,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background-color: #46a094;
 }
 
 .log_container{
@@ -31,18 +32,26 @@
 
 #submit,#reg{
     font-family: 'Poppins', sans-serif;
+    font-size: medium;
     background-color: transparent;
     border: 2px solid;
-    margin-top: 1vh;
+    margin-top: 4vh;
     width: fit-content;
     align-self: center;
-    border-radius: 7px;
+    height: 5vh;
+    border-radius: 13px;
+    background-color: goldenrod;
+    color: white;
 }
 
 .input{
-    border: 2px solid black;
-    border-radius: 7px;
-    margin: 0 5vh 0;
+    border: 3px solid goldenrod;
+    border-radius: 13px;
+    margin: 0 9vh 0;
+    height: 4vh;
+    font-size: large;
+    text-align: center;
+    background-color: antiquewhite;
 }
 
 
@@ -56,9 +65,16 @@
     display: flex; 
     flex-direction: column;
     align-items: center;
+    width: fit-content;
+    justify-content: space-between;
+    align-self: center;
+    margin-top: 1vh;
+    border: 2px solid goldenrod;
+    border-radius: 13px;
+    background-color: rgb(240, 221, 170);
 }
 
-#message_inv,#email_inv,#reg_inv{
+#message_inv,#email_cont_inv,.reg_inv{
     display: none;
 }
 
@@ -71,16 +87,21 @@
 }
 
 .invalid {
-    color: red;
+    color: firebrick;
+    margin: 1vh;
+}
+
+#message_h3{
+    margin: 1vh;
 }
 
 
-#email_vis{
+#email_cont_vis{
     display: flex;
     flex-direction: column;
 }
 
-#reg_vis{
+.reg_vis{
     display: flex;
     flex-direction: column;
     margin-top: 5vh;
