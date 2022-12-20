@@ -12,6 +12,7 @@ CREATE TABLE user (
   email VARCHAR(45) NOT NULL,
   password VARCHAR(45) NOT NULL,
   isAdmin BOOLEAN DEFAULT FALSE,
+  register_date DATETIME DEFAULT now(),
   PRIMARY KEY  (user_id),
   CONSTRAINT `unq_user_email` UNIQUE(email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -130,7 +131,7 @@ CREATE TABLE offer (
   active BOOLEAN NOT NULL DEFAULT TRUE,
   in_stock BOOLEAN NOT NULL DEFAULT TRUE,
   creation_date DATETIME NOT NULL  DEFAULT now(),
-  expiration_date DATE NOT NULL DEFAULT now(),
+  expiration_date DATE NOT NULL DEFAULT (CURRENT_DATE),
   PRIMARY KEY  (offer_id),
   CONSTRAINT `fk_offer_store_id` FOREIGN KEY (store_id) REFERENCES store (store_id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_offer_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE,
