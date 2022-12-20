@@ -24,8 +24,6 @@ day_loop: LOOP
     END IF;
     LEAVE day_loop;
 END LOOP day_loop;
-SELECT price;
-SELECT denominator;
 SET price = price / denominator;
 END$
 DELIMITER ;
