@@ -15,7 +15,7 @@ if ($conn->connect_error){
 }
 
 //Get file data
-$file = file_get_contents('sample_prices.json');
+$file = file_get_contents('json/dumpPrices.json');
 $parsed_file = json_decode($file, true);
 $parsed_prod_data = $parsed_file['data'];
 

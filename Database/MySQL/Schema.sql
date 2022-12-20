@@ -92,7 +92,7 @@ CREATE TABLE price_history (
 
 CREATE TABLE store (
   store_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  store_name VARCHAR(45) NOT NULL DEFAULT 'Unknown',
+  store_name VARCHAR(27) NOT NULL DEFAULT 'Unknown',
   longtitude DECIMAL(11,8) NOT NULL,
   latitude DECIMAL(10,8) NOT NULL,
   map_id VARCHAR(16) NOT NULL,

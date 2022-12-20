@@ -14,7 +14,7 @@ if ($conn->connect_error){
     print_r("OH NO!");
 }
 
-$file = file_get_contents('products.json');
+$file = file_get_contents('json/dumpProducts.json');
 $parsed_file = json_decode($file, true);
 $parsed_products = $parsed_file['products'];
 $parsed_categories = $parsed_file['categories'];

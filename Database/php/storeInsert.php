@@ -15,7 +15,7 @@ if ($conn->connect_error){
 }
 
 //Get file data
-$file = file_get_contents('export.geojson');
+$file = file_get_contents('json/export.geojson');
 $parsed_file = json_decode($file, true);
 $parsed_stores = $parsed_file['features'];
 
