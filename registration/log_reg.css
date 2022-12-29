@@ -35,7 +35,7 @@
     font-size: medium;
     background-color: transparent;
     border: 2px solid;
-    margin-top: 2vh;
+    margin-top: 1vh;
     width: fit-content;
     align-self: center;
     height: 5vh;
@@ -120,5 +120,18 @@ html{
     background-size: cover;
 }
 
+#inline{
+    display: inline-flexbox;
+}
 
-
+#RP{
+    border: 2px solid goldenrod;
+    border-radius: 10px;
+    margin-top: 1vh;
+    height: 2vh;
+    font-size: medium;
+    text-align: center;
+    background-color: antiquewhite;
+    width: fit-content;
+    align-self: center;
+}

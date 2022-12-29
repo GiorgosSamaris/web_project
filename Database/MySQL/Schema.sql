@@ -9,12 +9,12 @@ USE GoCart;
 
 CREATE TABLE user (
   user_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  email VARCHAR(45) NOT NULL,
+  username VARCHAR(45) NOT NULL,
   password VARCHAR(45) NOT NULL,
   isAdmin BOOLEAN DEFAULT FALSE,
   register_date DATETIME DEFAULT now(),
   PRIMARY KEY  (user_id),
-  CONSTRAINT `unq_user_email` UNIQUE(email)
+  CONSTRAINT `unq_user_email` UNIQUE(username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -24,12 +24,12 @@ CREATE TABLE user (
 
 CREATE TABLE customer (
   customer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  username VARCHAR(45) NOT NULL,
+  email VARCHAR(45) NOT NULL,
   tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (customer_id),
-  CONSTRAINT `unq_customer_username` UNIQUE(username),
+  CONSTRAINT `unq_customer_username` UNIQUE(email),
   CONSTRAINT `fk_customer_client_id` FOREIGN KEY (customer_id) REFERENCES user (user_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
