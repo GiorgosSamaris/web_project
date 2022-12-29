@@ -35,13 +35,17 @@
     font-size: medium;
     background-color: transparent;
     border: 2px solid;
-    margin-top: 4vh;
+    margin-top: 2vh;
     width: fit-content;
     align-self: center;
     height: 5vh;
     border-radius: 13px;
     background-color: goldenrod;
     color: white;
+}
+
+#submit,#reg:hover{
+    cursor: pointer;
 }
 
 .input{
@@ -115,5 +119,6 @@ input:focus{
 html{
     background-size: cover;
 }
+
 
 
