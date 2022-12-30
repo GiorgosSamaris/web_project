@@ -13,36 +13,40 @@
             <h2>Logo</h2>
         </div>
         <div class="right_side">
-        <form action="https://www.google.com">
-            <div class="log_container">
-                <h1 >GoCart</h1>
-                
-                <label for="usrn">Enter your username</label>      
-                <input type="text" name="usrn" class="input" id="usrn" pattern="^\S{2,}$" title="Must contain at least two characters" required>
-                
-                <label for="Pswr">Enter your password</label>
-                <input type="password" name="Pswr" class="input" id="Pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
-                        title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
-                <input type="button" value="Reveal Password" id="RP" onclick="pswr_vis()">
-            <div id="message_inv">
-                <h3 id="message_h3">Password must contain:</h3>
-                <p id="characters" class="invalid"><b>At least 8 characters</b></p>
-                <p id="uppercase" class="invalid"><b>At least one uppercase</b></p>
-                <p id="symbol" class="invalid"><b>At least one symbol</b></p>
-                <p id="number" class="invalid"><b>At least one number</b></p>
-            </div>
-                <div id="email_cont_inv">
-                    <label for="Email">Enter your email</label>
-                    <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input" id="email" pattern="^\S+@\S+$" required>
-                            <input type="submit" value="Create Account" id="submit" >
+            <form action="register_customer.php" method="post">
+                <div class="log_container">
+                    <h1 >GoCart</h1>
+                    
+                    <label for="usrn">Enter your username</label>      
+                    <input type="text" name="usrn" class="input" id="usrn" pattern="^\S{2,}$" title="Must contain at least two characters" required>
+                    
+                    <label for="pswr">Enter your password</label>
+                    <div id="inline">
+                        <input type="password" name="pswr" class="input1" id="Pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
+                            title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
+                            <span class="material-icons" id="eye">
+                                visibility_off
+                            </span>
+                    </div>
+                <div id="message_inv">
+                    <h3 id="message_h3">Password must contain:</h3>
+                    <p id="characters" class="invalid"><b>At least 8 characters</b></p>
+                    <p id="uppercase" class="invalid"><b>At least one uppercase</b></p>
+                    <p id="symbol" class="invalid"><b>At least one symbol</b></p>
+                    <p id="number" class="invalid"><b>At least one number</b></p>
                 </div>
-            </div>
-        </form>
-           
-            <form class="log_container">
-                <div class="reg_vis" id="reg_cont">
-                    <label for="register" >Not registered?</label>
-                    <input type="button" value="Register Now" name="register" id="reg">
+                    <div id="email_cont_inv">
+                        <label for="Email">Enter your email</label>
+                        <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input" id="email" pattern="^\S+@\S+$" required>
+                        <input type="submit" value="Create Account" id="submit1" >
+                    </div>
+                </div>
+               
+                <div class="log_container">
+                    <div class="reg_vis" id="reg_cont">
+                        <label for="register" >Not registered?</label>
+                        <input type="button" value="Register Now" name="register" id="reg" >
+                    </div>
                 </div>
             </form>
         </div>

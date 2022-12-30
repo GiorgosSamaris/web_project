@@ -1,14 +1,15 @@
-var password = document.getElementById("Pswr");
-var char = document.getElementById("characters");
-var uppercase = document.getElementById("uppercase");
-var symbol  = document.getElementById("symbol");
-var number  = document.getElementById("number");
-var mess_inv = document.getElementById("message_inv");
-var reg_btn = document.getElementById("reg");
-var reg_container = document.getElementById("reg_cont");
-var email_btn = document.getElementById("submit");
-var username = document.getElementById("usrn");
-var email = document.getElementById("email");
+const password = document.getElementById("Pswr");
+const char = document.getElementById("characters");
+const uppercase = document.getElementById("uppercase");
+const symbol  = document.getElementById("symbol");
+const number  = document.getElementById("number");
+const mess_inv = document.getElementById("message_inv");
+const reg_btn = document.getElementById("reg");
+const reg_container = document.getElementById("reg_cont");
+const email_btn = document.getElementById("submit");
+const username = document.getElementById("usrn");
+const email = document.getElementById("email");
+const eye = document.getElementById("eye");
 var usrn_ok = false;
 var pswr_ok = false;
 var email_ok = false;
@@ -128,8 +129,11 @@ function pswr_vis() {       //changes the type of input in order to make the pas
     var x = document.getElementById("Pswr");
     if(x.type === "password") {
         x.type = "text";
+        eye.innerHTML = "visibility";
     } else {
         x.type = "password";
+        eye.innerHTML = "visibility_off";
     }
 }
 
+eye.addEventListener('click', pswr_vis);        //toggles password visiblity

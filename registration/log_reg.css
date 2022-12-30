@@ -1,3 +1,9 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+body{
+    margin: 0;
+}
+
 .col_container{
     display: flex;
     flex-direction: row;
@@ -30,7 +36,7 @@
     /* width: 70%; */
 }
 
-#submit,#reg{
+#submit1,#reg{
     font-family: 'Poppins', sans-serif;
     font-size: medium;
     background-color: transparent;
@@ -121,17 +127,30 @@ html{
 }
 
 #inline{
-    display: inline-flexbox;
+    display: flex;
+    align-items: center;
+    border: 3px solid goldenrod;
+    margin: 0 9vh 0;
+    height: 4vh;
+    border-radius: 13px;
+    background-color: antiquewhite;
 }
 
-#RP{
-    border: 2px solid goldenrod;
-    border-radius: 10px;
-    margin-top: 1vh;
-    height: 2vh;
-    font-size: medium;
-    text-align: center;
+#inline input{
+    width: 100%;
+    border: 1px solid black;
+    outline: none;
+    padding: 10px;
     background-color: antiquewhite;
-    width: fit-content;
-    align-self: center;
+    font-size: large;
+    border-radius: 13px;
+    text-align: calc();
 }
+
+#inline span{
+    cursor: default;
+    margin: 5px;
+}
+
+
+
