@@ -80,7 +80,7 @@ CREATE TABLE price_history (
   price_history_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   product_id SMALLINT UNSIGNED NOT NULL,
   price_date DATE NOT NULL,
-  average_price DECIMAL(3,2) NOT NULL DEFAULT 0,
+  average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (price_history_id),
   CONSTRAINT `fk_price_history_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
