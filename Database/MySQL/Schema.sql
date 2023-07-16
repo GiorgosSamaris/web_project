@@ -58,7 +58,7 @@ CREATE TABLE subcategory (
   name VARCHAR(80) NOT NULL,  
   PRIMARY KEY  (subcategory_id),
   CONSTRAINT `fk_subcategory_category_id` FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  UNIQUE INDEX(name)
+  INDEX(name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
