@@ -4,16 +4,17 @@ var uppercase = document.getElementById("uppercase");
 var symbol  = document.getElementById("symbol");
 var number  = document.getElementById("number");
 var mess_inv = document.getElementById("message_inv");
-var reg_btn = document.getElementById("reg");
+var reg_btn = document.getElementById("register");
 var reg_container = document.getElementById("reg_cont");
 var email_btn = document.getElementById("submit");
+var login_btn = document.getElementById("lgn_vis");
 
 
 reg_btn.onclick = function(){
-    document.getElementById("email_cont_inv").id = "email_cont_vis";
+    document.getElementById("email_inv").id = "email_vis";
     reg_container.classList.remove("reg_vis");
     reg_container.classList.add("reg_inv");
-
+    login_btn.id = "lgn_inv";
 
     password.onfocus = function(){
             document.getElementById("message_inv").id = "message_vis";        //when the user clicks on password field a password validation message is dispalyed

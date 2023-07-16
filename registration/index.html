@@ -13,38 +13,33 @@
             <h2>Logo</h2>
         </div>
         <div class="right_side">
-            <form class="log_container">
+            <form class="log_container" method="post" action="register_customer.php">
                 <h1 >Shop It</h1>
+                <label for="usrn">Enter your username</label>    
 
-                <label for="usrn">Enter your username</label>      
                 <input type="text" name="usrn" class="input" id="usrn">
-
                 <label for="Pswr">Enter your password</label>
                 <input type="password" name="Pswr" class="input" id="Pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
                 title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
-                <button type="submit" id="lgn">Login</button>
-            </form>    
-            <div id="message_inv">
-                <h3 id="message_h3">Password must contain:</h3>
-                <p id="characters" class="invalid"><b>At least 8 characters</b></p>
-                <p id="uppercase" class="invalid"><b>At least one uppercase</b></p>
-                <p id="symbol" class="invalid"><b>At least one symbol</b></p>
-                <p id="number" class="invalid"><b>At least one number</b></p>
-            </div>
-            <form class="log_container">
-                <div id="email_cont_inv">
+
+                <button type="submit" id="lgn_vis" onclick="window.location.href = './maps/maps.html';">Login</button>  
+                <div id="message_inv">
+                    <h3 id="message_h3">Password must contain:</h3>
+                    <p id="characters" class="invalid"><b>At least 8 characters</b></p>
+                    <p id="uppercase" class="invalid"><b>At least one uppercase</b></p>
+                    <p id="symbol" class="invalid"><b>At least one symbol</b></p>
+                    <p id="number" class="invalid"><b>At least one number</b></p>
+                </div>
+                <div id="email_inv">
                     <label for="Email">Enter your email</label>
                     <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input">
-                    <input type="button" value="Create Account" id="submit" >
+                    <input type="submit" value="Create Account" id="submit" >
                 </div>
-            </form>
-           
-            <form class="log_container">
                 <div class="reg_vis" id="reg_cont">
                     <label for="register" >Not registered?</label>
-                    <input type="button" value="Register Now" name="register" id="reg">
+                    <input type="button" value="Register Now" name="register" id="register">
                 </div>
-            </form>
+            </form>  
         </div>
     </div>
 

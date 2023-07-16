@@ -31,7 +31,7 @@
     /* width: 70%; */
 }
 
-#lgn {
+#lgn_vis {
     font-family: 'Poppins', sans-serif;
     font-size: medium;
     font-weight: bold;
@@ -46,7 +46,11 @@
     color: white;
 }
 
-#submit,#reg{
+#lgn_inv {
+    display: none;
+}
+
+#submit,#register{
     font-family: 'Poppins', sans-serif;
     font-size: medium;
     font-weight: bold;
@@ -61,7 +65,7 @@
     color: white;
 }
 
-#submit,#reg:hover{
+#submit,#register:hover{
     cursor: pointer;
 }
 
@@ -99,7 +103,7 @@ input:focus{
     background-color: rgb(240, 221, 170);
 }
 
-#message_inv,#email_cont_inv,.reg_inv{
+#message_inv,#email_inv,.reg_inv{
     display: none;
 }
 
@@ -122,7 +126,7 @@ input:focus{
 }
 
 
-#email_cont_vis{
+#email_vis{
     display: flex;
     flex-direction: column;
 }
