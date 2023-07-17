@@ -4,6 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="log_reg.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Go Cart</title>
 </head>
 
@@ -15,13 +16,14 @@
         <div class="right_side">
             <form class="log_container" method="post" action="register_customer.php">
                 <h1 >Shop It</h1>
-                <label for="usrn">Enter your username</label>    
-
+                <label for="usrn" class="text">Enter your username</label>    
                 <input type="text" name="usrn" class="input" id="usrn">
-                <label for="Pswr">Enter your password</label>
-                <input type="password" name="Pswr" class="input" id="Pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
-                title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
-
+                <label for="pswr" class="text">Enter your password</label>
+                <div id="pass_vis" class="input">
+                    <input type="password" name="pswr" id="pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
+                    title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
+                    <i class="fa-solid fa-eye" ></i>
+                </div>
                 <button type="submit" id="lgn_vis" onclick="window.location.href = './maps/maps.html';">Login</button>  
                 <div id="message_inv">
                     <h3 id="message_h3">Password must contain:</h3>
@@ -31,13 +33,13 @@
                     <p id="number" class="invalid"><b>At least one number</b></p>
                 </div>
                 <div id="email_inv">
-                    <label for="Email">Enter your email</label>
+                    <label for="Email" class="text">Enter your email</label>
                     <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input">
                     <input type="submit" value="Create Account" id="submit" >
                 </div>
                 <div class="reg_vis" id="reg_cont">
-                    <label for="register" >Not registered?</label>
-                    <input type="button" value="Register Now" name="register" id="register">
+                    <label for="register" class="text">Not registered?</label>
+                    <button type="submit" id="register" name="register">Register Now</button>
                 </div>
             </form>  
         </div>

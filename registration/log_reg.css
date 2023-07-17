@@ -1,3 +1,8 @@
+body{
+    margin: 0;
+}
+
+
 .col_container{     /*. is for classes*/
     display: flex;
     flex-direction: row;
@@ -26,24 +31,24 @@
     flex-direction: column;
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
-    font-size: medium;
     text-align: center;
+    color: black;
     /* width: 70%; */
 }
 
 #lgn_vis {
     font-family: 'Poppins', sans-serif;
-    font-size: medium;
+    font-size: large;
     font-weight: bold;
     background-color: transparent;
-    border: 2px solid;
+    border: 3px solid black;
     margin-top: 2vh;
     width: 15%;
     align-self: center;
     height: 4vh;
     border-radius: 13px;
     background-color: goldenrod;
-    color: white;
+    color: black;
 }
 
 #lgn_inv {
@@ -52,29 +57,28 @@
 
 #submit,#register{
     font-family: 'Poppins', sans-serif;
-    font-size: medium;
+    font-size: large;
     font-weight: bold;
     background-color: transparent;
-    border: 2px solid;
+    border: 3px solid black;
     margin-top: 1vh;
     width: fit-content;
     align-self: center;
     height: 5vh;
     border-radius: 13px;
     background-color: goldenrod;
-    color: white;
 }
 
-#submit,#register:hover{
+#submit,#register,#lgn_vis:hover{
     cursor: pointer;
 }
 
 .input{
-    border: 3px solid goldenrod;
+    border: 3px solid black;
     border-radius: 13px;
     margin: 0 9vh 0;
     height: 4vh;
-    font-size: large;
+    font-size: larger;
     text-align: center;
     background-color: antiquewhite;
 }
@@ -83,6 +87,30 @@ input:focus{
     outline: none;
 }
 
+#pass_vis {
+    display: inline-flex;
+}
+
+#pswr {
+    width: 100%;
+    border-radius: 13px;
+    background-color: transparent;
+    border: none;
+    font-size: larger;
+    text-align: center;
+}
+
+.fa-eye{
+    width: 0%;
+    align-self: center;
+    position: relative;
+    left: -2vh;
+}
+
+
+.text{
+    font-size: large;
+}
 
 ::placeholder{
     text-align: center;
@@ -90,7 +118,7 @@ input:focus{
 
 #message_vis{
     font-family: 'Poppins', sans-serif;
-    font-size: small;
+    font-size: medium;
     display: flex; 
     flex-direction: column;
     align-items: center;
@@ -98,7 +126,7 @@ input:focus{
     justify-content: space-between;
     align-self: center;
     margin-top: 1vh;
-    border: 2px solid goldenrod;
+    border: 3px solid black;
     border-radius: 13px;
     background-color: rgb(240, 221, 170);
 }
