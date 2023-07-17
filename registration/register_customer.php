@@ -16,12 +16,12 @@
     // $conn = mysqli_init();
     // mysqli_ssl_set($conn,NULL,NULL, "/home/ptriantafy/Downloads/DigiCertGlobalRootCA.crt.pem", NULL, NULL);
     // mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "softk1ng\$d3v", "gocart", 3306, MYSQLI_CLIENT_SSL);
-    // $testusername =$_POST['usrn'];
-    // $testemail = $_POST['Email'];
-    // $testpass = $_POST['Pswr'];
-    $testusername ="testusername12";
-    $testemail = "testemail2";
-    $testpass = "testpasword";
+    $testusername =$_POST['usrn'];
+    $testemail = $_POST['Email'];
+    $testpass = $_POST['pswr'];
+    // $testusername ="testusername12";
+    // $testemail = "testemail2";
+    // $testpass = "testpasword";
 
     $testusername = stripcslashes($testusername);  
     $testemail = stripcslashes($testemail);  
