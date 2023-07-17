@@ -112,19 +112,23 @@ input:focus{
     font-size: large;
 }
 
+#usrn,#email{
+    
+}
+
 ::placeholder{
     text-align: center;
 }
 
 #message_vis{
-    font-family: 'Poppins', sans-serif;
-    font-size: medium;
     display: flex; 
     flex-direction: column;
     align-items: center;
     width: fit-content;
     justify-content: space-between;
     align-self: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: large;
     margin-top: 1vh;
     border: 3px solid black;
     border-radius: 13px;

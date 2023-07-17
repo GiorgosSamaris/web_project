@@ -22,7 +22,7 @@
                 <div id="pass_vis" class="input">
                     <input type="password" name="pswr" id="pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
                     title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
-                    <i class="fa-solid fa-eye" ></i>
+                    <i class="fa-solid fa-eye" id="eye"></i>
                 </div>
                 <button type="submit" id="lgn_vis" onclick="window.location.href = './maps/maps.html';">Login</button>  
                 <div id="message_inv">
@@ -34,7 +34,7 @@
                 </div>
                 <div id="email_inv">
                     <label for="Email" class="text">Enter your email</label>
-                    <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input">
+                    <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input" id="email">
                     <input type="submit" value="Create Account" id="submit" >
                 </div>
                 <div class="reg_vis" id="reg_cont">

@@ -1,4 +1,4 @@
-var password = document.getElementById("Pswr");
+var password = document.getElementById("pswr");
 var char = document.getElementById("characters");
 var uppercase = document.getElementById("uppercase");
 var symbol  = document.getElementById("symbol");
@@ -8,6 +8,7 @@ var reg_btn = document.getElementById("register");
 var reg_container = document.getElementById("reg_cont");
 var email_btn = document.getElementById("submit");
 var login_btn = document.getElementById("lgn_vis");
+var show_pass = document.getElementById("eye");
 
 
 reg_btn.onclick = function(){
@@ -79,3 +80,9 @@ if(char.classList.contains("valid") == true &&
             mess_inv.id = "message_vis";
         }
     }
+
+show_pass.addEventListener("click", function(){
+    this.classList.toggle("fa-eye-slash");
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type",type);
+})
