@@ -35,3 +35,4 @@
     $reg_cust->bind_param("sss", $testusername, $testemail, $testpass);
     $reg_cust->execute();
 
+?>
