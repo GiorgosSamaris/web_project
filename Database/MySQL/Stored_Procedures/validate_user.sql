@@ -1,4 +1,4 @@
--- Returns 1 if user.username || user.password exist in the same record else 0
+-- Returns 1 if user.username && user.password exist in the same record else 0
 -- 
 DROP PROCEDURE IF EXISTS validate_user;
 DELIMITER $
