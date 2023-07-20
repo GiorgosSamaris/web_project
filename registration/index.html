@@ -1,51 +1,36 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <!-- <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/log_reg.css" type="text/css">
+    <link rel="stylesheet" href="css/registration.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Go Cart</title>
 </head>
 
 <body>
-    <div class="col_container">
-        <div class="left_side">
-            <h2>Logo</h2>
-        </div>
-        <div class="right_side">
-            <form id="login_register_cont" method="post" action="register_customer.php">
-                <h1 >Shop It</h1>
-                <label for="usrn" class="text">Enter your username</label>    
-                <input type="text" name="usrn" class="input" id="usrn">
-                <label for="pswr" class="text">Enter your password</label>
-                <div id="pass_vis" class="input">
-                    <input type="password" name="pswr" id="pswr" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
-                    title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required>
-                    <i class="fa-solid fa-eye" id="eye"></i>
-                </div>
-                <button type="submit" id="lgn_vis" onclick="window.location.href = './maps/maps.html';">Login</button>  
-                <div id="message_inv">
+    <div class="container">
+        <h1>Shop it</h1>
+        <form action="register_customer.php" method="post">
+            <div class="register">
+                <label for="username">Enter username</label>
+                <input type="text" name="username" class="input input-username">
+                <label for="password">Enter password</label>
+                <input type="password" name="password" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
+                title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required id ="password" class="input input-password">
+                <div id ="password-requirements-inv">
                     <h3 id="message_h3">Password must contain:</h3>
                     <p id="characters" class="invalid"><b>At least 8 characters</b></p>
                     <p id="uppercase" class="invalid"><b>At least one uppercase</b></p>
                     <p id="symbol" class="invalid"><b>At least one symbol</b></p>
                     <p id="number" class="invalid"><b>At least one number</b></p>
                 </div>
-                <div id="email_inv">
-                    <label for="Email" class="text">Enter your email</label>
-                    <input type="text" name="Email" placeholder="<name>@<mail>.<com>" class="input" id="email">
-                    <input type="submit" value="Create Account" id="submit" >
-                </div>
-                <div class="reg_vis" id="reg_cont">
-                    <label for="register" class="text">Not registered?</label>
-                    <button type="submit" id="register" name="register">Register Now</button>
-                </div>
-            </form>  
-        </div>
+                <label for="email">Enter email</label>
+                <input type="text" name="email" placeholder="<name>@<mail>.<com>" class="input input-password">
+                <button type="submit" class="register-btn">Register</button>
+            </div>
+        </form>
+        <script src="js/registration.js"></script>
     </div>
-
-    <script type="text/javascript" src="js/log_reg.js"></script>
 </body>
-
 </html>
