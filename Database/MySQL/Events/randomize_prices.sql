@@ -1,4 +1,3 @@
--- SELECT 0.85 + RAND() * (1.15 - 0.85) AS random_float;
 DROP EVENT IF EXISTS randomize_prices;
 
 -- Randomly sets inventory.price as X * yesterday's average where x IN [0.85, 1.15]
