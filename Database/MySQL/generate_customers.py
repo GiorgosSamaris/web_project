@@ -12,5 +12,5 @@ with open('customers.csv', 'w', newline='') as file:
     writer.writerow(["email"])
     for username in usernames:
         writer.writerow([username+"@mail.com"])
-# MYSQL insert query: LOAD DATA INFILE 'path' INTO TABLE inventory FIELDS TERMINATED BY ','  LINES TERMINATED BY '\r\n' IGNORE 1 ROWS (store_id, product_id);
+# MYSQL insert query: LOAD DATA INFILE 'path' INTO TABLE tables FIELDS TERMINATED BY ','  LINES TERMINATED BY '\r\n' IGNORE 1 ROWS (cols);
 
