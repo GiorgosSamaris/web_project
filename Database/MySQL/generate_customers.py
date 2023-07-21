@@ -2,6 +2,7 @@ from random_username.generate import generate_username
 # https://github.com/williexu/random_username
 import csv
 usernames = generate_username(1000)
+usernames = [*set(usernames)]
 with open('users.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(["username", "password"])
