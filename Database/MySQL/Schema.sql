@@ -85,6 +85,7 @@ CREATE TABLE price_history (
   price_date DATE NOT NULL,
   average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (price_history_id),
+  INDEX(product_id, price_date),
   CONSTRAINT `fk_price_history_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -117,7 +118,7 @@ CREATE TABLE inventory (
   PRIMARY KEY  (inventory_id),
   CONSTRAINT `fk_inventory_store_id` FOREIGN KEY (store_id) REFERENCES store (store_id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_inventory_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  INDEX (store_id)
+  INDEX (store_id,product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
