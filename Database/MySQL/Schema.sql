@@ -129,7 +129,7 @@ CREATE TABLE offer (
   offer_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   product_id SMALLINT UNSIGNED NOT NULL,
   store_id TINYINT UNSIGNED NOT NULL,
-  customer_id SMALLINT UNSIGNED NOT NULL,
+  author_id SMALLINT UNSIGNED NOT NULL,
   offer_price DECIMAL (4,2) NOT NULL DEFAULT 0,
   number_of_likes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   number_of_dislikes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
@@ -140,11 +140,25 @@ CREATE TABLE offer (
   PRIMARY KEY  (offer_id),
   CONSTRAINT `fk_offer_store_id` FOREIGN KEY (store_id) REFERENCES store (store_id) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_offer_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `fk_offer_customer_id` FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  INDEX(customer_id, store_id, product_id, active)
+  CONSTRAINT `fk_offer_customer_id` FOREIGN KEY (author_id) REFERENCES customer (customer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  INDEX(author_id, store_id, product_id, active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+--
+-- Table structure for table `offer_rating`
+--
 
+CREATE TABLE offer_rating (
+  rating_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT
+  offer_id MEDIUMINT UNSIGNED NOT NULL,
+  customer_id SMALLINT UNSIGNED NOT NULL,
+  rate_value ENUM('LIKE', 'DISLIKE') NOT NULL,
+  rating_date DATETIME NOT NULL  DEFAULT now(),
+  PRIMARY KEY  (rating_id),
+  CONSTRAINT `fk_offer_rate_id` FOREIGN KEY (offer_id) REFERENCES offer (offer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_rate_customer_id` FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  INDEX(customer_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
