@@ -1,23 +1,6 @@
 <?php
-//connection arguments
-// $servername = "localhost";
-// $username = "phpClient";
-// $password = "$0ftK1ngsPhP";
-// $dbname = "GoCart";
-
-// // Create connection
-// $conn = new mysqli($servername, $username, $password, $dbname);
-
-// // Check connection
-// if ($conn->connect_error){
-//     die("Connection failed: " . $conn->connect_error);
-//     print_r("OH NO!");
-// }
-$conn = mysqli_init();
-mysqli_ssl_set($conn,NULL,NULL, "/home/ptriantafy/Downloads/DigiCertGlobalRootCA.crt.pem", NULL, NULL);
-mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "", "gocart", 3306, MYSQLI_CLIENT_SSL);
-
-
+include 'localhostConn.php';
+// include 'azureConn.php'
 //Get file data
 $file = file_get_contents('json/dumpPrices.json');
 $parsed_file = json_decode($file, true);
@@ -39,11 +22,8 @@ foreach($parsed_prod_data as $product_data){
     }
     $product_iter++;
 }
-
 print_r("Number of entries inserted: ");
 print_r($price_count);
 print_r("\n");
-
 $prod_insert->close();
-$conn->close();
 ?>

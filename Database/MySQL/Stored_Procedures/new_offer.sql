@@ -7,7 +7,7 @@ BEGIN
 DECLARE gain INT;
 DECLARE avg_price DECIMAL(4,2);
 
-INSERT INTO `offer`(`product_id`, `store_id`, `customer_id`, `offer_price`) VALUES(pro_id, sto_id, cus_id, price);
+INSERT INTO `offer`(`product_id`, `store_id`, `author_id`, `offer_price`) VALUES(pro_id, sto_id, cus_id, price);
 UPDATE offer SET expiration_date = DATE_ADD(expiration_date, INTERVAL 7 DAY) WHERE offer_id = LAST_INSERT_ID();
 CALL get_yester_price(pro_id, avg_price);
 SET gain = 0;
