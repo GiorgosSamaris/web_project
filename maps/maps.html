@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
-    <link rel="stylesheet" href="https://labs.easyblog.it/maps/leaflet-search/src/leaflet-search.css">
+    <link type="text/css" href="maps\leaflet-search-master\dist\leaflet-search.src.css">
     <link rel="stylesheet" href="maps.css">
     <title>Maps</title>
 </head>
@@ -15,23 +15,22 @@
     <div id="mapid"></div>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+    <script src="maps\leaflet-search-master\dist\leaflet-search.src.js"></script>
     <script src="stores.js"></script>
     <script>
         let mymap = L.map('mapid');
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
-
         mymap.setView([38.2462420, 21.7350847], 16);
+        var markersLayer = new L.LayerGroup().addTo(mymap);
 
-        let marker = L.marker([38.2462420, 21.7350847], { draggable: true }).addTo(mymap);
-        marker.bindPopup("<b>Πλατεία Γεωργίου</b>").openPopup();
-        marker.on("click", markerClick);
+        mymap.addControl(new L.Control.Search({
+            layer: markersLayer,
+            position: "topright",
+            initial: false}));
 
-        let data = [];
-        var markersLayer = new L.LayerGroup();
-        mymap.addLayer(markersLayer);
+        //#region Functions
 
         function markerClick(event) {
             this.getPopup()
@@ -40,37 +39,37 @@
         }
 
         function popupContent(feature) {
-        let popupContent = "";
-
-        // Show the English brand name if available, otherwise use the name property
-        if (feature.properties.name) {
-            popupContent = feature.properties.name;
-        } else if (feature.properties['brand:en']) {
-            popupContent = feature.properties['brand:en'];
+            let popupContent = "";
+            
+            //show name and if not available then the brand name in english
+            if (feature.properties.name) {
+                popupContent = feature.properties.name;
+            } else if (feature.properties['brand:en']) {
+                popupContent = feature.properties['brand:en'];
+            }
+        
+            // Add coordinates 
+            popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
+        
+            //Add opening hours if available
+            if (feature.properties.opening_hours) {
+                popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
+            }
+        
+            // bold text
+            popupContent = "<b>" + popupContent + "</b>";
+        
+            return popupContent;
         }
+        //#endregion
 
-        // Add coordinates 
-        popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
-
-        //Add opening hours if available
-        if (feature.properties.opening_hours) {
-            popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
-        }
-
-        // bold text
-        popupContent = "<b>" + popupContent + "</b>";
-
-        return popupContent;
-    }
 
 
         L.geoJson(stores_json, {
-    onEachFeature: function(feature, markersLayer) {
-        markersLayer.bindPopup(popupContent(feature));
-    }
-}).addTo(mymap);
-
-
+            onEachFeature: function(feature, layer) {
+                layer.bindPopup(popupContent(feature));
+            }
+        }).addTo(mymap);
     </script>
 </body>
 </html>
