@@ -39,13 +39,37 @@
                 .setContent("Συντεταγμένες σημείου: " + event.latlng.toString());
         }
 
+        function popupContent(feature) {
+        let popupContent = "";
+
+        // Show the English brand name if available, otherwise use the name property
+        if (feature.properties.name) {
+            popupContent = feature.properties.name;
+        } else if (feature.properties['brand:en']) {
+            popupContent = feature.properties['brand:en'];
+        }
+
+        // Add coordinates 
+        popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
+
+        //Add opening hours if available
+        if (feature.properties.opening_hours) {
+            popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
+        }
+
+        // bold text
+        popupContent = "<b>" + popupContent + "</b>";
+
+        return popupContent;
+    }
+
 
         L.geoJson(stores_json, {
-            onEachFeature: function(feature, LayerGroup) {
-                LayerGroup.bindPopup(feature.properties.name, minWidth = 100)
-                LayerGroup.bindPopup(feature.properties.opening_hours)
-            }
-        }).addTo(mymap);
+    onEachFeature: function(feature, markersLayer) {
+        markersLayer.bindPopup(popupContent(feature));
+    }
+}).addTo(mymap);
+
 
     </script>
 </body>
