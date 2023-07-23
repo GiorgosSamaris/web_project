@@ -7,31 +7,34 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
-    <link type="text/css" href="maps\leaflet-search-master\dist\leaflet-search.src.css">
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
+
+
+    <link type="stylesheet" href="leaflet-search-master\dist\leaflet-search.src.css">
+    <script src="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
+    <script src="leaflet-search-master\dist\leaflet-search.src.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="../src/leaflet-search.css" />
+    <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script>
+    <script src="../dist/leaflet-search.src.js"></script> -->
     <link rel="stylesheet" href="maps.css">
+    <script src="stores.js"></script>
     <title>Maps</title>
 </head>
 <body>
     <div id="mapid"></div>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
-    <script src="maps\leaflet-search-master\dist\leaflet-search.src.js"></script>
-    <script src="stores.js"></script>
     <script>
+        let lat = 38.2462420;
+        let lng = 21.7350847;
         let mymap = L.map('mapid');
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
-        mymap.setView([38.2462420, 21.7350847], 16);
-        var markersLayer = new L.LayerGroup().addTo(mymap);
 
-        mymap.addControl(new L.Control.Search({
-            layer: markersLayer,
-            position: "topright",
-            initial: false}));
-
-        //#region Functions
-
+         //#region Functions
         function markerClick(event) {
             this.getPopup()
                 .setLatLng(event.latlng)
@@ -61,15 +64,54 @@
         
             return popupContent;
         }
+
+        function initializeMap() {
+            mymap.setView([lat,lng], 16);
+            var markersLayer = new L.LayerGroup();
+            mymap.addLayer(markersLayer);
+
+            var controlSearch = new L.Control.Search({
+                layer: markersLayer,
+                position: "topright",
+                initial: false,
+                zoom: 12,
+                marker: false});
+
+            // let geocode = L.Control.geocode();
+            // mymap.addControl(geocode);
+    
+            L.geoJson(stores_json, {
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(popupContent(feature));
+                }
+            }).addTo(markersLayer);
+            mymap.addControl(controlSearch);
+        }
         //#endregion
 
 
+        if("geolocation" in navigator) {
+            //add prompt for user's location
+            navigator.geolocation.getCurrentPosition(  //get current position of user
+                (position) => {
+                    lat = position.coords.latitude;
+                    lng = position.coords.longitude;
+                    initializeMap();
+                },
+                (error) => {
+                    console.error("Error getting user location: ", error);
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser");
+            initializeMap();
+        }
 
-        L.geoJson(stores_json, {
-            onEachFeature: function(feature, layer) {
-                layer.bindPopup(popupContent(feature));
-            }
-        }).addTo(mymap);
+        // mymap.setView([38.2462420, 21.7350847], 16);
+
+
+
+        
     </script>
 </body>
 </html>
