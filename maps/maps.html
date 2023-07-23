@@ -4,22 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- required -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
 
-
-    <link type="stylesheet" href="leaflet-search-master\dist\leaflet-search.src.css">
-    <script src="https://unpkg.com/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
-    <script src="leaflet-search-master\dist\leaflet-search.src.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" />
-    <link rel="stylesheet" href="../src/leaflet-search.css" />
-    <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script>
-    <script src="../dist/leaflet-search.src.js"></script> -->
+
+
+    <script src="leaflet-search.js"></script>
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="maps.css">
     <script src="stores.js"></script>
@@ -35,14 +31,13 @@
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
-
-         //#region Functions
+        //#region Functions
         function markerClick(event) {
             this.getPopup()
                 .setLatLng(event.latlng)
                 .setContent("Συντεταγμένες σημείου: " + event.latlng.toString());
         }
-
+        
         function popupContent(feature) {
             let popupContent = "";
             
@@ -52,15 +47,15 @@
             } else if (feature.properties['brand:en']) {
                 popupContent = feature.properties['brand:en'];
             }
-        
+            
             // Add coordinates 
             popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
-        
+            
             //Add opening hours if available
             if (feature.properties.opening_hours) {
                 popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
             }
-        
+            
             // bold text
             popupContent = "<b>" + popupContent + "</b>";
         
@@ -73,27 +68,32 @@
             mymap.addLayer(markersLayer);
             userpos = new L.marker([lat,lng]).addTo(mymap); 
             userpos.bindPopup("You're here!").openPopup();
-
-            var controlSearch = new L.Control.Search({
-                layer: markersLayer,
-                position: "topright",
-                initial: false,
-                zoom: 12,
-                marker: false});
-
-            // let geocode = L.Control.geocode();
-            // mymap.addControl(geocode);
-    
+            
+            
+            let geocode = L.Control.geocoder();
+            mymap.addControl(geocode);
+            
             L.geoJson(stores_json, {
                 onEachFeature: function(feature, layer) {
                     layer.bindPopup(popupContent(feature));
                 }
             }).addTo(markersLayer);
+            
+            var searchLayer = L.featureGroup().addTo(mymap);
+            const  controlSearch = new L.Control.Search({
+                layer: searchLayer,
+                // propertyName: ,
+                position: 'topright',
+                // initial: true,
+                // zoom: 12,
+                // marker: false
+            });
             mymap.addControl(controlSearch);
+            
         }
         //#endregion
-
-
+        
+        
         if("geolocation" in navigator) {
             //add prompt for user's location
             navigator.geolocation.getCurrentPosition(  //get current position of user
@@ -105,17 +105,17 @@
                 (error) => {
                     console.error("Error getting user location: ", error);
                 }
-            );
-        } else {
-            console.error("Geolocation is not supported by this browser");
-            initializeMap();
-        }
-
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser");
+                initializeMap();
+            }
+            
         // mymap.setView([38.2462420, 21.7350847], 16);
-
-
-
         
-    </script>
+        
+        
+        
+        </script>
 </body>
 </html>
