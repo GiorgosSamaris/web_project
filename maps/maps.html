@@ -18,9 +18,9 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" />
     <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script>
+    <script src="leaflet-search.js"></script>
     <!-- ------------------------------------------------ -->
 
-    <script src="leaflet-search.js"></script>
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="maps.css">
     <script src="stores.js"></script>
@@ -29,13 +29,18 @@
 <body>
     <div id="mapid"></div>
     <script>
+        //#region initilization
         let lat = 38.2462420;
         let lng = 21.7350847;
         let userpos;
+        const results = [];
+        var resultsLayer = L.featureGroup();
         let mymap = L.map('mapid');
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
+        //#endregion
+
         //#region Functions
         function markerClick(event) {
             this.getPopup()
@@ -59,11 +64,10 @@
             //Add opening hours if available
             if (feature.properties.opening_hours) {
                 popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
-            }
-            
-            // bold text
+            }  
             popupContent = "<b>" + popupContent + "</b>";
-        
+
+
             return popupContent;
         }
 
@@ -81,17 +85,60 @@
                 }
             }).addTo(markersLayer);
 
+            function groupFindings(text, data) {
+                if (data.properties && data.properties.name) {
+                    return data.properties.name.toLowerCase().includes(text.toLowerCase());
+                }
+                return false;
+            }
+
+
             var searchBar = new L.Control.Search({
                 position: 'topright',
                 layer: markersLayer,
                 propertyName: 'name',
                 zoom: 16,
                 initial: false,
+                exactMatch: false,
+                buildTip: (text, loc) => {  
+                    results.push(loc);
+                    const tip = L.DomUtil.create('div');
+                    tip.innerHTML = text;
+                    L.DomEvent.disableClickPropagation(tip).on(tip, "click", L.DomEvent.stop, searchBar)
+                    .on(
+                        tip,
+                        "click",
+                        function (e) {
+                            searchBar._input.value = text;
+                            searchBar._handleAutoresize();
+                            searchBar._input.focus();
+                            searchBar._hideTooltip();
+                            searchBar._handleSubmit();
+                        },
+                        searchBar
+                    );
+                    console.log(results);
+                    return tip;
+                },
+                moveToLocation: results.length > 1 ? L.Control.Search._defaultMoveToLocation : () => {}
             });
-
-            
-
             mymap.addControl(searchBar);
+            
+            const container = searchBar.getContainer();
+
+            const inputElement = container.querySelector('input[type="text"]');
+
+            inputElement.addEventListener("keypress", function (e) {
+                if(e.key === "Enter" && results.length) {
+                    console.log(results);
+                    markersLayer.remove();
+                    results.forEach((result) => {
+                        const marker = L.marker(result);
+                        resultsLayer.addLayer(marker);
+                    });
+                    mymap.fitBounds(resultsLayer.getBounds());
+                }
+            });
             
         }
         //#endregion
@@ -114,8 +161,11 @@
         //         initializeMap();
         //     }
             
+        // let empty = [];
         mymap.setView([38.2462420, 21.7350847], 16);
         initializeMap();
+            // if (results.)
+            //     results = empty;
         
         
         
