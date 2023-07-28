@@ -7,7 +7,7 @@ CREATE PROCEDURE get_last_week_price(IN pro_id SMALLINT UNSIGNED, OUT price DECI
 BEGIN
 DECLARE incr INT;
 DECLARE denominator INT;
-DECLARE dayily_average DECIMAL(3,2);
+DECLARE dayily_average DECIMAL(4,2);
 SET incr = 0;
 SET denominator = 0;
 SET price = 0;
