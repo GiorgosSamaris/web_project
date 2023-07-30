@@ -1,4 +1,8 @@
 <?php
+    include 'localhostConn.php';
+    // include 'azureConn.php'
+
+
 
     echo "Converting...";
     $jsonPath = $argv[1];
@@ -32,30 +36,34 @@
         $categories = $jsonData["categories"];
     
         //create the csv file and open it for writing
-        $csvPath = "categories.csv";
-        $filePointer = fopen($csvPath, "w");
+        $csvPathCat = "/var/lib/mysql-files/categories.csv";
+        $csvPathSubCat = "/var/lib/mysql-files/sub_categories.csv";
+        $filePointerCat = fopen($csvPathCat, "w");
+        $filePointerSubCat = fopen($csvPathSubCat, "w");
     
         //write csv header
-        fputs($filePointer, "category_id,category_name,subcategory_id,subcategory_name\n");
+        fputs($filePointerCat, "category_id,category_name\n");
+        fputs($filePointerSubCat, "subcategory_id,category_id,subcategory_name\n");
     
         //insert json data to csv
         foreach( $categories as $c )
         {
 
+            fputs($filePointerCat, ($c["id"].",".$c["name"]."\n"));
             //check if the category has a subcategory
             if(array_key_exists("subcategories", $c));
             {
                 $subcategories = $c["subcategories"];
                 foreach($subcategories as $s)
                 {
-                    fputs($filePointer, ($c["id"].",".$c["name"].","));
-                    fputcsv($filePointer, $s);
-                    
+                    fputs($filePointerSubCat, ($s["uuid"].","));
+                    fputs($filePointerSubCat, ($c["id"].",".$s["name"]."\n"));    
                 }
 
             }
         }
-        fclose($filePointer);
+        fclose($filePointerCat);
+        fclose($filePointerSubCat);
 
     }
 
