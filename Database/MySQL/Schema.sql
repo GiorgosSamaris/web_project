@@ -68,7 +68,7 @@
 
 
   CREATE TABLE product (
-    product_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    product_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
     subcategory_id VARCHAR(32) NOT NULL,
     name VARCHAR(128) NOT NULL,  
     PRIMARY KEY  (product_id),
@@ -81,8 +81,8 @@
   --
 
   CREATE TABLE price_history (
-    price_history_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    product_id SMALLINT UNSIGNED NOT NULL,
+    price_history_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    product_id MEDIUMINT UNSIGNED NOT NULL,
     price_date DATE NOT NULL,
     average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY  (price_history_id),
@@ -112,9 +112,9 @@
   --
 
   CREATE TABLE inventory (
-    inventory_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    inventory_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
     store_id TINYINT UNSIGNED NOT NULL,
-    product_id SMALLINT UNSIGNED NOT NULL,
+    product_id MEDIUMINT UNSIGNED NOT NULL,
     inventory_price DECIMAL (4,2) NOT NULL DEFAULT 0,
     PRIMARY KEY  (inventory_id),
     CONSTRAINT `fk_inventory_store_id` FOREIGN KEY (store_id) REFERENCES store (store_id) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -128,8 +128,8 @@
   --
 
   CREATE TABLE offer (
-    offer_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    product_id SMALLINT UNSIGNED NOT NULL,
+    offer_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    product_id MEDIUMINT UNSIGNED NOT NULL,
     store_id TINYINT UNSIGNED NOT NULL,
     author_id SMALLINT UNSIGNED NOT NULL,
     offer_price DECIMAL (4,2) NOT NULL DEFAULT 0,
@@ -153,7 +153,7 @@
 
   CREATE TABLE offer_rating (
     rating_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    offer_id MEDIUMINT UNSIGNED NOT NULL,
+    offer_id BIGINT UNSIGNED NOT NULL,
     customer_id SMALLINT UNSIGNED NOT NULL,
     rate_value ENUM('LIKE', 'DISLIKE') NOT NULL,
     rating_date DATETIME NOT NULL  DEFAULT now(),
