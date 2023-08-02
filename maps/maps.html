@@ -33,9 +33,11 @@
         let lat = 38.2462420;
         let lng = 21.7350847;
         let userpos;
-        const results = [];
-        var resultsLayer = L.featureGroup();
+        let popupContent = "";
         let mymap = L.map('mapid');
+        var resultsLayer = L.featureGroup();
+        let results = [];
+        var productsList = [];
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
@@ -48,40 +50,82 @@
                 .setContent("Συντεταγμένες σημείου: " + event.latlng.toString());
         }
         
-        function popupContent(feature) {
-            let popupContent = "";
-            
+        function popupContentStores(feature) {  
+            popupContent = "<b>";       //reset the content because its a global variable
+            console.log(popupContent);
             //show name and if not available then the brand name in english
             if (feature.properties.name) {
-                popupContent = feature.properties.name;
+                popupContent += feature.properties.name;
             } else if (feature.properties['brand:en']) {
-                popupContent = feature.properties['brand:en'];
+                popupContent += feature.properties['brand:en'];
             }
-            
+        
             // Add coordinates 
-            popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
+                // popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
             
             //Add opening hours if available
             if (feature.properties.opening_hours) {
                 popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
             }  
-            popupContent = "<b>" + popupContent + "</b>";
-
-
+            let productsContent = "<ul>";
+            productsList.forEach((product) => {
+                if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
+                    // console.log(product.name);
+                    productsContent += "<li>" + product.name + "</li>";
+                }
+            });
+            productsContent += "</ul>"; 
+            popupContent += "<br>" + "Products on sale:" + productsContent;
+            
+            // popupContent = "<b>" + popupContent + "</b>";
+            popupContent += "</b>";
             return popupContent;
         }
 
-        function initializeMap() {
+        async function fetchProducts() {    //fetch is an asynchronous function
+            try {
+                const response = await fetch("products_and_categories.json");
+                const data = await response.json();
+                data.products.forEach((product) => {
+                    const { id, name, category, subcategory } = product;
+                    productsList.push(product);
+                });
+            } catch (error) {
+                console.error("Error loading the JSON data:", error);
+            }
+        }
+
+        async function initializeMap() {
             mymap.setView([lat,lng], 16);
             var markersLayer = new L.LayerGroup();
             mymap.addLayer(markersLayer);
             userpos = new L.marker([lat,lng]).addTo(mymap); 
             userpos.bindPopup("You're here!").openPopup();
 
+
+            //  fetch("products_and_categories.json")
+            // .then((res) => res.json())
+            // .then((data) => {
+            //     // console.log(data.products[0].subcategory);
+            //     data.products.forEach(product => {
+            //         const {id, name, category, subcategory} = product;
+            //         productsList.push(product);
+                    
+            //         // console.log(product);
+            //         // console.log(productsList.length);
+            //     });
+            //     // popupContentProducts();
+                
+            // })
+            // .catch(error => {
+            //     console.error('Error loading the JSON data:', error);
+            // });
             
+            await fetchProducts();
+
             L.geoJson(stores_json, {
                 onEachFeature: function(feature, layer) {
-                    layer.bindPopup(popupContent(feature));
+                    layer.bindPopup(popupContentStores(feature));
                 }
             }).addTo(markersLayer);
 
@@ -96,33 +140,17 @@
             var searchBar = new L.Control.Search({
                 position: 'topright',
                 layer: markersLayer,
-                propertyName: 'name',
+                propertyName: ['name', 'brand:en'],
                 zoom: 16,
                 initial: false,
                 exactMatch: false,
-                buildTip: (text, loc) => {  
-                    results.push(loc);
-                    const tip = L.DomUtil.create('div');
-                    tip.innerHTML = text;
-                    L.DomEvent.disableClickPropagation(tip).on(tip, "click", L.DomEvent.stop, searchBar)
-                    .on(
-                        tip,
-                        "click",
-                        function (e) {
-                            searchBar._input.value = text;
-                            searchBar._handleAutoresize();
-                            searchBar._input.focus();
-                            searchBar._hideTooltip();
-                            searchBar._handleSubmit();
-                        },
-                        searchBar
-                    );
-                    console.log(results);
-                    return tip;
-                },
-                moveToLocation: results.length > 1 ? L.Control.Search._defaultMoveToLocation : () => {}
-            });
-            mymap.addControl(searchBar);
+                buildTip: function(text, val) {
+                    var type = val.layer.feature.properties.shop;
+                    return '<a href="#" class="'+type+'">'+text+'<b>'+type+'</b></a>';
+                }
+            }).addTo(mymap);
+            
+            
             
             const container = searchBar.getContainer();
 
@@ -137,8 +165,14 @@
                         resultsLayer.addLayer(marker);
                     });
                     mymap.fitBounds(resultsLayer.getBounds());
+                } else if (e.key === "Enter") {
+                    alert("Error no results were found!");
+
                 }
             });
+            // window.onload = function () {
+            // initializeMap();
+        // };
             
         }
         //#endregion
