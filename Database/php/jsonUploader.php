@@ -20,18 +20,22 @@
     if(array_key_exists("products", $jsonData))
     {
         $products = $jsonData["products"];
+
+        $added_prod = true;
         
         //create the csv file and open it for writing
-        $csvPath = "products.csv";
+        $csvPath = "/var/lib/mysql-files/products.csv";
         $filePointer = fopen($csvPath, "w");
         
         //write csv header
-        fputs($filePointer, "id,name,category,subcategory\n");
+        fputs($filePointer, "subcategory| name\n");
     
         //insert json data to csv
         foreach( $products as $p )
         {
-            fputcsv($filePointer, $p);
+            
+            fputs($filePointer,($p["subcategory"]."|".$p["name"]."\n"));
+            
         }
         fclose($filePointer);
         
@@ -47,22 +51,22 @@
         $filePointerSubCat = fopen($csvPathSubCat, "w");
     
         //write csv header
-        fputs($filePointerCat, "category_id,category_name\n");
-        fputs($filePointerSubCat, "subcategory_id,category_id,subcategory_name\n");
+        fputs($filePointerCat, "category_id|category_name\n");
+        fputs($filePointerSubCat, "subcategory_id|category_id|subcategory_name\n");
         
         //insert json data to csv
         foreach( $categories as $c )
         {
             $added_cat = true;
-            fputs($filePointerCat, ($c["id"].",".$c["name"]."\n"));
+            fputs($filePointerCat, ($c["id"]."|".$c["name"]."\n"));
             //check if the category has a subcategory
             
             $subcategories = $c["subcategories"];
             foreach($subcategories as $s)
             {
                 $added_sub_cat = true;
-                fputs($filePointerSubCat, ($s["uuid"].","));
-                fputs($filePointerSubCat, ($c["id"].",".$s["name"]."\n"));    
+                fputs($filePointerSubCat, ($s["uuid"]."|"));
+                fputs($filePointerSubCat, ($c["id"]."|".$s["name"]."\n"));    
             }
             
             
@@ -105,12 +109,19 @@
         $statement = 
         "LOAD DATA INFILE  '/var/lib/mysql-files/categories.csv'
         INTO TABLE category
-        FIELDS TERMINATED BY ','
+        FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES;";
     
     
-        $cat_insert = $conn->query($statement);
+        
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during category insert: $e\n";
+        }
 
     }
     if($added_sub_cat == true)
@@ -118,7 +129,7 @@
         $statement = 
         "LOAD DATA INFILE  '/var/lib/mysql-files/sub_categories.csv'
         INTO TABLE subcategory
-        FIELDS TERMINATED BY ','
+        FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES;";
     
@@ -127,12 +138,31 @@
         }
         catch (mysqli_sql_exception $e)
         {
-            echo "Error occured during category insert: $e";
+            echo "Error occured during subcategory insert: $e\n";
+        }
+
+    }
+
+    if($added_prod == true)
+    {
+        $statement = 
+        "LOAD DATA INFILE  '/var/lib/mysql-files/products.csv'
+        INTO TABLE temp_table
+        FIELDS TERMINATED BY '|'
+        LINES TERMINATED BY '\n'
+        IGNORE 1 LINES;";
+    
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during product insert: $e\n";
         }
 
     }
 
 
-
+    
 
     ?>

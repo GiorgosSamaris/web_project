@@ -165,3 +165,4 @@
 
 
 
+CREATE OR REPLACE VIEW temp_table AS SELECT subcategory_id,name FROM product;
