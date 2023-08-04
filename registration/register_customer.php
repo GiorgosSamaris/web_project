@@ -1,38 +1,30 @@
-<?php
-    // connection arguments
-    $servername = "localhost";
-    $username = "phpClient";
-    $password = "$0ftK1ngsPhP";
-    $dbname = "GoCart";
+<?php 
+//connection arguments
+$servername = "localhost";
+$username = "phpClient";
+$password = "$0ftK1ngsPhP";
+$dbname = "GoCart";
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Check connection
-    if ($conn->connect_error){
-        die("Connection failed: " . $conn->connect_error);
-        print_r("OH NO!");
-    }
-    // azure connect
-    // $conn = mysqli_init();
-    // mysqli_ssl_set($conn,NULL,NULL, "/home/ptriantafy/Downloads/DigiCertGlobalRootCA.crt.pem", NULL, NULL);
-    // mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "ENTER PASSWORD", "gocart", 3306, MYSQLI_CLIENT_SSL);
-    $testusername =$_POST['usrn'];
-    $testemail = $_POST['Email'];
-    $testpass = $_POST['pswr'];
-    // $testusername ="testusername12";
-    // $testemail = "testemail2";
-    // $testpass = "testpasword";
+// Check connection
+if ($conn->connect_error){
+    die("Connection failed: " . $conn->connect_error);
+    print_r("OH NO!");
+}
+$username = $_POST['username'];
+$email = $_POST['email'];
+$password = $_POST['password'];
 
-    $testusername = stripcslashes($testusername);  
-    $testemail = stripcslashes($testemail);  
-    $testpass = stripcslashes($testpass);  
-    $testusername = mysqli_real_escape_string($conn, $testusername);  
-    $testemail = mysqli_real_escape_string($conn, $testemail);  
-    $testpass = mysqli_real_escape_string($conn, $testpass);  
+$username = stripcslashes($username);  
+$email = stripcslashes($email);  
+$password = stripcslashes($password);  
+$username = mysqli_real_escape_string($conn, $username);  
+$email = mysqli_real_escape_string($conn, $email);  
+$password = mysqli_real_escape_string($conn, $password);  
 
-    $reg_cust = $conn->prepare("CALL register_customer(?, ?, ?);");
-    $reg_cust->bind_param("sss", $testusername, $testemail, $testpass);
-    $reg_cust->execute();
-
+$reg_cust = $conn->prepare("CALL register_customer(?, ?, ?);");
+$reg_cust->bind_param("sss", $username, $email, $password);
+$reg_cust->execute();
 ?>
