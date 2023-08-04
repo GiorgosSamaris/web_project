@@ -30,14 +30,14 @@
     <div id="mapid"></div>
     <script>
         //#region initilization
-        let lat = 38.2462420;
-        let lng = 21.7350847;
+        let testLat = 38.2462420;
+        let testLon = 21.7350847;
         let userpos;
         let popupContent = "";
         let mymap = L.map('mapid');
-        var resultsLayer = L.featureGroup();
         let results = [];
-        var productsList = [];
+        let productsList = [];
+        let resultsLayer = L.featureGroup();
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
@@ -52,7 +52,7 @@
         
         function popupContentStores(feature) {  
             popupContent = "<b>";       //reset the content because its a global variable
-            console.log(popupContent);
+            
             //show name and if not available then the brand name in english
             if (feature.properties.name) {
                 popupContent += feature.properties.name;
@@ -67,27 +67,57 @@
             if (feature.properties.opening_hours) {
                 popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
             }  
-            let productsContent = "<ul>";
+            let productsContent = "<ol>";
             productsList.forEach((product) => {
-                if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
-                    // console.log(product.name);
-                    productsContent += "<li>" + product.name + "</li>";
+                if(feature.properties.name === 'Kiosk'){
+                    if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
+                        // console.log(product.name);
+                        productsContent += "<li>" + product.name + "</li>";
+                    }
                 }
+                
             });
-            productsContent += "</ul>"; 
+            productsContent += "</ol>"; 
             popupContent += "<br>" + "Products on sale:" + productsContent;
             
-            // popupContent = "<b>" + popupContent + "</b>";
             popupContent += "</b>";
             return popupContent;
         }
 
-        async function fetchProducts() {    //fetch is an asynchronous function
+        function userStoreDistance(lat1, lon1 , lat2, lon2) {
+            //using the haversine Formula
+            const R = 6371.0; //Earth's radius in km
+
+            //convert lat and lon to radians
+            const lat1Rad = (Math.PI / 180) * lat1;
+            const lon1Rad = (Math.PI / 180) * lon1; 
+            const lat2Rad = (Math.PI / 180) * lat2;
+            const lon2Rad = (Math.PI / 180) * lon2; 
+
+            //calculate difference
+            const latDifference = lat2Rad - lat1Rad;
+            const lonDifference = lon2Rad - lon1Rad;
+
+            //formula
+            const a = Math.sin(latDifference / 2) * Math.sin(latDifference / 2) +
+                      Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
+                      Math.sin(lonDifference / 2) * Math.sin(lonDifference / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            
+            const roundedDistance = distance.toFixed(2); //displays only two floating point digits
+
+            return roundedDistance;
+        }
+
+        async function fetchProducts() {    //fetch api to pull data from JSON file
             try {
                 const response = await fetch("products_and_categories.json");
                 const data = await response.json();
                 data.products.forEach((product) => {
-                    const { id, name, category, subcategory } = product;
+                    //creates a variable that consists of four attributes that describe a product 
+                    const { id, name, category, subcategory } = product;    
+                    //adds each product to the list
                     productsList.push(product);
                 });
             } catch (error) {
@@ -96,85 +126,80 @@
         }
 
         async function initializeMap() {
-            mymap.setView([lat,lng], 16);
+            mymap.setView([testLat,testLon], 16);
             var markersLayer = new L.LayerGroup();
             mymap.addLayer(markersLayer);
-            userpos = new L.marker([lat,lng]).addTo(mymap); 
+            userpos = new L.marker([testLat,testLon]).addTo(mymap); 
             userpos.bindPopup("You're here!").openPopup();
-
-
-            //  fetch("products_and_categories.json")
-            // .then((res) => res.json())
-            // .then((data) => {
-            //     // console.log(data.products[0].subcategory);
-            //     data.products.forEach(product => {
-            //         const {id, name, category, subcategory} = product;
-            //         productsList.push(product);
-                    
-            //         // console.log(product);
-            //         // console.log(productsList.length);
-            //     });
-            //     // popupContentProducts();
-                
-            // })
-            // .catch(error => {
-            //     console.error('Error loading the JSON data:', error);
-            // });
-            
+   
             await fetchProducts();
 
-            L.geoJson(stores_json, {
+            L.geoJson(stores_json, {    //pulls data from GeoJSON file
                 onEachFeature: function(feature, layer) {
+                    if(layer.feature.properties['addr:street']){
+                        //combines two features into one for use in search if the second attribute exists
+                        layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + layer.feature.properties['addr:street'];
+                        //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
+                    } else {
+                        layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + 
+                                                              userStoreDistance(testLat, testLon, layer.feature.geometry.coordinates[1], layer.feature.geometry.coordinates[0]) + 
+                                                              ' Km';
+                    }
+                    
+                    //binds the popup content to every marker
                     layer.bindPopup(popupContentStores(feature));
-                }
-            }).addTo(markersLayer);
 
-            function groupFindings(text, data) {
-                if (data.properties && data.properties.name) {
+                }
+            }).addTo(markersLayer);     //adds the stores in the markersLayer
+
+            function groupFindings(text, data) {    //text is the user input and data is the marker
+                //ensures that the item has the name property before the process of matching with the input begins
+                if (data.properties && data.properties.name) {   
+                    //checks if the name property(lowerCase) of the item matches the input(lowerCase)
                     return data.properties.name.toLowerCase().includes(text.toLowerCase());
                 }
-                return false;
+                return false;   //return false if name doesnt exist
             }
 
+            var searchResultsLayer = new L.LayerGroup();
 
             var searchBar = new L.Control.Search({
-                position: 'topright',
+                position: 'topleft',
                 layer: markersLayer,
-                propertyName: ['name', 'brand:en'],
+                propertyName: 'searchProp', 
                 zoom: 16,
                 initial: false,
                 exactMatch: false,
                 buildTip: function(text, val) {
-                    var type = val.layer.feature.properties.shop;
-                    return '<a href="#" class="'+type+'">'+text+'<b>'+type+'</b></a>';
+                    // var type = val.layer.feature.properties.shop;
+                    // console.log(val);
+                    var filteredLayer = new L.LayerGroup();
+                    var redIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                    });
+                    for (var i = 0; i < val.length; i++) {
+                        var resultMarker = val[i].layer; // Get the original marker from markersLayer
+                        console.log(resultMarker.feature);
+                        if(val[i].layer.feature.properties.name.toLowerCase() === text.toLowerCase()){
+                            resultMarker.setIcon(redIcon); // Set the red icon directly on the original marker
+                            resultMarker.addTo(filteredLayer);
+                        }
+                    }
+                    // console.log(filteredLayer);
+                    markersLayer.clearLayers();
+                    markersLayer.addLayer(filteredLayer);
+                    //return the names of the stores and their type
+                    return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
                 }
             }).addTo(mymap);
-            
-            
-            
-            const container = searchBar.getContainer();
 
-            const inputElement = container.querySelector('input[type="text"]');
-
-            inputElement.addEventListener("keypress", function (e) {
-                if(e.key === "Enter" && results.length) {
-                    console.log(results);
-                    markersLayer.remove();
-                    results.forEach((result) => {
-                        const marker = L.marker(result);
-                        resultsLayer.addLayer(marker);
-                    });
-                    mymap.fitBounds(resultsLayer.getBounds());
-                } else if (e.key === "Enter") {
-                    alert("Error no results were found!");
-
-                }
-            });
-            // window.onload = function () {
-            // initializeMap();
-        // };
             
         }
+
+        
         //#endregion
         
         //get users location
