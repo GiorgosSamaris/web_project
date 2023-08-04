@@ -14,7 +14,7 @@
     isAdmin BOOLEAN DEFAULT FALSE,
     register_date DATETIME DEFAULT now(),
     PRIMARY KEY  (user_id),
-    CONSTRAINT `unq_user_email` UNIQUE(username),
+    CONSTRAINT `unq_user_name` UNIQUE(username),
     INDEX(username)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -30,7 +30,7 @@
     current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY  (customer_id),
-    CONSTRAINT `unq_customer_username` UNIQUE(email),
+    CONSTRAINT `unq_customer_email` UNIQUE(email),
     CONSTRAINT `fk_customer_client_id` FOREIGN KEY (customer_id) REFERENCES user (user_id) ON DELETE RESTRICT ON UPDATE CASCADE,
     INDEX(email)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
