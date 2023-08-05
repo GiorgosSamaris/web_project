@@ -4,12 +4,12 @@ ini_set('display_errors', 1);
 // include __DIR__ .'/../Database/php/localhostConn.php';
 //connection arguments
 $servername = "localhost";
-$username = "phpClient";
-$password = "$0ftK1ngsPhP";
+$dbusername = "phpClient";
+$dbpassword = "$0ftK1ngsPhP";
 $dbname = "GoCart";
 
 // Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
 // Check connection
 if ($conn->connect_error){
