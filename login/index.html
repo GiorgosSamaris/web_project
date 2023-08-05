@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <title>Go Cart</title>
+</head>
+<body>
+    <div class="container">
+        <form action="login_customer.php" method="post" id="loginForm">
+            <div class="login">
+                <h1>Go Cart</h1>
+                <label for="username">Enter username</label>
+                <input type="text" name="username" id="username" class="input input-username">
+                <label for="password">Enter password</label>
+                <input type="text" name="password" id="password" class="input input-password">
+                <button type="submit" class="login-btn">Login</button>
+            </div>
+        </form>
+    </div>
+    <div id="response"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

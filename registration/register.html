@@ -10,11 +10,11 @@
 
 <body>
     <div class="container">
-        <h1>Shop it</h1>
-        <form action="register_customer.php" method="post">
+        <h1>Go Cart</h1>
+        <form action="" method="post" id="registrationForm">
             <div class="register">
                 <label for="username">Enter username</label>
-                <input type="text" name="username" class="input input-username">
+                <input type="text" name="username" id="username" class="input input-username">
                 <label for="password">Enter password</label>
                 <input type="password" name="password" pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
                 title="Must contain at least 8 characters, one uppercase letter, one number and one symbol" required id ="password" class="input input-password">
@@ -26,10 +26,12 @@
                     <p id="number" class="invalid"><b>At least one number</b></p>
                 </div>
                 <label for="email">Enter email</label>
-                <input type="text" name="email" placeholder="<name>@<mail>.<com>" class="input input-password">
+                <input type="text" name="email" id="email" placeholder="<name>@<mail>.<com>" class="input input-password">
                 <button type="submit" class="register-btn">Register</button>
             </div>
         </form>
+        <div id="response"></div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="js/registration.js"></script>
     </div>
 </body>
