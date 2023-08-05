@@ -1,9 +1,42 @@
 body {
     padding: 0;
     margin: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
 #mapid { 
     height: 100vh; 
     width: 100%;
+}
+
+.leaflet-popup-content-wrapper {
+    box-shadow: none;
+    /* background: none; */
+}
+
+.leaflet-control-search .search-tip {
+    white-space: normal;
+    width: 6rem;
+}
+
+.popup-container {
+    text-align: center;
+    display: block;
+    background-color: antiquewhite;
+    border-radius: 0.6rem;
+}
+
+.submit-offer{
+    display: block;
+    margin: 0 auto; /* 0 margin for top and bottom 
+    and auto for left and right. Centers the button 
+    inside the block */
+    padding: 0.4rem;
+    font-weight: 600;
+    background-color: transparent;
+    border-radius: 0.6rem;
+}
+
+.button-container button {
+    margin-bottom: 0.3rem;
 }
