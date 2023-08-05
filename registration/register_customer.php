@@ -1,21 +1,21 @@
 <?php 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-// include __DIR__ .'/../Database/php/localhostConn.php';
+include(dirname(__DIR__).'/azureConnection/azureConn.php');
 //connection arguments
-$servername = "localhost";
-$dbusername = "phpClient";
-$dbpassword = "$0ftK1ngsPhP";
-$dbname = "GoCart";
+// $servername = "localhost";
+// $dbusername = "phpClient";
+// $dbpassword = "$0ftK1ngsPhP";
+// $dbname = "GoCart";
 
-// Create connection
-$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+// // Create connection
+// $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
-if ($conn->connect_error){
-    die("Connection failed: " . $conn->connect_error);
-    print_r("OH NO!");
-}
+// // Check connection
+// if ($conn->connect_error){
+//     die("Connection failed: " . $conn->connect_error);
+//     print_r("OH NO!");
+// }
 
 // Check if the request is a POST request
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
