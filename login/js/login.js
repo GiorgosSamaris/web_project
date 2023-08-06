@@ -14,7 +14,7 @@ $(document).ready(function(){
             url: "validate_user.php",
             data: loginData,
             success: function (response) {
-            console.log(JSON.parse(response));
+            console.log(JSON.parse(response.trim()));
             console.log(response.status);
             console.log(response.message);
             console.log(response.type);
