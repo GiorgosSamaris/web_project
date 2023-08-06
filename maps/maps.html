@@ -36,8 +36,10 @@
         let userpos;
         let popupContent = "";
         let mymap = L.map('mapid');
-        let results = [];
+        let storesList = [];
         let productsList = [];
+        let categoriesList = [];
+        let subCategoriesList = [];
         let resultsLayer = L.featureGroup();
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -46,36 +48,46 @@
 
         //#region Functions
         
-        function popupContentStores(feature, isClose) {  
+        function getSubCategoryName(subCategoryId) {
+            // console.log(subCategoryId);
+            for(const subCategory of subCategoriesList){
+                if(subCategory.uuid === subCategoryId)
+                    return subCategory.name;
+            }
+            return null;
+        }
+
+        function popupContentStores(store, isClose) {  
             popupContent = '<div class = "popup-container">';
                 popupContent += "<b>";       //reset the content because its a global variable
-                
+                console.log(store.store_name);
                 //show name and if not available then the brand name in english
-                if (feature.properties.name) {
-                    popupContent += feature.properties.name;
-                } else if (feature.properties['brand:en']) {
-                    popupContent += feature.properties['brand:en'];
-                }
+                if (store.store_name) {
+                    // console.log(store_name);
+                    popupContent += store.store_name;
+                } // else if (feature.properties['brand:en']) {
+                //     popupContent += feature.properties['brand:en'];
+                // }
             
                 // Add coordinates 
                     // popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
 
                 //Add opening hours if available
-                if (feature.properties.opening_hours) {
-                    popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
-                }  
-                let productsContent = "<ol>";
-                productsList.forEach((product) => {
-                    if(feature.properties.name === 'Kiosk'){
-                        if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
-                            // console.log(product.name);
-                            productsContent += "<li>" + product.name + "</li>";
-                        }
-                    }
+                // if (feature.properties.opening_hours) {
+                //     popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
+                // }  
+                // let productsContent = "<ol>";
+                // productsList.forEach((product) => {
+                //     if(feature.properties.name === 'Kiosk'){
+                //         if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
+                //             // console.log(product.name);
+                //             productsContent += "<li>" + product.name + "&nbsp" + '(' + getSubCategoryName("991276688c8c4a91b5524b1115122ec1") + ')' + "</li>";
+                //         }
+                //     }
+                // });
 
-                });
-                productsContent += "</ol>"; 
-                popupContent += "<br>" + "Products on sale:" + productsContent;
+                // productsContent += "</ol>"; 
+                // popupContent += "<br>" + "Products on sale:" + productsContent;
                 if(isClose === true){
                     popupContent += '<div class = "button-container">';
                     popupContent += '<button type = "submit" class = "submit-offer" > Add Offer </button>';
@@ -86,7 +98,7 @@
             popupContent += '</div>'
             return popupContent;
         }
-
+ 
         function userStoreDistance(lat1, lon1 , lat2, lon2) {
             //using the haversine Formula
             const R = 6371.0; //Earth's radius in km
@@ -113,16 +125,47 @@
             return [roundedDistance, distanceInMeters];
         }
 
+        async function fetchStores() {
+            try{
+                const response = await fetch('json/stores.json');
+                const textData = await response.text();
+                const cleanedData = textData.trim();
+                const data =  JSON.parse(cleanedData);
+                data.forEach((store) => {
+                    const {store_id, store_name, longitude, latitude, map_id} = store;
+                    // console.log(store);
+                    storesList.push(store);
+                });
+            } catch (error) {
+                console.error("Error loading the json data: ", error);
+            }
+            
+        }
+
         async function fetchProducts() {    //fetch api to pull data from JSON file
             try {
                 const response = await fetch("products_and_categories.json");
                 const data = await response.json();
                 data.products.forEach((product) => {
                     //creates a variable that consists of four attributes that describe a product 
-                    const { id, name, category, subcategory } = product;    
+                    const { productId, productName, productCategory, productSubcategory } = product;  
                     //adds each product to the list
                     productsList.push(product);
                 });
+                //onEach and onEachFeature are specific to leaflet
+                data.categories.forEach((category) => {
+                    const {categoryId, categoryName, subcategories} = category;  
+                    category.subcategories.forEach((subCategory) => {
+                        const {subCatName, subCatUuid} = subCategory;
+                        subCategoriesList.push(subCategory);
+                    })
+                    categoriesList.push(category);
+                });
+                // console.log(subCategoriesList);
+                // data.categories.subcategories.forEach((subcategory) => {
+                //     const {subCatName, sunCatUuid} = subcategory;
+                //     subcategoriesList.push(subcategory);
+                // });
             } catch (error) {
                 console.error("Error loading the JSON data:", error);
             }
@@ -131,39 +174,60 @@
         async function initializeMap() {
             mymap.setView([testLat,testLon], 17);
             var markersLayer = new L.LayerGroup();
-            mymap.addLayer(markersLayer);
             userpos = new L.marker([testLat,testLon]).addTo(mymap); 
             userpos.bindPopup("You're here!").openPopup();
-   
-            await fetchProducts();
+            let isClose = false;
 
-            L.geoJson(stores_json, {    //pulls data from GeoJSON file
-                onEachFeature: function(feature, layer) {
-                    let isClose = false;
-                    var currStoreDist = userStoreDistance(testLat, testLon, layer.feature.geometry.coordinates[1], layer.feature.geometry.coordinates[0]);
-                    if(layer.feature.properties['addr:street']){
-                        //combines two features into one for use in search if the second attribute exists
-                        layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + layer.feature.properties['addr:street'];
-                        //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
-                    } else {
-                        layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + currStoreDist[0] + ' Km';
-                    }
+            await fetchStores();
+            console.log(storesList);
+            storesList.forEach((store) => {
+                // console.log(store);
+                // console.log(store.latitude);
+                let marker = new L.marker([store.latitude, store.longitude]).addTo(mymap);
 
+                var currStoreDist = userStoreDistance(testLat, testLon, store.latitude, store.longitude);
 
-                    if(currStoreDist[1] <= 70){
-                        console.log(currStoreDist*1000);
-                        isClose = true;
-                        layer.bindPopup(popupContentStores(feature,isClose));
-
-                    } else {
-                        isClose = false;
-                        //binds the popup content to every marker
-                        layer.bindPopup(popupContentStores(feature,isClose));
-                    }
-                    
-
+                if(currStoreDist[1] <= 50){
+                    isClose = true;
+                    marker.bindPopup(popupContentStores(store,isClose));
+                } else {
+                    isClose = false;
+                    marker.bindPopup(popupContentStores(store,isClose));
                 }
-            }).addTo(markersLayer);     //adds the stores in the markersLayer
+            });
+            await fetchProducts();
+            mymap.addLayer(markersLayer);
+            // L.geoJson(stores_json, {    //pulls data from GeoJSON file
+            //     onEachFeature: function(feature, layer) {
+            //         let isClose = false;
+            //         var currStoreDist = userStoreDistance(testLat, 
+            //                                               testLon, 
+            //                                               layer.feature.geometry.coordinates[1], 
+            //                                               layer.feature.geometry.coordinates[0]);
+            //         if(layer.feature.properties['addr:street']){
+            //             //combines two features into one for use in search if the second attribute exists
+            //             layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + 
+            //                                                   layer.feature.properties['addr:street'];
+            //             //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
+            //         } else {
+            //             layer.feature.properties.searchProp = layer.feature.properties.name + ', ' + 
+            //                                                   currStoreDist[0] + ' Km';
+            //         }
+
+            //         if(currStoreDist[1] <= 70){ //check for stores that are nearby the users location
+            //             console.log(currStoreDist*1000);
+            //             isClose = true; //enable the buttons for adding offer and reviewing
+            //             layer.bindPopup(popupContentStores(feature,isClose));
+
+            //         } else {
+            //             isClose = false;
+            //             //binds the popup content to every marker
+            //             layer.bindPopup(popupContentStores(feature,isClose));
+            //         }
+            //     }
+            // }).addTo(markersLayer);     //adds the stores in the markersLayer
+
+            
 
             function groupFindings(text, data) {    //text is the user input and data is the marker
                 //ensures that the item has the name property before the process of matching with the input begins
