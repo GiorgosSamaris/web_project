@@ -69,7 +69,42 @@ function checkRequirementsVisibility(){
     symbol.classList.contains("valid") &&
     number.classList.contains("valid") ) {
       requirements.id = "password-requirements-inv";
+      // requirements.classList.remove("visible");
     } else {
+      // requirements.classList.add("visible");
       requirements.id = "password-requirements-vis";
     }
 }
+$(document).ready(function () {
+  $("#registrationForm").submit(function (event) {
+    event.preventDefault();
+
+    var registrationData = {
+      username: $("#username").val(),
+      password: $("#password").val(),
+      email: $("#email").val(),
+    };
+    // console.log(registrationData);
+    $.ajax({
+      type: "POST",
+      url: "register_customer.php",
+      data: registrationData,
+      success: function (response) {
+        console.log(response);
+        if (JSON.parse(response).status === "success") {
+          $("#response").html(JSON.parse(response).message);
+          window.location.href = "/maps/maps.html"; 
+        } else if (JSON.parse(response).status === "fail") {
+          $("#response").html(JSON.parse(response).message);
+        } else {
+          $("#response").html("An error occurred while processing your request.");
+        }
+    },
+      error: function (xhr, status, error) {
+        console.error("AJAX Error: " + status, error);
+        $("#response").html("An error occurred while processing your request.");
+        console.log(xhr.responseText); 
+      },
+    });
+  });
+});

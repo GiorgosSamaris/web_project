@@ -8,20 +8,19 @@
 </head>
 <body>
     <div class="container">
-        <form action="login_customer.php" method="post">
+        <form action="login_customer.php" method="post" id="loginForm">
             <div class="login">
                 <h1>Go Cart</h1>
                 <label for="username">Enter username</label>
-                <input type="text" name="username" class="input input-username">
+                <input type="text" name="username" id="username" class="input input-username">
                 <label for="password">Enter password</label>
-                <input type="text" name="password" class="input input-password" 
-                pattern="(?=.+[a-z])(?=.+\d)(?=.+[A-Z])(?=.+[\W\S_]).{8,}"
-                title="Must contain at least 8 characters, one uppercase letter, 
-                one number and one symbol" required id ="password">
+                <input type="text" name="password" id="password" class="input input-password">
                 <button type="submit" class="login-btn">Login</button>
             </div>
         </form>
     </div>
+    <div id="response"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/login.js"></script>
 </body>
 </html>

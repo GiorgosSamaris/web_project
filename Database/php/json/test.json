@@ -1,0 +1,23 @@
+{
+    "fetch_date": 1671156540,
+    "products": [
+      {
+        "id": "0",
+        "name": "Trata Σαρδέλα Λαδιού 100γρ",
+        "category": "ee0022e7b1b34eb2b834ea334cda52e7",
+        "subcategory": "df10062ca2a04789bd43d18217008b5f"
+      },
+      {
+        "id": "1",
+        "name": "Υφαντής Πίτσα Rock N Roll 3Χ460γρ",
+        "category": "ee0022e7b1b34eb2b834ea334cda52e7",
+        "subcategory": "3f38edda7854447a837956d64a2530fa"
+      },
+      {
+        "id": "2",
+        "name": "Barilla Μακαρ Linguine Bavette Ν13 500γρ",
+        "category": "ee0022e7b1b34eb2b834ea334cda52e7",
+        "subcategory": "0c347b96540a427e9823f321861ce58e"
+      }
+    ]
+}
