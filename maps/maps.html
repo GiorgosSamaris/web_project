@@ -5,25 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- required -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/> -->
+    <!-- <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script> -->
 
     <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
     <!-- <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> -->
 
     <!-- leaflet-search -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" />
-    <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script>
-    <script src="leaflet-search.js"></script>
-    <!-- ------------------------------------------------ -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> -->
+    <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" /> -->
+    <!-- <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script> -->
+    <!-- <script src="leaflet-search.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+   
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.3.7/dist/leaflet-search.src.css" />
+    <script src="https://unpkg.com/leaflet-search@2.3.7/dist/leaflet-search.src.js"></script>
 
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="maps.css">
-    <script src="stores.js"></script>
+    <!-- <script src="stores.js"></script> -->
     <title>Maps</title>
 </head>
 <body>
@@ -107,18 +109,21 @@
         async function fetchStores() {
             try{
                 const response = await fetch('json/stores.json');
-                const textData = await response.text();
-                const cleanedData = textData.trim();
-                const data =  JSON.parse(cleanedData);
+                const data = await response.json();
+                // const cleanedData = textData.trim();
+                // const data =  JSON.parse(cleanedData);
                 data.forEach((store) => {
                     const {store_id, store_name, longitude, latitude, map_id, address} = store;
                     // console.log(store);
                     storesList.push(store);
+                    // console.log(store.address);
                     if('address' in store && store['address'] != "Unknown"){
                         store.searchProp = store.store_name + ', ' + store.address; //combine the store name and address 
+                        // console.log(store.searchProp);
                     } else {
                         //combine the store name and distance from the users location
                         store.searchProp = store.store_name + ', ' + userStoreDistance(testLat, testLon, store.latitude, store.longitude);
+                        console.log(store.searchProp);
                     }
                 });
                 
@@ -164,24 +169,53 @@
             userpos.bindPopup("You're here!").openPopup();
             let isClose = false;
 
-            await fetchStores();
+            // await fetchStores();
             // console.log(storesList);
-            storesList.forEach((store) => {
-                // console.log(store);
-                // console.log(store.latitude);
-                let marker = new L.marker([store.latitude, store.longitude]).addTo(markersLayer);
+            // storesList.forEach((store) => {
+            //     // console.log(store);
+            //     // console.log(store.latitude);
+            //     var marker = new L.marker([store.latitude, store.longitude]).addTo(markersLayer);
 
-                var currStoreDist = userStoreDistance(testLat, testLon, store.latitude, store.longitude);
+            //     var currStoreDist = userStoreDistance(testLat, testLon, store.latitude, store.longitude);
 
-                if(currStoreDist[1] <= 50){
-                    isClose = true;
-                    marker.bindPopup(popupContentStores(store,isClose));
-                } else {
-                    isClose = false;
-                    marker.bindPopup(popupContentStores(store,isClose));
+            //     if(currStoreDist[1] <= 50){
+            //         isClose = true;
+            //         marker.bindPopup(popupContentStores(store,isClose));
+            //     } else {
+            //         isClose = false;
+            //         marker.bindPopup(popupContentStores(store,isClose));
+            //     }
+            // });
+            // await fetchProducts();
+            L.geoJson(stores1, {    //pulls data from GeoJSON file
+                onEachFeature: function(feature, layer) {
+                    let isClose = false;
+                    var currStoreDist = userStoreDistance(testLat, 
+                                                          testLon, 
+                                                          layer.feature.geometry.coordinates[1], 
+                                                          layer.feature.geometry.coordinates[0]);
+                    if(layer.feature.address){
+                        //combines two features into one for use in search if the second attribute exists
+                        layer.feature.searchProp = layer.feature.store_name + ', ' + 
+                                                              layer.feature.address;
+                        //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
+                    } else {
+                        layer.feature.searchProp = layer.feature.store_name + ', ' + 
+                                                              currStoreDist[0] + ' Km';
+                    }
+
+                    if(currStoreDist[1] <= 70){ //check for stores that are nearby the users location
+                        console.log(currStoreDist*1000);
+                        isClose = true; //enable the buttons for adding offer and reviewing
+                        layer.bindPopup(popupContentStores(feature,isClose));
+
+                    } else {
+                        isClose = false;
+                        //binds the popup content to every marker
+                        layer.bindPopup(popupContentStores(feature,isClose));
+                    }
                 }
-            });
-            await fetchProducts();
+            }).addTo(markersLayer); 
 
             function groupFindings(text, data) {    //text is the user input and data is the marker
                 //ensures that the item has the name property before the process of matching with the input begins
@@ -193,6 +227,7 @@
             }
 
             // var searchResultsLayer = new L.LayerGroup();
+            mymap.addLayer(markersLayer);
 
             var searchBar = new L.Control.Search({
                 position: 'topleft',
@@ -201,11 +236,11 @@
                 zoom: 16,
                 initial: false,
                 exactMatch: false,
-                buildTip: function(text, val) {
+                buildTip: function(text) {
+                    log
                     return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
                 }
             }).addTo(mymap);
-            mymap.addLayer(markersLayer);
             
         }
 
