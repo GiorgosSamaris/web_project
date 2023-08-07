@@ -13,7 +13,8 @@ GRANT SELECT ON GoCart.offer TO 'phpClient'@'localhost';
 GRANT SELECT ON GoCart.product TO 'phpClient'@'localhost';
 GRANT SELECT ON GoCart.subcategory TO 'phpClient'@'localhost';
 GRANT SELECT ON GoCart.category TO 'phpClient'@'localhost';
-
+GRANT SELECT ON GoCart.inventory TO 'phpClient'@'localhost';
+GRANT UPDATE ON GoCart.store TO 'phpClient'@'localhost';
 
 GRANT SELECT ON GoCart.store TO 'phpClient'@'localhost';
 grant execute on GoCart.* to 'phpClient'@'localhost';
