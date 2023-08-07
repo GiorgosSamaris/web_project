@@ -99,9 +99,10 @@
   CREATE TABLE store (
     store_id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
     store_name VARCHAR(27) NOT NULL DEFAULT 'Unknown',
-    longtitude DECIMAL(11,8) NOT NULL,
+    longitude DECIMAL(11,8) NOT NULL,
     latitude DECIMAL(10,8) NOT NULL,
     map_id VARCHAR(16) NOT NULL,
+    address VARCHAR(40) NOT NULL DEFAULT 'Unknown',
     PRIMARY KEY  (store_id),
     INDEX(store_name)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
