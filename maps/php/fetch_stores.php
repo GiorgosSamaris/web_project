@@ -13,8 +13,31 @@ if ($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
     print_r("OH NO!");
 }
-$result = $conn->query("SELECT * FROM store;", MYSQLI_USE_RESULT);
-$result= mysqli_fetch_all($result, MYSQLI_ASSOC);
-$result = json_encode($result, JSON_UNESCAPED_UNICODE);
-file_put_contents(__DIR__.'/../json/stores.json', $result);
+
+$result = $conn->query("SELECT * FROM store;");
+$features = array();
+// foreach row
+while ($row = $result->fetch_assoc()) {
+    $feature = array(
+        'type' => 'Feature',
+        'geometry' => array(
+            'type' => 'Point',
+            // cast to float
+            'coordinates' => array((float)$row['longitude'], (float)$row['latitude']),
+        ),
+        'properties' => $row,
+    );
+    // append to array
+    $features[] = $feature;
+}
+
+$geojson = array(
+    'type' => 'FeatureCollection',
+    'features' => $features,
+);
+
+$json = json_encode($geojson, JSON_UNESCAPED_UNICODE);
+file_put_contents(__DIR__.'/../json/stores.geojson', $json);
+$conn->close();
+// echo $json;
 ?>
