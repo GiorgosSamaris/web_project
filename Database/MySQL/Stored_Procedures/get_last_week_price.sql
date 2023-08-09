@@ -14,7 +14,7 @@ SET price = 0;
 day_loop: LOOP
     SET incr = incr + 1;
     SET dayily_average = NULL;
-    SELECT average_price FROM price_history WHERE product_id = pro_id AND price_date = DATE_SUB(CURDATE(), INTERVAL incr DAY) INTO dayily_average;
+    SELECT average_price FROM price_history WHERE product_id = pro_id AND price_date = DATE_SUB(CURDATE(), INTERVAL incr DAY) LIMIT 1 INTO dayily_average ;
     IF dayily_average IS NOT NULL THEN
         SET denominator = denominator + 1;
         SET price = ROUND((price + dayily_average), 2);
@@ -24,6 +24,8 @@ day_loop: LOOP
     END IF;
     LEAVE day_loop;
 END LOOP day_loop;
-SET price = ROUND((price / denominator), 2);
+IF denominator > 0 THEN
+    SET price = ROUND((price / denominator), 2);
+END IF;
 END$
 DELIMITER ;
