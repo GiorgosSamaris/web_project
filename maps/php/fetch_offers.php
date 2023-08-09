@@ -1,20 +1,38 @@
 <?php 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header('Content-Type: application/json; charset=utf-8');
+// include(dirname(__DIR__).'/azureConnection/azureConn.php');
 $servername = "localhost";
-$username = "phpClient";
-$password = "$0ftK1ngsPhP";
+$dbusername = "phpClient";
+$dbpassword = "$0ftK1ngsPhP";
 $dbname = "GoCart";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-$conn->set_charset("utf8");
-// Check connection
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
     print_r("OH NO!");
 }
-$result = $conn->query("SELECT username, offer_id, creation_date, expiration_date, number_of_likes, number_of_dislikes, offer_price, in_stock, store_name, name FROM user as u INNER JOIN customer as c ON u.user_id = c.customer_id INNER JOIN offer as o ON c.customer_id = o.author_id INNER JOIN product as p ON o.product_id = p.product_id INNER JOIN store as s ON o.store_id = s.store_id;", MYSQLI_USE_RESULT);
-$result= mysqli_fetch_all($result, MYSQLI_ASSOC);
-$result = json_encode($result, JSON_UNESCAPED_UNICODE);
-file_put_contents(__DIR__.'/../json/offers.json', $result);
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $store_id = $_POST['store_id'] ?? '';
+    // $store_id = 1;
+    $store_offers = $conn->prepare("SELECT o.offer_id, u.username, p.name, p.product_id, o.offer_price, o.number_of_likes, o.number_of_dislikes, o.active, o.in_stock, o.creation_date,o.price_decrease_last_day_avg, o.price_decrease_last_week_avg
+                                    from offer as o INNER JOIN product as p ON p.product_id = o.product_id
+                                    INNER JOIN customer as c ON c.customer_id = o.author_id
+                                    INNER JOIN user as u ON c.customer_id = u.user_id
+                                    where store_id = ?;");
+    $store_offers->bind_param("i", $store_id);
+    if ($store_offers->execute()) {
+        $store_offers = $store_offers->get_result();
+        $store_offers = mysqli_fetch_all($store_offers, MYSQLI_ASSOC);
+        echo json_encode($store_offers, JSON_UNESCAPED_UNICODE);
+    } 
+    else {
+        echo "could not execute";
+    }
+    }
+    else {
+        echo "invalid request method";
+    }
+$conn->close(); 
 ?>
