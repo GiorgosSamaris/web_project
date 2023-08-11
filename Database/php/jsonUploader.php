@@ -1,7 +1,11 @@
 <?php
-    include 'localhostConn.php';
-    // include 'azureConn.php'
-    
+    //include 'localhostConn.php';
+    //include 'azureConn.php';
+
+    $conn = mysqli_init();
+    mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
+    mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "softk1ng\$d3v", "gocart", 3306, MYSQLI_CLIENT_SSL);
+
 
     //these variables denote if the user added a specific type of entry
     $added_cat = false;
@@ -110,7 +114,7 @@
     if($added_cat == true)
     {
         $statement = 
-        "LOAD DATA INFILE  '/var/lib/mysql-files/categories.csv'
+        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/categories.csv'
         INTO TABLE category
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
@@ -130,7 +134,7 @@
     if($added_sub_cat == true)
     {
         $statement = 
-        "LOAD DATA INFILE  '/var/lib/mysql-files/sub_categories.csv'
+        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/sub_categories.csv'
         INTO TABLE subcategory
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
@@ -149,11 +153,11 @@
     if($added_prod == true)
     {
         $statement = 
-        "LOAD DATA INFILE  '/var/lib/mysql-files/products.csv'
-        INTO TABLE temp_product
+        "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv'
+        INTO TABLE product
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
-        IGNORE 1 LINES;";
+        IGNORE 1 LINES(subcategory_id, name);";
     
         try{
             $cat_insert = $conn->query($statement);
@@ -168,11 +172,11 @@
     if($added_price == true)
     {
         $statement = 
-        "LOAD DATA INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
-        INTO TABLE temp_price
+        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
+        INTO TABLE price_history
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
-        IGNORE 1 LINES;";
+        IGNORE 1 LINES(product_id,price_date,average_price);";
     
         try{
             $cat_insert = $conn->query($statement);
