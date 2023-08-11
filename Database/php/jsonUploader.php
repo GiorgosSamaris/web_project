@@ -7,7 +7,7 @@
     $added_cat = false;
     $added_sub_cat = false;
     $added_prod = false;
-    
+    $added_price = false;
     
     echo "Converting...\n";
     $jsonPath = $argv[1];
@@ -81,8 +81,10 @@
         $products = $jsonData["data"];
         
         //create the csv file and open it for writing
-        $csvPath = "prices.csv";
+        $csvPath = "/var/lib/mysql-files/prices.csv";
         $filePointer = fopen($csvPath, "w");
+
+
         
         //write csv header
         fputs($filePointer, "id,name,date,price\n");
@@ -93,7 +95,8 @@
             $prices = $p["prices"];
             foreach($prices as $prcs)
             {
-                fputs($filePointer, ($p["id"].",".$p["name"].","));
+                $added_price = true;
+                fputs($filePointer, ($p["id"].","));
                 fputcsv($filePointer, $prcs);
             }
         }
@@ -147,8 +150,27 @@
     {
         $statement = 
         "LOAD DATA INFILE  '/var/lib/mysql-files/products.csv'
-        INTO TABLE temp_table
+        INTO TABLE temp_product
         FIELDS TERMINATED BY '|'
+        LINES TERMINATED BY '\n'
+        IGNORE 1 LINES;";
+    
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during product insert: $e\n";
+        }
+
+    }
+
+    if($added_price == true)
+    {
+        $statement = 
+        "LOAD DATA INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
+        INTO TABLE temp_price
+        FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES;";
     

@@ -167,5 +167,7 @@
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+CREATE OR REPLACE VIEW temp_product AS SELECT subcategory_id,name FROM product;
 
-CREATE OR REPLACE VIEW temp_table AS SELECT subcategory_id,name FROM product;
+CREATE OR REPLACE VIEW temp_price AS SELECT product_id, price_date, average_price FROM price_history;
+
