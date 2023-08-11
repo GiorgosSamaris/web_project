@@ -12,6 +12,7 @@
     $added_sub_cat = false;
     $added_prod = false;
     $added_price = false;
+    $added_store = false;
     
     echo "Converting...\n";
     $jsonPath = $argv[1];
@@ -107,6 +108,59 @@
         fclose($filePointer);
 
     }
+
+    if(array_key_exists("features",$jsonData))
+    {
+        $added_store = true;
+        $stores = $jsonData["features"];
+        
+        //create the csv file and open it for writing
+        $csvPath = "/var/lib/mysql-files/stores.csv";
+        $filePointer = fopen($csvPath, "w");
+        
+        
+        
+        //write csv header
+        fputs($filePointer, "store_name,long,lat,map_id, address\n");
+        
+        //insert json data to csv
+        foreach( $stores as $s )
+        {
+            $s_id = $s["id"];
+
+            if(array_key_exists("addr:street",$s["properties"]))
+            {
+                $s_name = $s["properties"]["name"];
+            }
+            else
+            {
+                $s_name = "";
+            } 
+            if(array_key_exists("addr:street",$s["properties"]))
+            {
+                $s_add = $s["properties"]["addr:street"]." ";
+
+            }
+            else
+            {
+                $s_add = "";
+            }
+            if(array_key_exists("addr:housenumber",$s["properties"]))
+            {
+                $s_add = $s_add.$s["properties"]["addr:housenumber"];
+
+            }
+            else 
+            {
+                $s_add = $s_add."";
+            }
+            $s_long = $s["geometry"]["coordinates"][0];
+            $s_lat = $s["geometry"]["coordinates"][1];
+            fputs($filePointer,$s_name.",".$s_long.",".$s_lat.",".$s_id.",".$s_add."\n");
+        }
+        fclose($filePointer);
+
+    }
     
     echo "Quering database...\n";
     //Declare prepared insert statement
@@ -177,6 +231,24 @@
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES(product_id,price_date,average_price);";
+    
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during product insert: $e\n";
+        }
+
+    }
+    if($added_store == true)
+    {
+        $statement = 
+        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/stores.csv' 
+        INTO TABLE store
+        FIELDS TERMINATED BY ','
+        LINES TERMINATED BY '\n'
+        IGNORE 1 LINES(store_name,longitude,latitude,map_id,address);";
     
         try{
             $cat_insert = $conn->query($statement);
