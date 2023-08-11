@@ -1,10 +1,10 @@
 <?php
     //include 'localhostConn.php';
-    //include 'azureConn.php';
+    include 'azureConn.php';
 
-    $conn = mysqli_init();
-    mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
-    mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "softk1ng\$d3v", "gocart", 3306, MYSQLI_CLIENT_SSL);
+    // $conn = mysqli_init();
+    // mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
+    // mysqli_real_connect($conn, "gocart.mysql.database.azure.com", "goCartDevTeam", "softk1ng\$d3v", "gocart", 3306, MYSQLI_CLIENT_SSL);
 
 
     //these variables denote if the user added a specific type of entry
@@ -128,13 +128,13 @@
         {
             $s_id = $s["id"];
 
-            if(array_key_exists("addr:street",$s["properties"]))
+            if(array_key_exists("name",$s["properties"]))
             {
                 $s_name = $s["properties"]["name"];
             }
             else
             {
-                $s_name = "";
+                $s_name = "Unknown";
             } 
             if(array_key_exists("addr:street",$s["properties"]))
             {
@@ -143,7 +143,7 @@
             }
             else
             {
-                $s_add = "";
+                $s_add = "Unknown";
             }
             if(array_key_exists("addr:housenumber",$s["properties"]))
             {
