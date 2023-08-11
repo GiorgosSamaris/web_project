@@ -37,6 +37,16 @@ body {
     border-radius: 0.6rem;
 }
 
+.offers-container{
+    width: 12rem;
+    height: 8rem;
+    overflow: scroll;
+}
+
 .button-container button {
     margin-bottom: 0.3rem;
+}
+
+.date-likes-dislikes {
+    display: inline;
 }

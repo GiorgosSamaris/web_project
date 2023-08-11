@@ -9,10 +9,7 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
-
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
-    <!-- <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> -->
-
+    
     <!-- leaflet-search -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -37,71 +34,129 @@
         let userpos;
         let popupContent = "";
         let mymap = L.map('mapid');
+
         let storesList = [];
         let productsList = [];
         let categoriesList = [];
         let subCategoriesList = [];
         let offersList = []; 
-        let resultsLayer = L.featureGroup();
+
+        //#region Icons
+
+        var redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]}); 
+
+        var greenIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+        
+        var blueIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+        
+        var orangeIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+        
+        var yellowIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+        
+        var violetIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+
+        var greyIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+
+        var blackIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+        
+        var goldIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]});
+
+        //#endregion
+
+        const storeIcons = {
+            "Σκλαβενίτης": redIcon,
+            "Ανδρικόπουλος": greenIcon,
+            "ΑΝΔΡΙΚΟΠΟΥΛΟΣ": greenIcon,
+            "Lidl": violetIcon,
+            "Μασούτης": orangeIcon,
+            "AB ": yellowIcon,
+            "Βασιλόπουλος": yellowIcon,
+            "ΒΑΣΙΛΟΠΟΥΛΟΣ": yellowIcon,
+            "Kiosk": blackIcon,
+            "Mini Market": goldIcon,
+            "ΚΡΟΝΟΣ": greyIcon,
+        };
+
+        var markersLayer = new L.LayerGroup();  
         let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mymap);
         //#endregion
 
         //#region Functions
-        
-        function getSubCategoryName(subCategoryId) {
-            // console.log(subCategoryId);
-            for(const subCategory of subCategoriesList){
-                if(subCategory.uuid === subCategoryId)
-                    return subCategory.name;
-            }
-            return null;
-        }
 
-        function popupContentStores(feature,isClose, displayOffers) {  
+        function popupContentStores(feature,isClose, offersList) {  
             popupContent = '<div class = "popup-container">';
                 popupContent += "<b>";       //reset the content because its a global variable
                 // console.log(feature.properties.store_name);
-                //show name 
+                //show name
+                // console.log(feature.properties.store_name);
                 if (feature.properties.store_name) {
                     // console.log(store_name);
                     popupContent += feature.properties.store_name + "<br>";
                 } 
-                if(displayOffers === true){
-                    offersList.forEach((offer) => {
-                        popupContent += "<li>" + '<div class = "offers-container">' + 
-                                        offer.name + 
-                                        offer.offer_price + 
-                                        '<div class = date-likes-dislikes>' +
-                                        offer.creation_date + 
-                                        offer.number_of_likes +
-                                        offer.number_of_dislikes +
-                                        '</div>' +
-                                        offer.in_stock +
-                                        "</div>"+
-                                        "</li>"; 
-                    });
-                }
-                // Add coordinates 
-                    // popupContent += "<br>Coordinates: " + feature.geometry.coordinates[1] + ", " + feature.geometry.coordinates[0];
-
-                //Add opening hours if available
-                // if (feature.properties.opening_hours) {
-                //     popupContent += "<br>Opening hours: " + feature.properties.opening_hours;
-                // }  
-                // let productsContent = "<ol>";
-                // productsList.forEach((product) => {
-                //     if(feature.properties.name === 'Kiosk'){
-                //         if(product.subcategory === "991276688c8c4a91b5524b1115122ec1"){
-                //             // console.log(product.name);
-                //             productsContent += "<li>" + product.name + "&nbsp" + '(' + getSubCategoryName("991276688c8c4a91b5524b1115122ec1") + ')' + "</li>";
-                //         }
-                //     }
-                // });
-
-                // productsContent += "</ol>"; 
-                // popupContent += "<br>" + "Products on sale:" + productsContent;
+                popupContent += "Current offers: " + "<br>";
+                popupContent += '<div class = "offers-container">';
+                popupContent += "<ol>"
+                offersList.forEach((offer) => {
+                    popupContent += "<li>" + 
+                                    offer.name + " " +
+                                    "price: " + offer.offer_price + "&euro;" + "<br>" +
+                                    '<div class = date-likes-dislikes>' +
+                                    offer.creation_date + " " +
+                                    offer.number_of_likes + " " +
+                                    offer.number_of_dislikes +
+                                    '</div>' +
+                                    offer.in_stock +
+                                    "</li>"; 
+                });
+                popupContent += "</ol>" + "</div>"; 
+                popupContent += "<br>" 
                 if(isClose === true){
                     popupContent += '<div class = "button-container">';
                     popupContent += '<button type = "submit" class = "submit-offer" > Add Offer </button>';
@@ -189,9 +244,11 @@
             try {
                 const response = await fetch("json/offers.json");
                 const data = await response.json();
-                index++;
+                offersList = [];//empty the list for the offers of the next store
                 data.forEach((offer) => {
                     if(offer.store_name === storeName){
+                        console.log(offer.store_name);
+                        console.log(storeName);
                         const {username, 
                             offer_id, 
                             creation_date, 
@@ -202,18 +259,26 @@
                             in_stock,
                             name } = offer;
 
+                        offersList.push(offer);
                     }
-                    offersList.push(offer);
                 });
                 console.log(offersList);
+                return offersList;
             } catch (error) {
                 console.error("Error loading the json data");
             }
         }
 
+        function containsWord(inputString, targetWord) {
+            const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
+            const lowercaseTarget = targetWord.toLowerCase(); // Convert target word to lowercase
+
+            const words = lowercaseInput.split(/\s+/); // Split the lowercase input string into an array of words
+            return words.includes(lowercaseTarget); // Check if the array of words includes the lowercase target word
+        }
+
         async function initializeMap() {
             mymap.setView([testLat,testLon], 17);
-            var markersLayer = new L.LayerGroup();
             userpos = new L.marker([testLat,testLon]).addTo(mymap); 
             userpos.bindPopup("You're here!").openPopup();
             let isClose = false;
@@ -238,85 +303,76 @@
             // await fetchProducts();
             L.geoJson(stores_json, {    //pulls data from GeoJSON file
                 onEachFeature: function(feature, layer) {
-                    var currStoreDist = userStoreDistance(
-                    testLat, 
-                    testLon, 
-                    layer.feature.geometry.coordinates[1], 
-                    layer.feature.geometry.coordinates[0]);
-                    if(layer.feature.properties.address != "Unknown"){
-                        //combines two features into one for use in search if the second attribute exists
-                        layer.feature.properties.searchProp = layer.feature.properties.store_name + ', ' + 
-                        layer.feature.properties.address;
-                        //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
-                    } else {
-                        layer.feature.properties.searchProp = layer.feature.properties.store_name + ', ' + 
-                        currStoreDist[0] + ' Km';
-                    }
-                    
-                    if(currStoreDist[1] <= 70){ //check for stores that are nearby the users location
-                        // console.log(currStoreDist*1000);
-                        //enable the buttons for adding offer and reviewing
-                        layer.feature.properties.isClose = true;
-                        layer.bindPopup(popupContentStores(feature,true,false));
+                    const storeName = layer.feature.properties.store_name;
+                    const storeLat = layer.feature.properties.latitude;
+                    const storeLon = layer.feature.properties.longitude;
+                    const address = layer.feature.properties.address;
+                    var searchProp = layer.feature.properties.searchProp;
+                    var isClose = layer.feature.properties.isClose;
+
+                    var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
+
+                    if (storeIcons.hasOwnProperty(storeName)) {// checks if the store name is in the storeIcons object
+                        layer.setIcon(storeIcons[storeName]);   //assigns the appropriate icon to the marker
+                    } 
                         
+                    if(address != "Unknown"){
+                    //combines two features into one for use in search if the second attribute exists
+                        searchProp = storeName + ', ' + address;
+                    //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
                     } else {
-                        layer.feature.properties.isClose = false;
-                        //binds the popup content to every marker
-                        layer.bindPopup(popupContentStores(feature,false,false));
+                        searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                     }
-                }
-            }).addTo(markersLayer);     //adds the stores in the markersLayer
-            
-            mymap.addLayer(markersLayer);
-            
+                    if(currStoreDist[1] <= 70){ //check for stores that are nearby the users location
+                        //enable the buttons for adding offer and reviewing
+                        isClose = true;
+                        layer.on('click', async function(){
+                            layer.bindPopup(popupContentStores(feature,true,await fetchOffers(storeName)));
+                        })
+                    } else {
+                        isClose = false;
+                        //binds the popup content to every marker
+                        layer.on('click', async function(){
+                            layer.bindPopup(popupContentStores(feature,false,await fetchOffers(storeName)));
+                        })
+                    }
+                     
+                    
+                    
 
-            function groupFindings(text, data) {    //text is the user input and data is the marker
-                //ensures that the item has the name property before the process of matching with the input begins
-                if (data.properties && data.properties.name) {   
-                    //checks if the name property(lowerCase) of the item matches the input(lowerCase)
-                    return data.properties.name.toLowerCase().includes(text.toLowerCase());
-                }
-                return false;   //return false if name doesnt exist
-            }
 
-            // var searchResultsLayer = new L.LayerGroup();
+                }
+            }).addTo(markersLayer);     //adds the stores in the markersLayer  
+                    
             var searchBar = new L.Control.Search({
                 position: 'topleft',
                 layer: markersLayer,
                 propertyName: 'searchProp', 
                 zoom: 16,
-                initial: false,
-                exactMatch: true,
+                initial: false,  //initially hides the search bar,
+                exactMatch: false,
+                tipAutoSubmit: false,
+                marker: {
+                    icon: redIcon,
+                },
                 buildTip: function(text, val) {
-                    // var redIcon = L.icon({
-                    //     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                    //     iconSize: [25, 41],
-                    //     iconAnchor: [12, 41],
-                    //     popupAnchor: [1, -34],
-                    // });
                     // var marker = layer;
-                    // console.log(val);
-                    for(var i = 0; i < val.length   ; i++){
-                        console.log(val[i].label);
-                    }
-                    // val.setIcon( new L.icon({
-                    //     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                    //     iconSize: [25, 41],
-                    //     iconAnchor: [12, 41],
-                    //     popupAnchor: [1, -34],
-                    // })); // Set your custom icon here
+                    // console.log(val.layer._icon.style);
+                    // val.layer._icon.style.[background-color] = 'green';
+                    // val.layer._icon = redIcon;
+                    // markersLayer.getLayer(val.layer._leaflet_id).setIcon(redIcon);
+                    // layer.setIcon(redIcon);
+                    // markersLayer.eachLayer(function(layer){
+                    //     if(layer.feature.properties.latitude === val.lat && layer.feature.properties.longitude === val.lng){
+                    //         layer.setIcon(redIcon);
+                    //     }
+                    // });
+                    // var marker = new L.marker([val.lat, val.lng], {icon: redIcon});
+                    // markersLayer.addLayer(marker);
                     //return the names of the stores and their type
                     return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
                 }
             }).addTo(mymap);
-
-            // searchBar.on("search:locationfound", async function(layer){
-            //     await fetchOffers(layer.feature.properties.store_name);
-            //     let isClose = layer.feature.properties.isClose;
-            //     layer.bindPopup(popupContent(feature,isClose,true));
-            // });
-
-            
         }
 
         
