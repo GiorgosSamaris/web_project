@@ -38,9 +38,21 @@ body {
 }
 
 .offers-container{
-    width: 12rem;
-    height: 8rem;
-    overflow: scroll;
+    width: fit-content;
+    height: 11.6rem;
+    overflow: auto;
+    text-align: center;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.offer-container{
+    border: 1px solid black;
+    border-radius: 0.6rem;
+}
+
+.button-container{
+    background-color: transparent;
 }
 
 .button-container button {
@@ -49,4 +61,20 @@ body {
 
 .date-likes-dislikes {
     display: inline;
+}
+
+.fa-thumbs-up {
+    color: green;
+}
+
+.fa-thumbs-down {
+    color: red;
+}
+
+.greyed-out{
+    color: grey;
+}
+
+.fa-thumbs-down-grey {
+    color: grey;
 }
