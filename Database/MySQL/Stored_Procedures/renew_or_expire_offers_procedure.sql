@@ -9,14 +9,14 @@ BEGIN
     DECLARE off_price DECIMAL(4,2);
     DECLARE yest_avg_price DECIMAL(4,2);
     DECLARE last_week_avg_price DECIMAL(4,2);
-    DECLARE expired_offers CURSOR FOR SELECT expiration_date, offer_id, product_id offer_price FROM  offer WHERE expiration_date < NOW();
+    DECLARE expired_offers CURSOR FOR SELECT expiration_date, offer_id, product_id, offer_price FROM  offer WHERE expiration_date < NOW();
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = TRUE;
     OPEN expired_offers;
 -- renew expiration
     iterate_expired_offers: LOOP
         FETCH expired_offers INTO exp_date, off_id, prod_id, off_price;
         CALL get_yester_price(prod_id, yest_avg_price);
-        CALL get_last_week_price(pro_id, last_week_avg_price);
+        CALL get_last_week_price(prod_id, last_week_avg_price);
         IF finished THEN 
             -- no more results
             LEAVE iterate_expired_offers;

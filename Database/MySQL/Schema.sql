@@ -26,7 +26,8 @@
   CREATE TABLE customer (
     customer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
     email VARCHAR(45) NOT NULL,
-    tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    overall_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    this_months_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY  (customer_id),
@@ -127,7 +128,6 @@
   --
   -- Table structure for table `Offer`
   --
-
   CREATE TABLE offer (
     offer_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     product_id MEDIUMINT UNSIGNED NOT NULL,
@@ -140,6 +140,8 @@
     in_stock BOOLEAN NOT NULL DEFAULT TRUE,
     creation_date DATETIME NOT NULL  DEFAULT now(),
     expiration_date DATE NOT NULL DEFAULT (CURRENT_DATE),
+    price_decrease_last_day_avg BOOLEAN NOT NULL DEFAULT FALSE,
+    price_decrease_last_week_avg BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY  (offer_id),
     CONSTRAINT `fk_offer_store_id` FOREIGN KEY (store_id) REFERENCES store (store_id) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_offer_product_id` FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE RESTRICT ON UPDATE CASCADE,
