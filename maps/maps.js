@@ -217,7 +217,7 @@ async function fetchOffers(storeName){
             if(offer.store_name === storeName){
                 console.log(offer.store_name);
                 console.log(storeName);
-                const {username, 
+                const { 
                     offer_id, 
                     creation_date, 
                     expiration_date, 
@@ -276,14 +276,14 @@ async function initializeMap() {
             if (currStoreDist[1] <= 70) {
                     isClose = true;
                     layer.on('click', async function () {
-                    const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, offers));
+                    // const offers = await fetchOffers(storeName);
+                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeName)));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
-                    const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, offers));
+                    // const offers = await fetchOffers(storeName);
+                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeName)));
         });
     }
         }
