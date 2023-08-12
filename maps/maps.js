@@ -98,7 +98,6 @@ var markersLayer = new L.LayerGroup();
 let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(mymap);
-//#endregion
 
 //#region Functions
 
@@ -113,21 +112,24 @@ function popupContentStores(feature,isClose, offersList) {
             popupContent += feature.properties.store_name + "<br>";
         } 
         popupContent += "Current offers: " + "<br>";
-        popupContent += '<div class = "offers-container">';
-        popupContent += "<ol>"
+        popupContent += '<ul class = "offers-container" >';
         offersList.forEach((offer) => {
-            popupContent += "<li>" + 
+            popupContent += '<div class = "offer-container">'+ "<li>" + 
                             offer.name + " " +
-                            "price: " + offer.offer_price + "&euro;" + "<br>" +
+                            "Price: " + offer.offer_price + "&euro;" + "<br>" +
                             '<div class = date-likes-dislikes>' +
-                            offer.creation_date + " " +
-                            offer.number_of_likes + " " +
-                            offer.number_of_dislikes +
+                            "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
+                            (offer.number_of_likes > 0 ? ('<i class="fa-solid fa-thumbs-up">' + '</i>' + " " + offer.number_of_likes): + " " + '<i class="fa-solid fa-thumbs-up greyed-out">' + '</i>' + "  " ) + " " + 
+                            (offer.number_of_dislikes > 0 ? ('<i class="fa-solid fa-thumbs-down">' + '</i>' + " " + offer.number_of_likes): + " " + '<i class="fa-solid fa-thumbs-down greyed-out">' + '</i>' + "  " ) +
                             '</div>' +
-                            offer.in_stock +
-                            "</li>"; 
+                            "<br>" + "In stock: " + offer.in_stock + "<br>" +
+                            (
+                                (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
+                            ) +
+                            "</li>" + '</div>'; 
+
         });
-        popupContent += "</ol>" + "</div>"; 
+        popupContent += "</ul>"; 
         popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
@@ -215,10 +217,9 @@ async function fetchOffers(storeName){
         offersList = [];//empty the list for the offers of the next store
         data.forEach((offer) => {
             if(offer.store_name === storeName){
-                console.log(offer.store_name);
-                console.log(storeName);
-                const {username, 
+                const { 
                     offer_id, 
+                    store_name,
                     creation_date, 
                     expiration_date, 
                     number_of_likes, 
@@ -236,7 +237,6 @@ async function fetchOffers(storeName){
         console.error("Error loading the json data");
     }
 }
-
 
 function containsWord(inputString, targetWord) {
     const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
@@ -276,14 +276,14 @@ async function initializeMap() {
             if (currStoreDist[1] <= 70) {
                     isClose = true;
                     layer.on('click', async function () {
-                    const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, offers));
+                    // const offers = await fetchOffers(storeName);
+                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeName)));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
-                    const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, offers));
+                    // const offers = await fetchOffers(storeName);
+                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeName)));
         });
     }
         }
