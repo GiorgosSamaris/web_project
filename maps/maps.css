@@ -37,6 +37,44 @@ body {
     border-radius: 0.6rem;
 }
 
+.offers-container{
+    width: fit-content;
+    height: 11.6rem;
+    overflow: auto;
+    text-align: center;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.offer-container{
+    border: 1px solid black;
+    border-radius: 0.6rem;
+}
+
+.button-container{
+    background-color: transparent;
+}
+
 .button-container button {
     margin-bottom: 0.3rem;
+}
+
+.date-likes-dislikes {
+    display: inline;
+}
+
+.fa-thumbs-up {
+    color: green;
+}
+
+.fa-thumbs-down {
+    color: red;
+}
+
+.greyed-out{
+    color: grey;
+}
+
+.fa-thumbs-down-grey {
+    color: grey;
 }

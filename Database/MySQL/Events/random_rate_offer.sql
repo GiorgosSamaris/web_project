@@ -8,7 +8,7 @@ STARTS NOW()
 COMMENT 'Randomly rates a random offer'
 DO 
 BEGIN
-CALL random_offer_procedure();
+CALL random_rate_offer_procedure();
 END$
 
 DELIMITER ;

@@ -5,274 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- required -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin=""/> -->
-    <!-- <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script> -->
-
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
-    <!-- <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> -->
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="anonymous"></script>
+    
     <!-- leaflet-search -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> -->
-    <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" /> -->
-    <!-- <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script> -->
-    <!-- <script src="leaflet-search.js"></script> -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-   
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.3.7/dist/leaflet-search.src.css" />
-    <script src="https://unpkg.com/leaflet-search@2.3.7/dist/leaflet-search.src.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" />
+    <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script>
+    <script src="leaflet-search.js"></script>
+    <!-- ------------------------------------------------ -->
 
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+    <!-- ------------ -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="maps.css">
-    <!-- <script src="stores.js"></script> -->
+    <script src="json/stores.js"></script>
     <title>Maps</title>
 </head>
 <body>
     <div id="mapid"></div>
-    <script>
-        //#region initilization
-        let testLat = 38.25673456255137;
-        let testLon = 21.740706238205785;
-        // 38.25673456255137, 21.740706238205785  test
-        let userpos;
-        let popupContent = "";
-        let mymap = L.map('mapid');
-        let storesList = [];
-        let productsList = [];
-        let categoriesList = [];
-        let subCategoriesList = [];
-        // let resultsLayer = L.featureGroup();
-        let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mymap);
-        //#endregion
-
-        //#region Functions
-        
-        function getSubCategoryName(subCategoryId) {
-            // console.log(subCategoryId);
-            for(const subCategory of subCategoriesList){
-                if(subCategory.uuid === subCategoryId)
-                    return subCategory.name;
-            }
-            return null;
-        }
-
-        function popupContentStores(store, isClose) {  
-            popupContent = '<div class = "popup-container">';
-                popupContent += "<b>";       //reset the content because its a global variable
-                // console.log(store.store_name);
-                //show name and if not available then the brand name in english
-                if (store.store_name) {
-                    // console.log(store_name);
-                    popupContent += store.store_name;
-                } // else if (feature.properties['brand:en']) {
-
-                if(isClose === true){
-                    popupContent += '<div class = "button-container">';
-                    popupContent += '<button type = "submit" class = "submit-offer" > Add Offer </button>';
-                    popupContent += '<button type = "submit" class = "submit-offer" > Review </button>'
-                    popupContent += '</div>';
-                } 
-                popupContent += "</b>";
-            popupContent += '</div>'
-            return popupContent;
-        }
- 
-        function userStoreDistance(lat1, lon1 , lat2, lon2) {
-            //using the haversine Formula
-            const R = 6371.0; //Earth's radius in km
-
-            //convert lat and lon to radians
-            const lat1Rad = (Math.PI / 180) * lat1;
-            const lon1Rad = (Math.PI / 180) * lon1; 
-            const lat2Rad = (Math.PI / 180) * lat2;
-            const lon2Rad = (Math.PI / 180) * lon2; 
-
-            //calculate difference
-            const latDifference = lat2Rad - lat1Rad;
-            const lonDifference = lon2Rad - lon1Rad;
-
-            //formula
-            const a = Math.sin(latDifference / 2) * Math.sin(latDifference / 2) +
-                      Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
-                      Math.sin(lonDifference / 2) * Math.sin(lonDifference / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c;
-            const distanceInMeters = distance * 1000;
-            const roundedDistance = distance.toFixed(2);
-
-            return [roundedDistance, distanceInMeters];
-        }
-
-        async function fetchStores() {
-            try{
-                const response = await fetch('json/stores.json');
-                const data = await response.json();
-                // const cleanedData = textData.trim();
-                // const data =  JSON.parse(cleanedData);
-                data.forEach((store) => {
-                    const {store_id, store_name, longitude, latitude, map_id, address} = store;
-                    // console.log(store);
-                    storesList.push(store);
-                    // console.log(store.address);
-                    if('address' in store && store['address'] != "Unknown"){
-                        store.searchProp = store.store_name + ', ' + store.address; //combine the store name and address 
-                        // console.log(store.searchProp);
-                    } else {
-                        //combine the store name and distance from the users location
-                        store.searchProp = store.store_name + ', ' + userStoreDistance(testLat, testLon, store.latitude, store.longitude);
-                        console.log(store.searchProp);
-                    }
-                });
-                
-            } catch (error) {
-                console.error("Error loading the json data: ", error);
-            }
-            
-        }
-
-        async function fetchProducts() {    //fetch api to pull data from JSON file
-            try {
-                const response = await fetch("products_and_categories.json");
-                const data = await response.json();
-                data.products.forEach((product) => {
-                    //creates a variable that consists of four attributes that describe a product 
-                    const { productId, productName, productCategory, productSubcategory } = product;  
-                    //adds each product to the list
-                    productsList.push(product);
-                });
-                //onEach and onEachFeature are specific to leaflet
-                data.categories.forEach((category) => {
-                    const {categoryId, categoryName, subcategories} = category;  
-                    category.subcategories.forEach((subCategory) => {
-                        const {subCatName, subCatUuid} = subCategory;
-                        subCategoriesList.push(subCategory);
-                    })
-                    categoriesList.push(category);
-                });
-                // console.log(subCategoriesList);
-                // data.categories.subcategories.forEach((subcategory) => {
-                //     const {subCatName, sunCatUuid} = subcategory;
-                //     subcategoriesList.push(subcategory);
-                // });
-            } catch (error) {
-                console.error("Error loading the JSON data:", error);
-            }
-        }
-
-        async function initializeMap() {
-            mymap.setView([testLat,testLon], 17);
-            var markersLayer = new L.LayerGroup();
-            userpos = new L.marker([testLat,testLon]).addTo(mymap); 
-            userpos.bindPopup("You're here!").openPopup();
-            let isClose = false;
-
-            // await fetchStores();
-            // console.log(storesList);
-            // storesList.forEach((store) => {
-            //     // console.log(store);
-            //     // console.log(store.latitude);
-            //     var marker = new L.marker([store.latitude, store.longitude]).addTo(markersLayer);
-
-            //     var currStoreDist = userStoreDistance(testLat, testLon, store.latitude, store.longitude);
-
-            //     if(currStoreDist[1] <= 50){
-            //         isClose = true;
-            //         marker.bindPopup(popupContentStores(store,isClose));
-            //     } else {
-            //         isClose = false;
-            //         marker.bindPopup(popupContentStores(store,isClose));
-            //     }
-            // });
-            // await fetchProducts();
-            L.geoJson(stores1, {    //pulls data from GeoJSON file
-                onEachFeature: function(feature, layer) {
-                    let isClose = false;
-                    var currStoreDist = userStoreDistance(testLat, 
-                                                          testLon, 
-                                                          layer.feature.geometry.coordinates[1], 
-                                                          layer.feature.geometry.coordinates[0]);
-                    if(layer.feature.address){
-                        //combines two features into one for use in search if the second attribute exists
-                        layer.feature.searchProp = layer.feature.store_name + ', ' + 
-                                                              layer.feature.address;
-                        //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
-                    } else {
-                        layer.feature.searchProp = layer.feature.store_name + ', ' + 
-                                                              currStoreDist[0] + ' Km';
-                    }
-
-                    if(currStoreDist[1] <= 70){ //check for stores that are nearby the users location
-                        console.log(currStoreDist*1000);
-                        isClose = true; //enable the buttons for adding offer and reviewing
-                        layer.bindPopup(popupContentStores(feature,isClose));
-
-                    } else {
-                        isClose = false;
-                        //binds the popup content to every marker
-                        layer.bindPopup(popupContentStores(feature,isClose));
-                    }
-                }
-            }).addTo(markersLayer); 
-
-            function groupFindings(text, data) {    //text is the user input and data is the marker
-                //ensures that the item has the name property before the process of matching with the input begins
-                if (data.properties && data.properties.name) {   
-                    //checks if the name property(lowerCase) of the item matches the input(lowerCase)
-                    return data.properties.name.toLowerCase().includes(text.toLowerCase());
-                }
-                return false;   //return false if name doesnt exist
-            }
-
-            // var searchResultsLayer = new L.LayerGroup();
-            mymap.addLayer(markersLayer);
-
-            var searchBar = new L.Control.Search({
-                position: 'topleft',
-                layer: markersLayer,
-                propertyName: 'searchProp', 
-                zoom: 16,
-                initial: false,
-                exactMatch: false,
-                buildTip: function(text) {
-                    log
-                    return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
-                }
-            }).addTo(mymap);
-            
-        }
-
-        
-        //#endregion
-        
-        //get users location
-        // if("geolocation" in navigator) {
-        //     //add prompt for user's location
-        //     navigator.geolocation.getCurrentPosition(  //get current position of user
-        //         (position) => {
-        //             lat = position.coords.latitude;
-        //             lng = position.coords.longitude;
-        //             initializeMap();
-        //         },
-        //         (error) => {
-        //             console.error("Error getting user location: ", error);
-        //         }
-        //         );
-        //     } else {
-        //         console.error("Geolocation is not supported by this browser");
-        //         initializeMap();
-        //     }
-            
-        // let empty = [];
-        mymap.setView([38.2462420, 21.7350847], 16);
-        initializeMap();
-            // if (results.)
-            //     results = empty;
-        
-        
-        
-        </script>
+    <script src="maps.js"></script>
 </body>
 </html>

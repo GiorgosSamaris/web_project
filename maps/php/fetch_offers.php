@@ -14,9 +14,9 @@ if ($conn->connect_error){
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $store_id = $_POST['store_id'] ?? '';
+    $store_id = $_POST['storeId'] ?? '';
     // $store_id = 1;
-    $store_offers = $conn->prepare("SELECT o.offer_id, u.username, p.name, p.product_id, o.offer_price, o.number_of_likes, o.number_of_dislikes, o.active, o.in_stock, o.creation_date,o.price_decrease_last_day_avg, o.price_decrease_last_week_avg
+    $store_offers = $conn->prepare("SELECT o.offer_id, p.name, p.product_id, o.offer_price, o.number_of_likes, o.number_of_dislikes, o.active, o.in_stock, o.creation_date,o.price_decrease_last_day_avg, o.price_decrease_last_week_avg
                                     from offer as o INNER JOIN product as p ON p.product_id = o.product_id
                                     INNER JOIN customer as c ON c.customer_id = o.author_id
                                     INNER JOIN user as u ON c.customer_id = u.user_id
