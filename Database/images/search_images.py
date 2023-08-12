@@ -1,5 +1,5 @@
 from google_images_search import GoogleImagesSearch
-gis = GoogleImagesSearch('AIzaSyAKZ7m_ej3qKFIvC89uqn8UeneUEss2slA', '42c27e51b08664033')
+gis = GoogleImagesSearch('', '')
 file_path = 'readme.txt'  # Replace with the path to your text file
 
 # Open the file in read mode
