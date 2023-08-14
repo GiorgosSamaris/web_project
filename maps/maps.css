@@ -26,7 +26,7 @@ body {
     border-radius: 0.6rem;
 }
 
-.submit-offer{
+.button-style{
     display: block;
     margin: 0 auto; /* 0 margin for top and bottom 
     and auto for left and right. Centers the button 

@@ -9,8 +9,8 @@ let mymap = L.map('mapid');
 
 let storesList = [];
 let productsList = [];
-let categoriesList = [];
-let subCategoriesList = [];
+// let categoriesList = [];
+// let subCategoriesList = [];
 let offersList = []; 
 
 //#region Icons
@@ -133,10 +133,24 @@ function popupContentStores(feature,isClose, offersList) {
         popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
-            popupContent += '<button type = "submit" class = "submit-offer" > Add Offer </button>';
-            popupContent += '<button type = "submit" class = "submit-offer" > Review </button>'
+            popupContent += '<button type = "submit" class = "button-style" id = "add-button"> Add Offer </button>';
+            popupContent += '<button type = "submit" class = "button-style" > Review </button>';
             popupContent += '</div>';
+            
         } 
+
+        // const addButton = document.getElementById("add-button");
+        // addButton.addEventListener("click",async function(){
+        //     console.log("add button clicked");
+        //     await fetchProducts();
+        //     popupContent += '<div class = "add-offer-container">';
+        //     popupContent += 'button class = "accordion"> Add Offer </button>';
+        //     popupContent += '<div class = "panel">';
+        //     popupContent += '<ul class = "general-categories">';
+        //     popupContent += '<li>' +  + '</li>'
+        //     popupContent += '</div>';
+        // });
+
         popupContent += "</b>";
     popupContent += '</div>'
     return popupContent;
@@ -168,29 +182,28 @@ function userStoreDistance(lat1, lon1 , lat2, lon2) {
     return [roundedDistance, distanceInMeters];
 }
 
-async function fetchProducts() {    //fetch api to pull data from JSON file
-    try {
-        const response = await fetch("products_and_categories.json");
-        const data = await response.json();
-        data.products.forEach((product) => {
-            //creates a variable that consists of four attributes that describe a product 
-            const { productId, productName, productCategory, productSubcategory } = product;  
-            //adds each product to the list
-            productsList.push(product);
-        });
-        //onEach and onEachFeature are specific to leaflet
-        data.categories.forEach((category) => {
-            const {categoryId, categoryName, subcategories} = category;  
-            category.subcategories.forEach((subCategory) => {
-                const {subCatName, subCatUuid} = subCategory;
-                subCategoriesList.push(subCategory);
-            })
-            categoriesList.push(category);
-        });
-    } catch (error) {
-        console.error("Error loading the JSON data:", error);
-    }
-}
+// async function fetchProducts(offersList) {    //fetch api to pull data from JSON file
+//     try {
+//         const response = await fetch("json/products.json");
+//         const data = await response.json();
+//         data.forEach((product) => {
+//             //creates a variable that consists of four attributes that describe a product
+//             const {productName, productCategory, productSubcategory } = product; 
+//             offersList.forEach((offer) => {
+//                 if(offer.name === product.product){
+//                     productsList.push(product);
+//                 }
+//             });
+             
+
+//             //adds each product to the list
+//             productsList.push(product);
+//         });
+//         console.log(productsList);
+//     } catch (error) {
+//         console.error("Error loading the JSON data:", error);
+//     }
+// }
 // async function fetchOffers(storeId) {
 // return new Promise((resolve, reject) => {
 //     $.ajax({
@@ -231,7 +244,7 @@ async function fetchOffers(storeName){
                 offersList.push(offer);
             }
         });
-        console.log(offersList);
+        // console.log(offersList);
         return offersList;
     } catch (error) {
         console.error("Error loading the json data");
@@ -298,12 +311,25 @@ async function initializeMap() {
         exactMatch: false,
         tipAutoSubmit: true,
         buildTip: function(text, val) {
+            // console.log(val);
             //return the names of the stores and their type
+            markersLayer.eachLayer((layer) => {
+                // if(layer.feature.properties.store_id != val.layer.feature.properties.store_id){
+                        // var mark = document.getElementByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive");
+                        // mark.classlist.add("");
+                        console.log(layer.feature.properties);
+                        markerProcess(layer);
+                        // console.log(val.layer.getIcon());
+                });
+            // });  
             return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
         }
     }).addTo(mymap);
 }
 
+function markerProcess(layer){
+    console.log(layer.feature.properties);
+}
 
 //#endregion
 

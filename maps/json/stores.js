@@ -722,8 +722,8 @@ var stores_json = {
 		},
 		"properties": {
 			"store_id": "52",
-			"store_name": "Kiosk",
 			"longitude": "21.73512800",
+			"store_name": "Kiosk",
 			"latitude": "38.24908520",
 			"map_id": "node\/5005409493",
 			"address": "Unknown"
