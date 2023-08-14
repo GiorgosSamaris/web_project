@@ -115,12 +115,12 @@ function popupContentStores(feature,isClose, offersList) {
         popupContent += '<ul class = "offers-container" >';
         offersList.forEach((offer) => {
             popupContent += '<div class = "offer-container">'+ "<li>" + 
-                            offer.name + " " +
+                            offer.name + " " + '<br>'+
                             "Price: " + offer.offer_price + "&euro;" + "<br>" +
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
-                            (offer.number_of_likes > 0 ? ('<i class="fa-solid fa-thumbs-up">' + '</i>' + " " + offer.number_of_likes): + " " + '<i class="fa-solid fa-thumbs-up greyed-out">' + '</i>' + "  " ) + " " + 
-                            (offer.number_of_dislikes > 0 ? ('<i class="fa-solid fa-thumbs-down">' + '</i>' + " " + offer.number_of_likes): + " " + '<i class="fa-solid fa-thumbs-down greyed-out">' + '</i>' + "  " ) +
+                            (offer.number_of_likes > 0 ? ('<i class="fa-solid fa-thumbs-up">' + '</i>' + " "): + " " + '<i class="fa-solid fa-thumbs-up greyed-out">' + '</i>' + "  " ) + offer.number_of_likes + " " + 
+                            (offer.number_of_dislikes > 0 ? ('<i class="fa-solid fa-thumbs-down">' + '</i>' + " "): + " " + '<i class="fa-solid fa-thumbs-down greyed-out">' + '</i>' + "  " ) + offer.number_of_dislikes + " " +
                             '</div>' +
                             "<br>" + "In stock: " + offer.in_stock + "<br>" +
                             (
@@ -138,7 +138,7 @@ function popupContentStores(feature,isClose, offersList) {
             popupContent += '</div>';
             
         } 
-
+        fetchInventory(1);
         // const addButton = document.getElementById("add-button");
         // addButton.addEventListener("click",async function(){
         //     console.log("add button clicked");
@@ -182,74 +182,72 @@ function userStoreDistance(lat1, lon1 , lat2, lon2) {
     return [roundedDistance, distanceInMeters];
 }
 
-// async function fetchProducts(offersList) {    //fetch api to pull data from JSON file
-//     try {
-//         const response = await fetch("json/products.json");
-//         const data = await response.json();
-//         data.forEach((product) => {
-//             //creates a variable that consists of four attributes that describe a product
-//             const {productName, productCategory, productSubcategory } = product; 
-//             offersList.forEach((offer) => {
-//                 if(offer.name === product.product){
-//                     productsList.push(product);
-//                 }
-//             });
-             
-
-//             //adds each product to the list
-//             productsList.push(product);
-//         });
-//         console.log(productsList);
-//     } catch (error) {
-//         console.error("Error loading the JSON data:", error);
-//     }
-// }
-// async function fetchOffers(storeId) {
-// return new Promise((resolve, reject) => {
-//     $.ajax({
-//         type: "POST",
-//         url: 'php/fetch_offers.php',
-//         data: {
-//             storeId: storeId
-//         },
-//         success: function (store_offers) {
-//             // console.log(store_offers);   
-//             resolve(store_offers);
-//         },
-//         error: function (error) {
-//             reject(error);
-//         }
-//     });
-// });
-// }
-
-async function fetchOffers(storeName){
-    try {
-        const response = await fetch("json/offers.json");
-        const data = await response.json();
-        offersList = [];//empty the list for the offers of the next store
-        data.forEach((offer) => {
-            if(offer.store_name === storeName){
-                const { 
-                    offer_id, 
-                    store_name,
-                    creation_date, 
-                    expiration_date, 
-                    number_of_likes, 
-                    number_of_dislikes, 
-                    offer_price,
-                    in_stock,
-                    name } = offer;
-
-                offersList.push(offer);
+// fetch products/inventory
+async function fetchInventory(storeId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_inventory.php',
+            data: {
+                storeId: storeId
+            },
+            success: function (store_inventory) {
+                console.log(store_inventory);   
+                resolve(store_inventory);
+            },
+            error: function (error) {
+                reject(error);
             }
         });
-        // console.log(offersList);
-        return offersList;
-    } catch (error) {
-        console.error("Error loading the json data");
+    });
     }
+
+async function fetchOffers(storeId) {
+return new Promise((resolve, reject) => {
+    $.ajax({
+        type: "POST",
+        url: 'php/fetch_offers.php',
+        data: {
+            storeId: storeId
+        },
+        success: function (store_offers) {
+            // console.log(store_offers);   
+            resolve(store_offers);
+        },
+        error: function (error) {
+            reject(error);
+        }
+    });
+});
 }
+
+// async function fetchOffers(storeName){
+//     try {
+//         const response = await fetch("json/offers.json");
+//         const data = await response.json();
+//         offersList = [];//empty the list for the offers of the next store
+//         data.forEach((offer) => {
+//             if(offer.store_name === storeName){
+//                 const { 
+//                     offer_id, 
+//                     store_name,
+//                     creation_date, 
+//                     expiration_date, 
+//                     number_of_likes, 
+//                     number_of_dislikes, 
+//                     offer_price,
+//                     in_stock,
+//                     name } = offer;
+
+//                 offersList.push(offer);
+//             }
+//         });
+//         // console.log(offersList);
+//         return offersList;
+//     } catch (error) {
+//         console.error("Error loading the json data");
+//     }
+// }
 
 function containsWord(inputString, targetWord) {
     const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
@@ -290,13 +288,13 @@ async function initializeMap() {
                     isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeName)));
+                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeId)));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeName)));
+                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeId)));
         });
     }
         }

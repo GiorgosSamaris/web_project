@@ -14,7 +14,7 @@ if ($conn->connect_error){
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $store_id = $_POST['store_id'] ?? '';
+    $store_id = $_POST['storeId'] ?? '';
     // $store_id = 1;
     $store_inventory = $conn->prepare("SELECT p.name as product, s.name as subcategory, c.name as category, i.inventory_price as price 
                                 FROM product as p INNER JOIN subcategory as s ON p.subcategory_id = s.subcategory_id 
