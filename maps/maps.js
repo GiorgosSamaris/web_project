@@ -119,8 +119,12 @@ function popupContentStores(feature,isClose, offersList) {
                             "Price: " + offer.offer_price + "&euro;" + "<br>" +
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
-                            (offer.number_of_likes > 0 ? ('<i class="fa-solid fa-thumbs-up">' + '</i>' + " "): + " " + '<i class="fa-solid fa-thumbs-up greyed-out">' + '</i>' + "  " ) + offer.number_of_likes + " " + 
-                            (offer.number_of_dislikes > 0 ? ('<i class="fa-solid fa-thumbs-down">' + '</i>' + " "): + " " + '<i class="fa-solid fa-thumbs-down greyed-out">' + '</i>' + "  " ) + offer.number_of_dislikes + " " +
+                            '<i class="fa-solid fa-thumbs-up ' +
+                                (offer.in_stock > 0 ?
+                                'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
+                            '<i class="fa-solid fa-thumbs-down ' +
+                                (offer.in_stock > 0 ?
+                                'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
                             '</div>' +
                             "<br>" + "In stock: " + offer.in_stock + "<br>" +
                             (
