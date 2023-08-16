@@ -1,6 +1,7 @@
 var offersList = [];
 let listContent;
-
+// import { exportList } from "C:/web_project/maps/maps.js";
+// offersList = exportList;
 async function fetchOffers(){
     try {
         const response = await fetch("json/offers.json");
@@ -24,6 +25,7 @@ async function fetchOffers(){
         console.error("Error loading the json data");
     }
 }
+
 
 async function initializePage(){
     await fetchOffers();

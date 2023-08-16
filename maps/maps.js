@@ -9,9 +9,8 @@ let mymap = L.map('mapid');
 
 let storesList = [];
 let productsList = [];
-// let categoriesList = [];
-// let subCategoriesList = [];
 let offersList = []; 
+let exportList;
 
 //#region Icons
 
@@ -101,7 +100,8 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 //#region Functions
 
-function popupContentStores(feature,isClose, offersList) {  
+function popupContentStores(feature,isClose, offersList, storeId) {  
+    console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         // console.log(feature.properties.store_name);
@@ -137,8 +137,8 @@ function popupContentStores(feature,isClose, offersList) {
         popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
-            popupContent += '<button type = "submit" class = "button-style" id = "add-button"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "button-style" > Review </button>';
+            popupContent += '<button type = "submit" class = "button-style" id = "add-button-'+ storeId +'"> Add Offer </button>';
+            popupContent += '<button type = "submit" class = "button-style" id = "review-button-'+ storeId +'"> Review </button>';
             popupContent += '</div>';
             
         } 
@@ -204,7 +204,7 @@ async function fetchInventory(storeId) {
             }
         });
     });
-    }
+}
 
 async function fetchOffers(storeId) {
 return new Promise((resolve, reject) => {
@@ -224,34 +224,6 @@ return new Promise((resolve, reject) => {
     });
 });
 }
-
-// async function fetchOffers(storeName){
-//     try {
-//         const response = await fetch("json/offers.json");
-//         const data = await response.json();
-//         offersList = [];//empty the list for the offers of the next store
-//         data.forEach((offer) => {
-//             if(offer.store_name === storeName){
-//                 const { 
-//                     offer_id, 
-//                     store_name,
-//                     creation_date, 
-//                     expiration_date, 
-//                     number_of_likes, 
-//                     number_of_dislikes, 
-//                     offer_price,
-//                     in_stock,
-//                     name } = offer;
-
-//                 offersList.push(offer);
-//             }
-//         });
-//         // console.log(offersList);
-//         return offersList;
-//     } catch (error) {
-//         console.error("Error loading the json data");
-//     }
-// }
 
 function containsWord(inputString, targetWord) {
     const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
@@ -292,15 +264,15 @@ async function initializeMap() {
                     isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeId)));
+                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeId), storeId));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeId)));
-        });
-    }
+                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeId), storeId));
+                });
+            }
         }
     }).addTo(markersLayer);     //adds the stores in the markersLayer  
             
@@ -315,25 +287,33 @@ async function initializeMap() {
         buildTip: function(text, val) {
             // console.log(val);
             //return the names of the stores and their type
-            markersLayer.eachLayer((layer) => {
+            // markersLayer.eachLayer((layer) => {
                 // if(layer.feature.properties.store_id != val.layer.feature.properties.store_id){
                         // var mark = document.getElementByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive");
                         // mark.classlist.add("");
-                        console.log(layer.feature.properties);
-                        markerProcess(layer);
+                        // console.log(layer.feature.properties);
+                        // markerProcess(layer);
                         // console.log(val.layer.getIcon());
-                });
+                // });
             // });  
             return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
         }
     }).addTo(mymap);
 }
 
-function markerProcess(layer){
-    console.log(layer.feature.properties);
+//#endregion
+
+document.addEventListener('click', function(event){
+    if(exportList)
+        exportList(offersList);
+});
+
+function filExportList(offersList){
+    exportList = offersList;
 }
 
-//#endregion
+export{exportList};
+
 
 //get users location
 // if("geolocation" in navigator) {
