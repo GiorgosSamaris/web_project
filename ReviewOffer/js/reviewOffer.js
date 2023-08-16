@@ -33,8 +33,8 @@ async function initializePage(){
     updateListContent();
     
     document.addEventListener('click', function(event){
-        if (event.target.matches('.fa-thumbs-up')) {
-            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");
+        if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
+            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");    //gets the value of the attribute offer-id
             console.log("thumbs up clicked");
         } else if (event.target.matches('.fa-thumbs-down')) {
             findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "down");
@@ -42,9 +42,19 @@ async function initializePage(){
             console.log("thumbs down clicked");
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function() {  //triggered when the dom is fully loaded
+        const listItems = document.querySelectorAll('.list-item-container li');
+        listItems.forEach(function(listItem) {
+            listItem.addEventListener('click', function() {
+                console.log("list item clicked");
+                extendListItemContent();
+            });
+        });
+    });
 }
 
-function updateListContent(){
+function updateListContent(offerId){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
         listContent += '<div class = "list-item-container">' + '<li>' + offer.name + '<br>' + 
@@ -65,11 +75,17 @@ function updateListContent(){
             //checks whether the price has decreased in the last day or week and adjusts the icon accordingly
             (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
         ) + 
+        (offer.offer_id === offerId ? '<div class = "extended-content" >' + '<br>' +
+            "Submitted by: " + offer.username + '<br>' +
+            "Overall score: " + offer.overall_score + '<br>' +
+            '</div>' : "")
         '</li>' + '</div>';
     });
     listContent += '</ul>' + "</b>";
     document.getElementById("list-container").innerHTML = listContent;
 }
+
+
 
 function findOfferByIdAndUpdate(offerId, update){
     offersList.forEach(function(offer){
