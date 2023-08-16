@@ -8,21 +8,13 @@
     $prices = $jsonData["data"];
 
     
-    foreach ($jsonData as $k => $e)
+
+    foreach($prices as $key => $entry)
     {
-        if ($k == "data")
-        {
-            foreach($prices as $key => $entry)
-            {
-                $prices[$key]["id"] += 1;
-            }
-
-
-        }
-
+        $prices[$key]["id"] += 1;
     }
 
-    print_r($prices);
+    $jsonData["data"]=$prices;
 
     $newJsonString = json_encode($jsonData, JSON_PRETTY_PRINT);
     file_put_contents("json/dumpPricesReformat.json", $newJsonString);
