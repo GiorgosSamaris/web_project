@@ -12,6 +12,8 @@ let productsList = [];
 let offersList = []; 
 let exportList;
 
+import{fillExportList} from 'exportOffers.js';
+
 //#region Icons
 
 var redIcon = L.icon({
@@ -305,14 +307,9 @@ async function initializeMap() {
 
 document.addEventListener('click', function(event){
     if(exportList)
-        exportList(offersList);
+        fillExportList(offersList);
 });
 
-function filExportList(offersList){
-    exportList = offersList;
-}
-
-export{exportList};
 
 
 //get users location
