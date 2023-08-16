@@ -40,3 +40,7 @@ body, ul, h2 {
     align-items: center;
     padding-left: 0;
 }
+
+i {
+    cursor: pointer;
+}

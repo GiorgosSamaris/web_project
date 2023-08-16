@@ -19,7 +19,7 @@ async function fetchOffers(){
 
                 offersList.push(offer);
         });
-        console.log(offersList);
+        // console.log(offersList);
     } catch (error) {
         console.error("Error loading the json data");
     }
@@ -28,18 +28,33 @@ async function fetchOffers(){
 async function initializePage(){
     await fetchOffers();
 
+    updateListContent();
+    
+    document.addEventListener('click', function(event){
+        if (event.target.matches('.fa-thumbs-up')) {
+            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");
+            console.log("thumbs up clicked");
+        } else if (event.target.matches('.fa-thumbs-down')) {
+            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "down");
+            // Handle thumbs down click for the offer with offerId
+            console.log("thumbs down clicked");
+        }
+    });
+}
+
+function updateListContent(){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
         listContent += '<div class = "list-item-container">' + '<li>' + offer.name + '<br>' + 
         "price: " + offer.offer_price + "&euro;" + '<br>' +
         '<div class = date-likes-dislikes>' +
         "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
-        '<i id = "thumbs-up-' + offer.offer_id + '" class="fa-solid fa-thumbs-up ' +
+        '<i offer-id ="' + offer.offer_id + '" class="fa-solid fa-thumbs-up ' +
             //checks whether stock is greater than 0 and adjusts the color of the icon accordingly
             (offer.in_stock > 0 ?                                                               
             'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
         //specific id for icons for each offer to add event listeners
-        '<i id = "thumbs-down-' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
+        '<i offer-id = "' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
             (offer.in_stock > 0 ?
             'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
         '</div>' + 
@@ -54,5 +69,21 @@ async function initializePage(){
     document.getElementById("list-container").innerHTML = listContent;
 }
 
+function findOfferByIdAndUpdate(offerId, update){
+    offersList.forEach(function(offer){
+        if(offer.offer_id == offerId && offer.in_stock > 0){
+            if(update == "up"){
+                offer.number_of_likes++;
+                console.log(offer.number_of_likes);
+            }                
+            else if(update == "down"){
+                offer.number_of_dislikes++;
+                console.log(offer.number_of_dislikes);
+            }
+                
+        }
+        updateListContent();
+    });
+}
 
 initializePage();
