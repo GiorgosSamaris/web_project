@@ -29,44 +29,23 @@ async function fetchOffers(){
 
 async function initializePage(){
     await fetchOffers();
-
     updateListContent();
-    
-    document.addEventListener('click', function(event){
-        if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
-            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");    //gets the value of the attribute offer-id
-            console.log("thumbs up clicked");
-        } else if (event.target.matches('.fa-thumbs-down')) {
-            findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "down");
-            // Handle thumbs down click for the offer with offerId
-            console.log("thumbs down clicked");
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {  //triggered when the dom is fully loaded
-        const listItems = document.querySelectorAll('.list-item-container li');
-        listItems.forEach(function(listItem) {
-            listItem.addEventListener('click', function() {
-                console.log("list item clicked");
-                extendListItemContent();
-            });
-        });
-    });
 }
 
 function updateListContent(offerId){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
-        listContent += '<div class = "list-item-container">' + '<li>' + offer.name + '<br>' + 
+        listContent += '<div class = "list-item-container">' + 
+        '<li offer-id = "'+ offer.offer_id +'">' + offer.name + '<br>' + 
         "price: " + offer.offer_price + "&euro;" + '<br>' +
         '<div class = date-likes-dislikes>' +
         "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
-        '<i offer-id ="' + offer.offer_id + '" class="fa-solid fa-thumbs-up ' +
+        '<i id = "like" offer-id ="' + offer.offer_id + '" class="fa-solid fa-thumbs-up ' +
             //checks whether stock is greater than 0 and adjusts the color of the icon accordingly
             (offer.in_stock > 0 ?                                                               
             'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
-        //specific id for icons for each offer to add event listeners
-        '<i offer-id = "' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
+        //specific attribute for icons for each offer to add event listeners
+        '<i id = "dislike" offer-id = "' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
             (offer.in_stock > 0 ?
             'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
         '</div>' + 
@@ -82,9 +61,48 @@ function updateListContent(offerId){
         '</li>' + '</div>';
     });
     listContent += '</ul>' + "</b>";
-    document.getElementById("list-container").innerHTML = listContent;
+    document.getElementById("list-container").innerHTML = listContent;  //change the content of the list container div element
 }
 
+
+initializePage();
+
+let extendedContent = false;
+
+document.getElementById("list-container").addEventListener('click', function(event) {   //event listener for the list container
+    let offerId;
+
+    if (event.target.matches('.list-item-container li') && extendedContent == false){   //if a list item is clicked
+        offerId = event.target.getAttribute('offer-id');  //gets the offer id of the clicked offer
+        // console.log("list item clicked");
+        updateListContent(offerId); //updates the list content with the extended content of the clicked offer
+        extendedContent = true;
+        // console.log(extendedContent);
+        // console.log("offerId from div = " + offerId);
+    } else if(extendedContent == true){
+        if(event.target.matches('#like') || event.target.matches('#dislike')){
+            // console.log(event.target);
+            // console.log(extendedContent);
+            // console.log("offerId from like/dislike = " + offerId);
+            updateListContent(offerId);    //resets the list content if the user clicks anywhere in the div element
+        } else {
+            extendedContent = false;
+            // console.log("from else " + extendedContent);
+            updateListContent();
+        }
+    }
+});
+
+document.addEventListener('click', function(event){
+    if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
+        findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");    //gets the value of the attribute offer-id
+        // console.log(event.target.id);
+    } else if (event.target.matches('.fa-thumbs-down')) {
+        findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "down");
+        // Handle thumbs down click for the offer with offerId
+        // console.log(event.target.id);
+    }
+});
 
 
 function findOfferByIdAndUpdate(offerId, update){
@@ -100,8 +118,9 @@ function findOfferByIdAndUpdate(offerId, update){
             }
                 
         }
-        updateListContent();
+        if(extendedContent == true)
+            updateListContent(offerId);
+        else
+            updateListContent();
     });
 }
-
-initializePage();
