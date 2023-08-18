@@ -35,6 +35,7 @@ async function initializePage(){
 function updateListContent(offerId){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
+        // console.log(offer.name.replace(/\//g, "_"));
         listContent += '<div class = "list-item-container">' + 
         '<li offer-id = "'+ offer.offer_id +'">' + offer.name + '<br>' + 
         "price: " + offer.offer_price + "&euro;" + '<br>' +
@@ -55,6 +56,7 @@ function updateListContent(offerId){
             (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
         ) + 
         (offer.offer_id === offerId ? '<div class = "extended-content" >' + '<br>' +
+            '<img id = "offer-image" src = "img/' + offer.name.replace(/\//g, "_") +'.jpg" , alt = "Its taking a while">' + '<br>' +
             "Submitted by: " + offer.username + '<br>' +
             "Overall score: " + offer.overall_score + '<br>' +
             '</div>' : "")
@@ -64,30 +66,23 @@ function updateListContent(offerId){
     document.getElementById("list-container").innerHTML = listContent;  //change the content of the list container div element
 }
 
-
 initializePage();
 
 let extendedContent = false;
 
+//#region  event listeners
 document.getElementById("list-container").addEventListener('click', function(event) {   //event listener for the list container
     let offerId;
 
     if (event.target.matches('.list-item-container li') && extendedContent == false){   //if a list item is clicked
         offerId = event.target.getAttribute('offer-id');  //gets the offer id of the clicked offer
-        // console.log("list item clicked");
         updateListContent(offerId); //updates the list content with the extended content of the clicked offer
         extendedContent = true;
-        // console.log(extendedContent);
-        // console.log("offerId from div = " + offerId);
     } else if(extendedContent == true){
         if(event.target.matches('#like') || event.target.matches('#dislike')){
-            // console.log(event.target);
-            // console.log(extendedContent);
-            // console.log("offerId from like/dislike = " + offerId);
             updateListContent(offerId);    //resets the list content if the user clicks anywhere in the div element
         } else {
             extendedContent = false;
-            // console.log("from else " + extendedContent);
             updateListContent();
         }
     }
@@ -124,3 +119,4 @@ function findOfferByIdAndUpdate(offerId, update){
             updateListContent();
     });
 }
+//#endregion
