@@ -34,5 +34,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     else {
         echo "invalid request method";
     }
-$conn->close(); 
 ?>

@@ -39,6 +39,5 @@ $geojson = array(
 
 $json = json_encode($geojson, JSON_UNESCAPED_UNICODE);
 file_put_contents(__DIR__.'/../json/stores.geojson', $json);
-$conn->close();
 // echo $json;
 ?>
