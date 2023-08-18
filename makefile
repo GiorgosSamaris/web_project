@@ -1,13 +1,8 @@
-all: login_copy registration_copy maps_copy reviewOffer_copy
-	net stop Apache2.4
-	net start Apache2.4
+all: login_copy registration_copy maps_copy
+	systemctl restart apache2
 login_copy:
-		xcopy "C:\web_project\login\." "C:\Apache24\htdocs\login" /e /y
-
+		cp -a login/. /var/www/gocart.net/html/login
 registration_copy:
-		xcopy "C:\web_project\registration\." "C:\Apache24\htdocs\registration" /e /y
+		cp -a registration/. /var/www/gocart.net/html/registration
 maps_copy:
-		xcopy "C:\web_project\maps\." "C:\Apache24\htdocs\maps" /e /y
-
-reviewOffer_copy:
-		xcopy "C:\web_project\reviewOffer\." "C:\Apache24\htdocs\reviewOffer" /e /y
+		cp -a maps/. /var/www/gocart.net/html/maps
