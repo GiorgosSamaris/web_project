@@ -3,7 +3,7 @@
 
 DROP PROCEDURE IF EXISTS get_last_week_price;
 DELIMITER $
-CREATE PROCEDURE get_last_week_price(IN pro_id SMALLINT UNSIGNED, OUT price DECIMAL(4,2))
+CREATE PROCEDURE get_last_week_price(IN pro_id SMALLINT UNSIGNED, OUT price DECIMAL(5,2))
 BEGIN
 DECLARE incr INT;
 DECLARE denominator INT;
