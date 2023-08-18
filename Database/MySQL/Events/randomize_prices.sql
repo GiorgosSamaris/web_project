@@ -5,7 +5,7 @@ DROP EVENT IF EXISTS randomize_prices;
 DELIMITER $
 CREATE EVENT randomize_prices
 ON SCHEDULE EVERY 1 DAY 
-STARTS '2023-07-22 01:00:00'
+STARTS '2023-08-13 01:00:00'
 COMMENT 'Randomly sets inventory.price as X * yesterdays average where x IN [0.85, 1.15] and updates price_history table'
 DO 
 BEGIN

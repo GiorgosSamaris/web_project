@@ -8,7 +8,7 @@ BEGIN
 
 SELECT average_price INTO price
 FROM price_history
-WHERE product_id = pro_id AND price_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY);
+WHERE product_id = pro_id AND price_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY) LIMIT 1;
 
 END$
 DELIMITER ;

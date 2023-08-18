@@ -33,10 +33,12 @@ BEGIN
         SET gain = 0;
         IF avg_price * 0.8 > price THEN
             SET gain = 50;
+            UPDATE offer SET price_decrease_last_day_avg = TRUE WHERE offer_id = LAST_INSERT_ID(); 
         ELSE 
             CALL get_last_week_price(pro_id, avg_price);
             IF avg_price * 0.8 > price THEN
                 SET gain = 20;
+                UPDATE offer SET price_decrease_last_week_avg = TRUE WHERE offer_id = LAST_INSERT_ID();
             END IF;
         END IF;
 
@@ -57,10 +59,14 @@ BEGIN
         SET gain = 0;
         IF avg_price * 0.8 > price THEN
             SET gain = 50;
+            UPDATE offer SET price_decrease_last_day_avg = TRUE WHERE offer_id = LAST_INSERT_ID(); 
+
         ELSE 
             CALL get_last_week_price(pro_id, avg_price);
             IF avg_price * 0.8 > price THEN
                 SET gain = 20;
+                UPDATE offer SET price_decrease_last_week_avg = TRUE WHERE offer_id = LAST_INSERT_ID();
+
             END IF;
         END IF;
     END IF;

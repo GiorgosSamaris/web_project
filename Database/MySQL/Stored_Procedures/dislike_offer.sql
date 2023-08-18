@@ -5,7 +5,11 @@ BEGIN
     DECLARE cus_id SMALLINT UNSIGNED;
     DECLARE current_score_value INT; 
     DECLARE overall_score_value INT; 
+    DECLARE already_rated TINYINT UNSIGNED;
     
+    SELECT COUNT(rate_value) INTO already_rated FROM offer_rating WHERE customer_id = rater_id AND offer_id = off_id AND rate_value = 'DISLIKE';
+
+	IF (already_rated = 0) THEN
     UPDATE offer SET number_of_dislikes = number_of_dislikes + 1 WHERE offer_id = off_id;
     SELECT author_id INTO cus_id FROM offer WHERE offer_id = off_id;
     
@@ -21,5 +25,14 @@ BEGIN
     
     UPDATE customer SET current_score = current_score_value, overall_score = overall_score_value WHERE customer_id = cus_id;
     INSERT INTO offer_rating (offer_id, customer_id, rate_value) VALUES (off_id, rater_id, 'DISLIKE');
+    
+    ELSE 
+	UPDATE offer SET number_of_dislikes = number_of_dislikes - 1 WHERE offer_id = off_id;
+    SELECT author_id INTO cus_id FROM offer WHERE offer_id = off_id;
+    UPDATE customer SET current_score = current_score + 1, overall_score = overall_score + 1 WHERE customer_id = cus_id;
+    DELETE FROM offer_rating WHERE customer_id = rater_id AND offer_id = off_id;
+    
+    
+	END IF;
 END$
 DELIMITER ;
