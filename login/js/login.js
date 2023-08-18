@@ -13,21 +13,19 @@ $(document).ready(function(){
             type: "POST",
             url: "validate_user.php",
             data: loginData,
+            dataType: "json",
             success: function (response) {
-            console.log(JSON.parse(response));
-            console.log(response.status);
-            console.log(response.message);
-            console.log(response.type);
-            if (JSON.parse(response).status === "success") {
-                    $("#response").html(JSON.parse(response).message);
-                    if(JSON.parse(response).type === "customer"){
+            console.log(response);
+            if (response.status === "success") {
+                    $("#response").html(response.message);
+                    if(response.type === "customer"){
                         window.location.href = "/maps/maps.html"; 
                     }
-                    if(JSON.parse(response).type === "admin"){
+                    if(response.type === "admin"){
                         // window.location.href = ""; s 
                     }
-              } else if (JSON.parse(response).status === "fail") {
-                    $("#response").html(JSON.parse(response).message);
+              } else if (response.status === "fail") {
+                    $("#response").html(response.message);
               } else {
                     $("#response").html("An error occurred while processing your request.");
               }
