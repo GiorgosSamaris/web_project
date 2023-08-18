@@ -57,4 +57,4 @@ jobs:
           app-name: 'gocart'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E5B35EDD17904DB3A4A2513804F96C63 }}
-          package: login/
+          package: ${{ github.workspace }}
