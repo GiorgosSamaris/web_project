@@ -10,9 +10,9 @@ let mymap = L.map('mapid');
 let storesList = [];
 let productsList = [];
 let offersList = []; 
-let exportList;
+// let exportList;
 
-import{fillExportList} from 'exportOffers.js';
+// import{fillExportList} from 'exportOffers.js';
 
 //#region Icons
 
@@ -140,7 +140,7 @@ function popupContentStores(feature,isClose, offersList, storeId) {
         if(isClose === true){
             popupContent += '<div class = "button-container">';
             popupContent += '<button type = "submit" class = "button-style" id = "add-button-'+ storeId +'"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "button-style" id = "review-button-'+ storeId +'"> Review </button>';
+            popupContent += '<button type = "submit" class = "button-style" onClick = "window.location.href=\'' + "../reviewOffer/index.html" + '\';"> Review </button>';
             popupContent += '</div>';
             
         } 
@@ -305,10 +305,12 @@ async function initializeMap() {
 
 //#endregion
 
-document.addEventListener('click', function(event){
-    if(exportList)
-        fillExportList(offersList);
-});
+
+
+// document.addEventListener('click', function(event){
+//     if(exportList)
+//         fillExportList(offersList);
+// });
 
 
 
@@ -333,5 +335,4 @@ document.addEventListener('click', function(event){
 // let empty = [];
 mymap.setView([38.2462420, 21.7350847], 16);
 initializeMap();
-    // if (results.)
-    //     results = empty;
+
