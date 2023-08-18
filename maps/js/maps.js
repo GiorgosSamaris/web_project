@@ -12,7 +12,7 @@ let productsList = [];
 let offersList = []; 
 // let exportList;
 
-import{fillExportList} from 'exportOffers.js';
+// import{fillExportList} from 'exportOffers.js';
 
 //#region Icons
 
