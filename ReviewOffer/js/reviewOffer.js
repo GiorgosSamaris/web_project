@@ -6,29 +6,29 @@ let listContent;
 
 
 
-// async function fetchOffers(){
-//     try {
-//         const response = await fetch("json/offers.json");
-//         const data = await response.json();
-//         data.forEach((offer) => {
-//                 const { 
-//                     offer_id, 
-//                     store_name,
-//                     creation_date, 
-//                     expiration_date, 
-//                     number_of_likes, 
-//                     number_of_dislikes, 
-//                     offer_price,
-//                     in_stock,
-//                     name } = offer;
+async function fetchOffers(){
+    try {
+        const response = await fetch("json/offers.json");
+        const data = await response.json();
+        data.forEach((offer) => {
+                const { 
+                    offer_id, 
+                    store_name,
+                    creation_date, 
+                    expiration_date, 
+                    number_of_likes, 
+                    number_of_dislikes, 
+                    offer_price,
+                    in_stock,
+                    name } = offer;
 
-//                 offersList.push(offer);
-//         });
-//         // console.log(offersList);
-//     } catch (error) {
-//         console.error("Error loading the json data");
-//     }
-// }
+                offersList.push(offer);
+        });
+        // console.log(offersList);
+    } catch (error) {
+        console.error("Error loading the json data");
+    }
+}
 
 
 async function initializePage(){
