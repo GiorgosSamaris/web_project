@@ -12,7 +12,7 @@ let productsList = [];
 let offersList = []; 
 // let exportList;
 
-// import{fillExportList} from 'exportOffers.js';
+import{fillExportList} from 'exportOffers.js';
 
 //#region Icons
 
@@ -79,8 +79,6 @@ var goldIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-//#endregion
-
 const storeIcons = {
     "Σκλαβενίτης": redIcon,
     "Ανδρικόπουλος": greenIcon,
@@ -94,6 +92,8 @@ const storeIcons = {
     "Mini Market": goldIcon,
     "ΚΡΟΝΟΣ": greyIcon,
 };
+//#endregion
+
 
 var markersLayer = new L.LayerGroup();  
 let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -139,12 +139,12 @@ function popupContentStores(feature,isClose, offersList, storeId) {
         popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
-            popupContent += '<button type = "submit" class = "button-style" id = "add-button-'+ storeId +'"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "button-style" onClick = "window.location.href=\'' + "../reviewOffer/index.html" + '\';"> Review </button>';
+            popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
+            popupContent += '<button type = "submit" class = "review-offer" onClick = "window.location.href=\'' + "../reviewOffer/index.html" + '\';"> Review </button>';
             popupContent += '</div>';
             
         } 
-        fetchInventory(1);
+        // fetchInventory(1);
         // const addButton = document.getElementById("add-button");
         // addButton.addEventListener("click",async function(){
         //     console.log("add button clicked");

@@ -1,7 +1,7 @@
-// let exportList = [];
+let exportList = [];
 
-// function fillExportList(offersList) {
-//     exportList = offersList;
-// }
+function fillExportList(offersList) {
+    exportList = offersList;
+}
 
-// export{fillExportList, exportList};
+export{fillExportList, exportList};
