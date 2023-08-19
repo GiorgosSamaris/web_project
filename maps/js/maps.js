@@ -140,7 +140,7 @@ function popupContentStores(feature,isClose, offersList, storeId) {
         if(isClose === true){
             popupContent += '<div class = "button-container">';
             popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "review-offer" onClick = "window.location.href=\'' + "../reviewOffer/index.html" + '\';"> Review </button>';
+            popupContent += '<button type = "submit" class = "review-offer" onClick = "window.location.href=\'' + "../reviewOffer/review_offer.html" + '\';"> Review </button>';
             popupContent += '</div>';
             
         } 
