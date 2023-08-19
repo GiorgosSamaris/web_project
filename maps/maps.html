@@ -28,7 +28,29 @@
     <title>Maps</title>
 </head>
 <body>
-    <div id="mapid"></div>
+    <div id="page-container">
+        <div id="display">
+            <div id="mapid"></div>
+            <div id="profile-container" class = "hidden">
+                <label for="username">Username</label>
+                <input type="text" name="username">
+                <label for="password">Password</label>
+                <input type="password" name="password">
+            </div>
+        </div>
+        <div id="navigation">
+            <!-- <button id="map">Map</button>
+            <button id="profile">Profile</button> -->
+            <div class="radio-label-container">
+                <input type="radio" name="tabs" class="tabs-radio" id="tab1">
+                <label for="tab1" class="tab-label">Map</label>
+            </div>
+            <div class="radio-label-container">
+                <input type="radio" name="tabs" class="tabs-radio" id="tab2">
+                <label for="tab2" class="tab-label">Profile</label>
+            </div>
+        </div>
+    </div>
     <script src="js/maps.js"></script>
 </body>
 </html>

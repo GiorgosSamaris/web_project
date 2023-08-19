@@ -103,7 +103,7 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, offersList, storeId) {  
-    console.log(offersList);
+    // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         // console.log(feature.properties.store_name);

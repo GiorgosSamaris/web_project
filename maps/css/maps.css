@@ -4,36 +4,33 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+#page-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ======= Map Styling */
 #mapid { 
-    height: 100vh; 
+    height: 95vh; 
     width: 100%;
 }
 
-.leaflet-popup-content-wrapper {
-    box-shadow: none;
-    /* background: none; */
-}
 
+/* ======= Search Plugin ======= */
 .leaflet-control-search .search-tip {
     white-space: normal;
     width: 6rem;
+}
+/* ======= Popup Content ======= */
+.leaflet-popup-content-wrapper {
+    box-shadow: none;
+    /* background: none; */
 }
 
 .popup-container {
     text-align: center;
     display: block;
     background-color: antiquewhite;
-    border-radius: 0.6rem;
-}
-
-.button-style{
-    display: block;
-    margin: 0 auto; /* 0 margin for top and bottom 
-    and auto for left and right. Centers the button 
-    inside the block */
-    padding: 0.4rem;
-    font-weight: 600;
-    background-color: transparent;
     border-radius: 0.6rem;
 }
 
@@ -51,6 +48,17 @@ body {
     border-radius: 0.6rem;
 }
 
+.add-offer, .review-offer{
+    display: block;
+    margin: 0 auto; /* 0 margin for top and bottom 
+    and auto for left and right. Centers the button 
+    inside the block */
+    padding: 0.4rem;
+    font-weight: 600;
+    background-color: transparent;
+    border-radius: 0.6rem;
+}
+
 .button-container{
     background-color: transparent;
 }
@@ -63,6 +71,8 @@ body {
     display: inline;
 }
 
+
+/* ======= Icons ======= */
 .fa-thumbs-up {
     color: green;
 }
@@ -77,4 +87,44 @@ body {
 
 .fa-thumbs-down-grey {
     color: grey;
+}
+
+/* ======= Profile Styling */
+.hidden {
+    display: none;
+}
+
+/* ======= Navigation ======= */
+#navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 5vh;
+}
+
+.radio-label-container {
+    flex: 1;    /*distributes available space equally among all children*/
+    margin: 0;
+    height: 100%;
+    background-color: inherit;
+    font-size: larger;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabs-radio {
+    display: none;
+}
+
+.tabs-radio:checked+.tab-label{
+    color: cornflowerblue;
+    border-bottom: 0.3rem solid cornflowerblue;
+}
+
+.tab-label{
+    cursor: pointer;
+    padding: 0.2rem ;
 }
