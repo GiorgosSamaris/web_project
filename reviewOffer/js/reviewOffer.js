@@ -1,4 +1,4 @@
-import { exportList } from "/maps/js/exportOffers.js";
+// import { exportList } from "/maps/js/exportOffers.js";
 
 var offersList = [];
 let listContent;
