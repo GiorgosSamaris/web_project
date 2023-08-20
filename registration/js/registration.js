@@ -15,7 +15,8 @@ password.onfocus = function () {
 };
 
 password.onblur = function () {
-  checkRequirementsVisibility();
+  // checkRequirementsVisibility();
+  requirements.id = "password-requirements-inv";
 };
 
 password.onkeyup = function () {
