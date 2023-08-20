@@ -59,8 +59,8 @@ li {
 }
 
 #offer-image{
-    max-width: 80%;
-    max-height: 40%;
+    max-width: 200px;
+    max-height: 200px;
     padding: 0.5rem;
 }
 .user-info{

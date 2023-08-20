@@ -80,7 +80,7 @@ $(document).ready(function () {
   $("#registrationForm").submit(function (event) {
     event.preventDefault();
 
-    var registrationData = {
+    let registrationData = {
       username: $("#username").val(),
       password: $("#password").val(),
       email: $("#email").val(),
