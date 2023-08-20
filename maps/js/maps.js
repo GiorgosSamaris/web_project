@@ -10,7 +10,7 @@ let mymap = L.map('mapid');
 
 let storesList = [];
 let productsList = [];
-let offersList = []; 
+var offersList = []; 
 // const fs = require('fs');|
 // let exportList;
 
@@ -104,7 +104,7 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 //#region Functions
 
-function popupContentStores(feature,isClose, offersList, storeId) {  
+function popupContentStores(feature,isClose, storeId) {
     // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
@@ -142,7 +142,7 @@ function popupContentStores(feature,isClose, offersList, storeId) {
         if(isClose === true){
             popupContent += '<div class = "button-container">';
             popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()"> Review </button>';
+            popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
             
         } 
@@ -162,12 +162,12 @@ function popupContentStores(feature,isClose, offersList, storeId) {
             popupContent += "</b>";
             popupContent += '</div>'
             return popupContent;
-    }
-    function exportOffers(){
-        console.log(offersList);
-        localStorage.setItem("offers", JSON.stringify(offersList));
-        window.location.href= "../reviewOffer/review_offer.html";
-    }
+        }
+function exportOffers(){
+    console.log(offersList);
+    sessionStorage.setItem("offers", JSON.stringify(offersList));
+    window.location.href= "../reviewOffer/review_offer.html";
+}
 
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
     //using the haversine Formula
@@ -205,7 +205,7 @@ async function fetchInventory(storeId) {
                 storeId: storeId
             },
             success: function (store_inventory) {
-                console.log(store_inventory);   
+                // console.log(store_inventory);   
                 resolve(store_inventory);
             },
             error: function (error) {
@@ -273,13 +273,15 @@ async function initializeMap() {
                     isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeId), storeId));
+                    offersList = await fetchOffers(storeId);
+                    layer.bindPopup(popupContentStores(feature, true, storeId));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeId), storeId));
+                    offersList = await fetchOffers(storeId);
+                    layer.bindPopup(popupContentStores(feature, false, storeId));
                 });
             }
         }
@@ -344,11 +346,6 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
-
-console.log("initial mapContainer class: " + mapContainer.classList.value);
-console.log("initial profileContainer class: " + profileContainer.classList.value);
-console.log("initial mapButtonLabel class: " + mapButtonLabel.classList.value);
-console.log(mapButtonLabel.classList.contains("active"));
 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){

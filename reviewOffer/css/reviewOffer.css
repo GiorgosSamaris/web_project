@@ -22,13 +22,16 @@ body, ul, h2 {
     color: red;
 }
 
+ul{
+    display: block;
+}
 
 .list-item-container {
     border: 2px solid black;
     border-radius: 0.6rem;
     list-style-type: none;
     padding-left: 0;
-    margin: 0 auto;     /*top-down margin 0 and left,right auto*/
+    margin: 0.1rem auto;     /*top-down margin 0.1rem and left,right auto*/
     min-width: 20rem;
     max-width: 50rem;
     text-align: center;
@@ -46,4 +49,23 @@ i {
 
 li {
     cursor: pointer;
+}
+
+
+.extended-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#offer-image{
+    max-width: 80%;
+    max-height: 40%;
+    padding: 0.5rem;
+}
+.user-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
 }
