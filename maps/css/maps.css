@@ -10,11 +10,19 @@ body {
 }
 
 /* ======= Map Styling */
-#mapid { 
+/* #mapid { 
+    height: 95vh; 
+    width: 100%;
+} */
+
+.map-vis{
     height: 95vh; 
     width: 100%;
 }
 
+.map-inv{
+    display: none;
+}
 
 /* ======= Search Plugin ======= */
 .leaflet-control-search .search-tip {
@@ -90,8 +98,16 @@ body {
 }
 
 /* ======= Profile Styling */
-.hidden {
+.profile-container-inv{
     display: none;
+}
+
+.profile-container-vis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 95vh;
 }
 
 /* ======= Navigation ======= */
@@ -119,12 +135,19 @@ body {
     display: none;
 }
 
+.tab-label{
+    cursor: pointer;
+    padding: 0.2rem ;
+}
+
 .tabs-radio:checked+.tab-label{
     color: cornflowerblue;
     border-bottom: 0.3rem solid cornflowerblue;
 }
 
-.tab-label{
-    cursor: pointer;
-    padding: 0.2rem ;
+.active{
+    color: cornflowerblue;
+    border-bottom: 0.3rem solid cornflowerblue;
 }
+
+
