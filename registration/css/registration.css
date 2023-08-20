@@ -84,3 +84,11 @@ label{
     color: green;
 }
 
+#response{
+    font-size: larger;
+    font-weight: bold;
+    color: firebrick;
+    margin-top: 1rem;
+    padding: 0;
+}
+

@@ -1,4 +1,5 @@
 //#region initilization
+// import * as fs from "fs";
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
@@ -9,7 +10,8 @@ let mymap = L.map('mapid');
 
 let storesList = [];
 let productsList = [];
-let offersList = []; 
+var offersList = []; 
+// const fs = require('fs');|
 // let exportList;
 
 // import{fillExportList} from 'exportOffers.js';
@@ -102,8 +104,8 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 //#region Functions
 
-function popupContentStores(feature,isClose, offersList, storeId) {  
-    console.log(offersList);
+function popupContentStores(feature,isClose, storeId) {
+    // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         // console.log(feature.properties.store_name);
@@ -140,26 +142,31 @@ function popupContentStores(feature,isClose, offersList, storeId) {
         if(isClose === true){
             popupContent += '<div class = "button-container">';
             popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
-            popupContent += '<button type = "submit" class = "review-offer" onClick = "window.location.href=\'' + "../reviewOffer/review_offer.html" + '\';"> Review </button>';
+            popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
             
         } 
         // fetchInventory(1);
         // const addButton = document.getElementById("add-button");
         // addButton.addEventListener("click",async function(){
-        //     console.log("add button clicked");
-        //     await fetchProducts();
-        //     popupContent += '<div class = "add-offer-container">';
-        //     popupContent += 'button class = "accordion"> Add Offer </button>';
-        //     popupContent += '<div class = "panel">';
-        //     popupContent += '<ul class = "general-categories">';
-        //     popupContent += '<li>' +  + '</li>'
-        //     popupContent += '</div>';
-        // });
-
-        popupContent += "</b>";
-    popupContent += '</div>'
-    return popupContent;
+            //     console.log("add button clicked");
+            //     await fetchProducts();
+            //     popupContent += '<div class = "add-offer-container">';
+            //     popupContent += 'button class = "accordion"> Add Offer </button>';
+            //     popupContent += '<div class = "panel">';
+            //     popupContent += '<ul class = "general-categories">';
+            //     popupContent += '<li>' +  + '</li>'
+            //     popupContent += '</div>';
+            // });
+            
+            popupContent += "</b>";
+            popupContent += '</div>'
+            return popupContent;
+        }
+function exportOffers(){
+    console.log(offersList);
+    sessionStorage.setItem("offers", JSON.stringify(offersList));
+    window.location.href= "../reviewOffer/review_offer.html";
 }
 
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
@@ -198,7 +205,7 @@ async function fetchInventory(storeId) {
                 storeId: storeId
             },
             success: function (store_inventory) {
-                console.log(store_inventory);   
+                // console.log(store_inventory);   
                 resolve(store_inventory);
             },
             error: function (error) {
@@ -266,13 +273,15 @@ async function initializeMap() {
                     isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, true, await fetchOffers(storeId), storeId));
+                    offersList = await fetchOffers(storeId);
+                    layer.bindPopup(popupContentStores(feature, true, storeId));
                 });
             } else {
                 isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
-                    layer.bindPopup(popupContentStores(feature, false, await fetchOffers(storeId), storeId));
+                    offersList = await fetchOffers(storeId);
+                    layer.bindPopup(popupContentStores(feature, false, storeId));
                 });
             }
         }
@@ -306,14 +315,7 @@ async function initializeMap() {
 //#endregion
 
 
-
-// document.addEventListener('click', function(event){
-//     if(exportList)
-//         fillExportList(offersList);
-// });
-
-
-
+//#region user's location
 //get users location
 // if("geolocation" in navigator) {
 //     //add prompt for user's location
@@ -331,8 +333,41 @@ async function initializeMap() {
 //         console.error("Geolocation is not supported by this browser");
 //         initializeMap();
 //     }
-    
 // let empty = [];
+//#endregion
+
+
 mymap.setView([38.2462420, 21.7350847], 16);
 initializeMap();
+
+//#region Switch tabs
+const mapButton = document.getElementById("tab1");
+const mapButtonLabel = document.getElementById("map-button-label");
+const profileButton = document.getElementById("tab2");
+const mapContainer = document.getElementById("mapid");
+const profileContainer = document.getElementById("profile-container");
+
+mapButton.addEventListener("click", function(){
+    if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
+        mapContainer.classList.remove("map-inv");
+        mapContainer.classList.add("map-vis");
+        profileContainer.classList.remove("profile-container-vis");
+        profileContainer.classList.add("profile-container-inv");
+    }
+});
+
+profileButton.addEventListener("click", function(){
+    if(mapButtonLabel.classList.contains("active")){
+        mapButtonLabel.classList.remove("active");
+        console.log(mapButtonLabel.classList.value);
+    }
+    if(profileContainer.classList.contains("profile-container-inv") && mapContainer.classList.contains("map-vis")){
+        profileContainer.classList.remove("profile-container-inv");
+        profileContainer.classList.add("profile-container-vis");
+        mapContainer.classList.remove("map-vis");
+        mapContainer.classList.add("map-inv");
+    }   
+        
+});
+//#endregion
 
