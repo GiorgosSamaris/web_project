@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP PROCEDURE IF EXISTS change_username;
 DELIMITER $
 CREATE PROCEDURE change_username(IN n_username VARCHAR(45), IN id SMALLINT UNSIGNED)

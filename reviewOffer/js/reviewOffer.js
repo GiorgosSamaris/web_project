@@ -1,18 +1,15 @@
-let extendedContent = false;
 let offerId;
 let listContent;
-var offersList = [];
+let offersList = [];
 
 
 async function initializePage(){
-    // await fetchOffers();
     offersList = await JSON.parse(sessionStorage.getItem("offers"));
     console.log(offersList);
     updateListContent();
 }
 
-function updateListContent(offerId){
-    offerId = parseInt(offerId);
+function updateListContent(){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
         // console.log(offer.name.replace(/\//g, "_"));
@@ -35,45 +32,47 @@ function updateListContent(offerId){
             //checks whether the price has decreased in the last day or week and adjusts the icon accordingly
             (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
         ) + 
-        (offer.offer_id === offerId ? 
-            '<div class = "extended-content" >' + '<br>' +
-            '<img id = "offer-image" src = "img/' + offer.name.replace(/\//g, "_") +'.jpg" , alt = "Its taking a while">' + '<br>' +
-            '<div class = "user-info">' +
-            "Submitted by: " + offer.username + '<br>' +
-            "Overall score: " + offer.overall_score + '<br>' + 
-            '</div>' + 
-            '</div>' : "") +
-        '</li>' + '</div>';
+        (offer.offer_id === offerId ? getOfferImage(offer): "")
+        +'</li>' + '</div>';
     });
     listContent += '</ul>' + "</b>";
     document.getElementById("list-container").innerHTML = listContent;  //change the content of the list container div element
 }
 
+function getOfferImage(offer) {
+    return '<div class="extended-content">' +
+    '<br>' +
+    '<img id="offer-image" src="img/' + offer.name.replace(/\//g, "_") + '.jpg" onerror="this.onerror=null; this.src=\'img/Default.png\'" alt="It\'s taking a while">' +
+    '<br>' +
+    '<div class="user-info">' +
+    'Submitted by: ' + offer.username + '<br>' +
+    'Overall score: ' + offer.overall_score + '<br>' +
+    '</div>' +
+    '</div>';
+
+}
 initializePage();
 
 
 //#region  event listeners
-document.getElementById("list-container").addEventListener('click', function(event) {   //event listener for the list container
-
-    if(event.target.matches('.list-item-container li') && extendedContent === true){
-        if(event.target.matches('#like') || event.target.matches('#dislike')){
-            updateListContent(offerId);    //resets the list content if the user clicks anywhere in the div element
-        }
-    } 
-    if(!(event.target.matches('#like') || event.target.matches('#dislike')) && extendedContent === true) {
-        updateListContent();    //resets the list content if the user clicks anywhere in the div element
-        extendedContent = false;
-    }
-    if (event.target.matches('.list-item-container li') && extendedContent === false){   //if a list item is clicked
-        offerId = event.target.getAttribute('offer-id');  //gets the offer id of the clicked offer
+// rewritten
+// Adding a click event listener to the list container
+document.getElementById("list-container").addEventListener('click', function(event) {
+    if (event.target.matches('.list-item-container li')) {
+        offerId = parseInt(event.target.getAttribute('offer-id'));
         event.target.scrollIntoView({
             behavior: 'smooth', 
             block: 'center'
         });
-        extendedContent = true;
-        updateListContent(offerId); //updates the list content with the extended content of the clicked offer
+        updateListContent();
     } 
+    else {
+        offerId = null;
+        updateListContent();
+    }
 });
+
+
 
 document.addEventListener('click', function(event){
     if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
