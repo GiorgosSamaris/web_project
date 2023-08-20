@@ -66,7 +66,9 @@ document.getElementById("list-container").addEventListener('click', function(eve
         });
         updateListContent();
     } 
-    else {
+    else if(event.target.matches('#like') || event.target.matches('#dislike')){
+        updateListContent();
+    } else {
         offerId = null;
         updateListContent();
     }
@@ -96,13 +98,9 @@ function findOfferByIdAndUpdate(offerId, update){
             else if(update == "down"){
                 offer.number_of_dislikes++;
                 console.log(offer.number_of_dislikes);
-            }
-                
+            }     
         }
-        if(extendedContent == true)
-            updateListContent(offerId);
-        else
-            updateListContent();
+        updateListContent();
     });
 }
 //#endregion

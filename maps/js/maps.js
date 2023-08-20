@@ -138,7 +138,6 @@ function popupContentStores(feature,isClose, storeId) {
 
         });
         popupContent += "</ul>"; 
-        popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
             popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';

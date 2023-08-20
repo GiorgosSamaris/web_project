@@ -32,13 +32,13 @@ body {
 /* ======= Popup Content ======= */
 .leaflet-popup-content-wrapper {
     box-shadow: none;
-    /* background: none; */
+    background: cadetblue;
 }
 
 .popup-container {
     text-align: center;
     display: block;
-    background-color: antiquewhite;
+    background-color: cadetblue;
     border-radius: 0.6rem;
 }
 
@@ -52,8 +52,10 @@ body {
 }
 
 .offer-container{
-    border: 1px solid black;
+    /* border: 1px solid black; */
+    margin: 0.3rem auto;
     border-radius: 0.6rem;
+    background-color: antiquewhite;
 }
 
 .add-offer, .review-offer{
@@ -68,11 +70,15 @@ body {
 }
 
 .button-container{
+    margin: 1rem auto;
+    padding: 0;
     background-color: transparent;
+
 }
 
 .button-container button {
     margin-bottom: 0.3rem;
+    background-color: antiquewhite;
 }
 
 .date-likes-dislikes {
