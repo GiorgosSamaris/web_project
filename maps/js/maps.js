@@ -108,14 +108,12 @@ function popupContentStores(feature,isClose, storeId) {
     // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
-        // console.log(feature.properties.store_name);
-        //show name
-        // console.log(feature.properties.store_name);
+        popupContent += '<div class = "description">';
         if (feature.properties.store_name) {
             // console.log(store_name);
             popupContent += feature.properties.store_name + "<br>";
         } 
-        popupContent += "Current offers: " + "<br>";
+        popupContent += "Current offers" + '</div>';
         popupContent += '<ul class = "offers-container" >';
         offersList.forEach((offer) => {
             popupContent += '<div class = "offer-container">'+ "<li>" + 

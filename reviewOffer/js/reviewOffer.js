@@ -42,7 +42,7 @@ function updateListContent(){
 function getOfferImage(offer) {
     return '<div class="extended-content">' +
     '<br>' +
-    '<img id="offer-image" src="img/' + offer.name.replace(/\//g, "_") + '.jpg" onerror="this.onerror=null; this.src=\'img/Default.png\'" alt="It\'s taking a while">' +
+    '<img id="offer-image" src="img/' + offer.name.replace(/\//g, "_") + '.jpg" onerror="this.src=\'img/Default.png\';" alt="Product image missing">' +
     '<br>' +
     '<div class="user-info">' +
     'Submitted by: ' + offer.username + '<br>' +

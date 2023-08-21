@@ -42,6 +42,11 @@ body {
     border-radius: 0.6rem;
 }
 
+.description {
+    font-size: large;
+    font-weight: 600;
+}
+
 .offers-container{
     width: fit-content;
     height: 11.6rem;
@@ -56,6 +61,7 @@ body {
     margin: 0.3rem auto;
     border-radius: 0.6rem;
     background-color: antiquewhite;
+    font-size: medium;
 }
 
 .add-offer, .review-offer{
@@ -70,15 +76,22 @@ body {
 }
 
 .button-container{
-    margin: 1rem auto;
+    margin: 0.5rem auto;
     padding: 0;
     background-color: transparent;
-
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /*The first element is tied to the start of the element and the last to the end of the element*/
 }
 
 .button-container button {
-    margin-bottom: 0.3rem;
+    flex: 1;
+    margin: 0;
+    padding: 0;
     background-color: antiquewhite;
+    font-size: large;
+    font-weight:600;
+    cursor: pointer;
 }
 
 .date-likes-dislikes {

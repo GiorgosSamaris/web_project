@@ -53,15 +53,12 @@ i {
     cursor: pointer;
 }
 
-li {
-    cursor: pointer;
-}
-
 
 .extended-content{
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: pointer;
 }
 
 #offer-image{
