@@ -8,6 +8,6 @@ SELECT COUNT(*) FROM customer INNER JOIN user ON customer_id = user_id WHERE use
 SET tokens_pool = ROUND((tokens_pool * 0.8), 0);
 SELECT SUM(current_score) FROM customer INTO score_sum;
 UPDATE customer SET overall_tokens = overall_tokens + ROUND(((score_sum/current_score)*tokens_pool),0), current_score = 0 WHERE current_score > 0;
-UPDATE customer SET this_months_tokens = ROUND(((score_sum/current_score)*tokens_pool),0), current_score = 0 WHERE current_score > 0;
+UPDATE customer SET last_months_tokens = ROUND(((score_sum/current_score)*tokens_pool),0) WHERE current_score > 0;
 END$
 DELIMITER ;
