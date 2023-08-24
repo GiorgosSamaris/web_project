@@ -1,16 +1,26 @@
 //#region initilization
-// import * as fs from "fs";
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
 let index = 1;
 let userpos;
 let popupContent = "";
+var profileContent = "";
 let mymap = L.map('mapid');
+var markersLayer = new L.LayerGroup(); 
 
+//Store lists
 let storesList = [];
 let productsList = [];
 var offersList = []; 
+
+//User lists
+let likeDislikeHistory;
+let userScore;
+//============== Testing ==============
+let userId = 203;
+let userTokens;
+
 // const fs = require('fs');|
 // let exportList;
 
@@ -97,7 +107,7 @@ const storeIcons = {
 //#endregion
 
 
-var markersLayer = new L.LayerGroup();  
+ 
 let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(mymap);
@@ -160,9 +170,10 @@ function popupContentStores(feature,isClose, storeId) {
             popupContent += '</div>'
             return popupContent;
         }
+
 function exportOffers(){
-    console.log(offersList);
     sessionStorage.setItem("offers", JSON.stringify(offersList));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
     window.location.href= "../reviewOffer/review_offer.html";
 }
 
@@ -192,6 +203,48 @@ function userStoreDistance(lat1, lon1 , lat2, lon2) {
     return [roundedDistance, distanceInMeters];
 }
 
+function generateProfileContent(userId) {
+    const profileContainer = document.getElementById("profile-container");
+
+    //user credentials  
+    profileContent =    '<div class = "credentials-container">' + 
+                    '<label for = "username" class = "user-credentials"> Username </label>' +
+                    '<input type = "text" class = "user-credentials" id = "username" >' +
+                    '<label for = "password" class = "user-credentials"> Password </label>' +
+                    '<input type = "password" class = "user-credentials" id = "password">' +
+                    '</div>';
+
+    //user offers history
+
+    //user like dislike history
+    profileContent += '<div class = "like-dislike-history-container">' + '<Label>Like/Dislike History</label>' + "<br>" + 
+    '<ul class = "like-dislike-history">';
+    likeDislikeHistory.forEach((like) => {
+        // offersList.forEach((offer) => {     
+        //     if(offer.offer_id == like.offer_id){
+                profileContent += '<li>' + 
+                "offer id: " + like.offer_id + '<br>' +
+                (like.rate_value === "LIKE"? "Liked" : "Disliked" ) + '<br>' +
+                "Rating date/time: " + like.rating_date +'</li>';
+            // }
+        // });
+    });
+    profileContent +=  '</ul>' + '</div>';
+
+    //user score
+    profileContent += '<div class = "user-score-container">' + "Score" + "<br>" +
+                    '<p>Current month\'s score:' + userScore.current_score + '</p>' +
+                    '<p>Total Score:'  + userScore.overall_score + '</p>' +
+                    '</div>';
+    //user tokens
+    profileContent += '<div class = "user-tokens-container">' +
+                    "Previous month's tokens: " + userTokens.last_months_tokens +
+                    "Tokens since registration: " + userTokens.overall_tokens +
+                    '</div>';
+
+    profileContainer.innerHTML = profileContent;
+}
+
 // fetch products/inventory
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
@@ -204,6 +257,62 @@ async function fetchInventory(storeId) {
             success: function (store_inventory) {
                 // console.log(store_inventory);   
                 resolve(store_inventory);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function fetchUserScore(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_score.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_score) {
+                // console.log(user_score);   
+                resolve(user_score);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function fetchUserTokens(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_tokens.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_tokens) {
+                // console.log(user_tokens);   
+                resolve(user_tokens);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+async function fetchUserLikeHistory(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_likes_history.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_likes) {
+                // console.log(user_likes);   
+                resolve(user_likes);
             },
             error: function (error) {
                 reject(error);
@@ -231,19 +340,26 @@ return new Promise((resolve, reject) => {
 });
 }
 
-function containsWord(inputString, targetWord) {
-    const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
-    const lowercaseTarget = targetWord.toLowerCase(); // Convert target word to lowercase
 
-    const words = lowercaseInput.split(/\s+/); // Split the lowercase input string into an array of words
-    return words.includes(lowercaseTarget); // Check if the array of words includes the lowercase target word
-}
 
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
+
+    //fetch data from database
+    userScore = await fetchUserScore(userId);
+    userTokens = await fetchUserTokens(userId);
+    likeDislikeHistory = await fetchUserLikeHistory(userId);
+
+    console.log(likeDislikeHistory);
+    console.log(userScore);
+    console.log(userTokens);
+
+    generateProfileContent();
+
     let isClose = false;    
+    
     L.geoJson(stores_json, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
@@ -251,7 +367,7 @@ async function initializeMap() {
             const storeLat = layer.feature.properties.latitude;
             const storeLon = layer.feature.properties.longitude;
             const address = layer.feature.properties.address;
-            var isClose = layer.feature.properties.isClose;
+            // var isClose = layer.feature.properties.isClose;
 
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
 
@@ -272,6 +388,7 @@ async function initializeMap() {
                     // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, true, storeId));
+                    sessionStorage.setItem("storeId", JSON.stringify(storeId));
                 });
             } else {
                 isClose = false;
