@@ -7,6 +7,7 @@ var number = document.getElementById("number");
 var requirements = document.getElementById("password-requirements-inv");
 var register_btn = document.getElementsByClassName("register");
 var container = document.getElementsByClassName("container");
+var eye = document.getElementById("eye");
 //#endregion
 
 
@@ -70,9 +71,7 @@ function checkRequirementsVisibility(){
     symbol.classList.contains("valid") &&
     number.classList.contains("valid") ) {
       requirements.id = "password-requirements-inv";
-      // requirements.classList.remove("visible");
     } else {
-      // requirements.classList.add("visible");
       requirements.id = "password-requirements-vis";
     }
 }
@@ -108,4 +107,16 @@ $(document).ready(function () {
       },
     });
   });
+});
+
+eye.addEventListener("click", function () {
+  if (password.type === "password") {
+    password.type = "text";
+    eye.classList.remove("fa-eye-slash");
+    eye.classList.add("fa-eye");
+  } else {
+    password.type = "password";
+    eye.classList.remove("fa-eye");
+    eye.classList.add("fa-eye-slash");
+  }
 });
