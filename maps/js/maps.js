@@ -6,6 +6,10 @@ let index = 1;
 let userpos;
 let popupContent = "";
 var profileContent = "";
+
+var popupOpen = false;
+var popupContainer;
+
 let mymap = L.map('mapid');
 var markersLayer = new L.LayerGroup(); 
 
@@ -111,6 +115,7 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, storeId) {
+    // popup50 = false;
     // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
@@ -144,28 +149,24 @@ function popupContentStores(feature,isClose, storeId) {
         popupContent += "</ul>"; 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
-            popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
+            popupContent += '<button type = "button" class = "add-offer" id = "add-offer-button" onclick = "addOffer('+storeId+')"> Add Offer </button>';
             popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
-            
-        } 
-        // fetchInventory(1);
-        // const addButton = document.getElementById("add-button");
-        // addButton.addEventListener("click",async function(){
-            //     console.log("add button clicked");
-            //     await fetchProducts();
-            //     popupContent += '<div class = "add-offer-container">';
-            //     popupContent += 'button class = "accordion"> Add Offer </button>';
-            //     popupContent += '<div class = "panel">';
-            //     popupContent += '<ul class = "general-categories">';
-            //     popupContent += '<li>' +  + '</li>'
-            //     popupContent += '</div>';
-            // });
-            
-            popupContent += "</b>";
-            popupContent += '</div>'
-            return popupContent;
-        }
+            // addOfferButton = document.getElementById("add-offer-button");
+            // console.log(addOfferButton);
+            // popup50 = true;
+        }   
+        popupContent += "</b>";
+        popupContent += '</div>'
+        return popupContent;
+}
+
+
+async function addOffer(storeId){
+    console.log("add offer clicked");
+    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
+    window.location.href= "../addOffer/addOffer.html";
+}
 
 function exportOffers(){
     sessionStorage.setItem("offers", JSON.stringify(offersList));
@@ -298,6 +299,7 @@ async function fetchUserTokens(userId) {
         });
     });
 }
+
 async function fetchUserLikeHistory(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -336,6 +338,25 @@ return new Promise((resolve, reject) => {
 });
 }
 
+async function fetchUserOffers(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_users_offers.php',
+            data: {
+                userId: userId
+            },
+            success: function (users_offers) {
+                // console.log(store_offers);   
+                resolve(users_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
@@ -346,14 +367,32 @@ async function initializeMap() {
     userTokens = await fetchUserTokens(userId);
     likeDislikeHistory = await fetchUserLikeHistory(userId);
 
-    console.log(likeDislikeHistory);
-    console.log(userScore);
-    console.log(userTokens);
+    // console.log(likeDislikeHistory);
+    // console.log(userScore);
+    // console.log(userTokens);
 
-    generateProfileContent();
-
-    let isClose = false;    
     
+    // console.log(fetchUserOffers(userId));
+    // document.getElementById("list-container").addEventListener('click', async function(event) {
+    //     if (event.target.matches('.list-item-container li')) {
+    //         offerId = parseInt(event.target.getAttribute('offer-id'));
+    //         event.target.scrollIntoView({
+    //             behavior: 'smooth', 
+    //             block: 'center'
+    //         });
+    //         updateListContent();
+    //     } 
+    //     else if(event.target.matches('#like') || event.target.matches('#dislike')){
+    //         if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
+    //             await findOfferByIdAndUpdate(parseInt(event.target.getAttribute('offer-id')), "up");    //gets the value of the attribute offer-id
+    //         } else if (event.target.matches('.fa-thumbs-down')) {
+    //             await findOfferByIdAndUpdate(parseInt(event.target.getAttribute('offer-id')), "down");
+    //         }
+    //     } else {
+    //         offerId = null;
+    //         updateListContent();
+    //     }
+    // });   
     L.geoJson(stores_json, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
@@ -376,16 +415,23 @@ async function initializeMap() {
             } else {
                 layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
             }
+
             if (currStoreDist[1] <= 70) {
-                    isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, true, storeId));
                     sessionStorage.setItem("storeId", JSON.stringify(storeId));
+                    if(popupContainer != null){
+                        popupContainer.addEventListener("click", function(event){
+                            console.log(popupContainer);
+                            if(event.target.id === "add-offer-button"){
+                                console.log("add offer clicked");
+                            }
+                        });
+                    }
                 });
             } else {
-                isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
@@ -394,7 +440,7 @@ async function initializeMap() {
             }
         }
     }).addTo(markersLayer);     //adds the stores in the markersLayer  
-            
+
     var searchBar = new L.Control.Search({
         position: 'topleft',
         layer: markersLayer,
@@ -454,6 +500,7 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
+var addOfferButton;
 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
@@ -474,8 +521,23 @@ profileButton.addEventListener("click", function(){
         profileContainer.classList.add("profile-container-vis");
         mapContainer.classList.remove("map-vis");
         mapContainer.classList.add("map-inv");
+        generateProfileContent(); 
     }   
         
 });
+
+// markersLayer.eachLayer(function(layer) {
+//     popupOpen = false;
+//     popupOpen = layer.isPopupOpen();
+//     if(popupOpen === true){
+//         console.log("popup is open");
+//         popupContainer = document.getElementsByClassName("popup-container");
+//         popupContent.addEventListener("click", function(event){
+//             if(event.target.id === "add-offer-button"){
+//                 console.log("add offer clicked");
+//             }
+//         });
+//     }
+// });
 //#endregion
 
