@@ -1,0 +1,35 @@
+:root{
+    --antiquewhite: antiquewhite;
+    --cadetblue: cadetblue;
+    --radius: 0.4rem;
+    --medium: medium;
+    --font-weight: 600;
+}
+
+#dropdown-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--cadetblue);
+}
+
+#dropdown-container select{
+    margin: 1rem 0;
+    padding: 0.3rem;
+    font-size: var(--medium);
+    font-weight: var(--font-weight);
+    background-color: var(--antiquewhite);
+    color: black;
+    border-radius: var(--radius);
+    border: none;
+}
+
+#dropdown-container select option{
+    background-color: var(--antiquewhite);
+    color: black;
+}
+
+#dropdown-container select:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
