@@ -1,14 +1,18 @@
 let offerId;
 let listContent;
 let offersList = [];
+let userId = parseInt(JSON.parse(sessionStorage.getItem("userId")));
+let storeId = parseInt(JSON.parse(sessionStorage.getItem("storeId")));
+//let already_rated = false;
 
 
 async function initializePage(){
     offersList = await JSON.parse(sessionStorage.getItem("offers"));
-    console.log(offersList);
+    // console.log(offersList);
     updateListContent();
 }
 
+// make a list for each offer in the store, updates each time you click it
 function updateListContent(){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
@@ -39,6 +43,7 @@ function updateListContent(){
     document.getElementById("list-container").innerHTML = listContent;  //change the content of the list container div element
 }
 
+// called when you click on an offer, shows the image of the offer
 function getOfferImage(offer) {
     return '<div class="extended-content">' +
     '<br>' +
@@ -49,58 +54,97 @@ function getOfferImage(offer) {
     'Overall score: ' + offer.overall_score + '<br>' +
     '</div>' +
     '</div>';
-
 }
 initializePage();
 
 
 //#region  event listeners
-// rewritten
 // Adding a click event listener to the list container
-document.getElementById("list-container").addEventListener('click', function(event) {
+document.getElementById("list-container").addEventListener('click', async function(event) {
+    // scroll into view when you click on an offer and show the image
     if (event.target.matches('.list-item-container li')) {
         offerId = parseInt(event.target.getAttribute('offer-id'));
         event.target.scrollIntoView({
             behavior: 'smooth', 
             block: 'center'
         });
-        updateListContent();
+        // console.log("offerId" + offerId);
     } 
-    else if(event.target.matches('#like') || event.target.matches('#dislike')){
-        updateListContent();
-    } else {
+    // if you click on the like or dislike icon, update the database and the list
+    else if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
+        // console.log(parseInt(event.target.getAttribute('offer-id')));
+        await likeUpdate(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
+        offersList = await fetchOffers(storeId);
+    } 
+    else if (event.target.matches('.fa-thumbs-down')) {
+        // console.log(parseInt(event.target.getAttribute('offer-id')));
+        await dislikeUpdate(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
+        offersList = await fetchOffers(storeId);
+    }
+    // you clicked somewhere else, so hide the image
+    else {
+        // console.log("else");
         offerId = null;
-        updateListContent();
     }
+    updateListContent();
 });
 
-
-
-document.addEventListener('click', function(event){
-    if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
-        findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "up");    //gets the value of the attribute offer-id
-        // console.log(event.target.id);
-    } else if (event.target.matches('.fa-thumbs-down')) {
-        findOfferByIdAndUpdate(event.target.getAttribute('offer-id'), "down");
-        // Handle thumbs down click for the offer with offerId
-        // console.log(event.target.id);
-    }
-});
-
-
-function findOfferByIdAndUpdate(offerId, update){
-    offersList.forEach(function(offer){
-        if(offer.offer_id == offerId && offer.in_stock > 0){
-            if(update == "up"){
-                offer.number_of_likes++;
-                console.log(offer.number_of_likes);
-            }                
-            else if(update == "down"){
-                offer.number_of_dislikes++;
-                console.log(offer.number_of_dislikes);
-            }     
-        }
-        updateListContent();
+//fetchOffers should be called when the user has voted so as to update the rating that the user sees
+async function fetchOffers(storeId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: '../maps/php/fetch_offers.php',
+            data: {
+                storeId: storeId
+            },
+            success: function (offers) {
+                resolve(offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
     });
 }
+
+//Update likes/dislikes of the database
+async function likeUpdate(offId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/update_like.php',
+            data: {
+                user_id: userId,
+                offer_id: offId
+            },
+            success: function (success) {
+                resolve(success);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function dislikeUpdate(offId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/update_dislike.php',
+            data: {
+                user_id: userId,
+                offer_id: offId
+            },
+            success: function (success) {
+                resolve(success);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
 //#endregion
