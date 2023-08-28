@@ -17,14 +17,10 @@ var offersList = [];
 //User lists
 let likeDislikeHistory;
 let userScore;
+let userTokens;
 //============== Testing ==============
 let userId = 203;
-let userTokens;
-
-// const fs = require('fs');|
-// let exportList;
-
-// import{fillExportList} from 'exportOffers.js';
+//#endregion
 
 //#region Icons
 
@@ -209,9 +205,9 @@ function generateProfileContent(userId) {
     //user credentials  
     profileContent =    '<div class = "credentials-container">' + 
                     '<label for = "username" class = "user-credentials"> Username </label>' +
-                    '<input type = "text" class = "user-credentials" id = "username" >' +
+                    '<input type = "password" class = "user-credentials" id = "username" value = "mple" readonly>' +    //needs actual username
                     '<label for = "password" class = "user-credentials"> Password </label>' +
-                    '<input type = "password" class = "user-credentials" id = "password">' +
+                    '<input type = "password" class = "user-credentials" id = "password" value = "customer" readonly>' +    //needs actual password
                     '</div>';
 
     //user offers history
@@ -232,14 +228,14 @@ function generateProfileContent(userId) {
     profileContent +=  '</ul>' + '</div>';
 
     //user score
-    profileContent += '<div class = "user-score-container">' + "Score" + "<br>" +
-                    '<p>Current month\'s score:' + userScore.current_score + '</p>' +
-                    '<p>Total Score:'  + userScore.overall_score + '</p>' +
+    profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + "<br>" +
+                    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
+                    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
                     '</div>';
     //user tokens
-    profileContent += '<div class = "user-tokens-container">' +
-                    "Previous month's tokens: " + userTokens.last_months_tokens +
-                    "Tokens since registration: " + userTokens.overall_tokens +
+    profileContent += '<div class = "user-tokens-container">' + '<label>Tokens</label>' + '<br>' +
+                    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
+                    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
                     '</div>';
 
     profileContainer.innerHTML = profileContent;
@@ -339,8 +335,6 @@ return new Promise((resolve, reject) => {
     });
 });
 }
-
-
 
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
