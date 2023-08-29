@@ -22,6 +22,7 @@ var offersList = [];
 let likeDislikeHistory;
 let userScore;
 let userTokens;
+let offersSubmitted = [];
 //============== Testing ==============
 let userId = 203;
 //#endregion
@@ -105,8 +106,6 @@ const storeIcons = {
     "ΚΡΟΝΟΣ": greyIcon,
 };
 //#endregion
-
-
  
 let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -204,7 +203,7 @@ function generateProfileContent(userId) {
     const profileContainer = document.getElementById("profile-container");
 
     //user credentials  
-    profileContent =    '<div class = "credentials-container">' + 
+    profileContent = '<div class = "credentials-container">' + 
                     '<label for = "username" class = "user-credentials"> Username </label>' +
                     '<input type = "password" class = "user-credentials" id = "username" value = "mple" readonly>' +    //needs actual username
                     '<label for = "password" class = "user-credentials"> Password </label>' +
@@ -212,6 +211,23 @@ function generateProfileContent(userId) {
                     '</div>';
 
     //user offers history
+    profileContent += '<div class = "offers-submitted-container">' + 
+                        '<label>Offers Submitted</label>' + "<br>" +
+                        '<ul class = "offers-submitted">';
+    offersSubmitted.forEach((offer) => {
+                profileContent += '<li>' + offer.name + '<br>' +
+                                   "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
+                                   "Stock: " + offer.in_stock + '<br>' +
+                                   //offers submitted likes dislikes container(osld)
+                                   '<div id = "osld-container" >' + 
+                                   '<i class="fa-solid fa-thumbs-up color-green"></i>' + "&nbsp" + offer.number_of_likes + "&nbsp" + "&nbsp" + 
+                                   '<i class="fa-solid fa-thumbs-down color-red"></i>' + "&nbsp" + offer.number_of_dislikes + 
+                                   '</div>' + '<br>' +
+                                   "Price when submitted: " + offer.offer_price + "&euro;" + '<br>' +
+                                   "Submitted at: " + offer.creation_date + 
+                                   '</li>' ;
+    });
+    profileContent += '</ul>' + '</div>';
 
     //user like dislike history
     profileContent += '<div class = "like-dislike-history-container">' + '<Label>Like/Dislike History</label>' + "<br>" + 
@@ -338,11 +354,26 @@ return new Promise((resolve, reject) => {
 });
 }
 
+async function fetchAllOffers() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_all_offers.php',
+            success: function (store_offers) {
+                resolve(store_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+    }
+
 async function fetchUserOffers(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
-            url: 'php/fetch_users_offers.php',
+            url: 'php/fetch_user_offers.php',
             data: {
                 userId: userId
             },
@@ -366,6 +397,8 @@ async function initializeMap() {
     userScore = await fetchUserScore(userId);
     userTokens = await fetchUserTokens(userId);
     likeDislikeHistory = await fetchUserLikeHistory(userId);
+    offersSubmitted = await fetchUserOffers(userId);
+    console.log(offersSubmitted);
 
     // console.log(likeDislikeHistory);
     // console.log(userScore);
