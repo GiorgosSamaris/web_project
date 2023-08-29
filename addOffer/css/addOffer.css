@@ -9,6 +9,21 @@
 body{
     margin: 0;
     padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+label{
+    font-size: var(--medium);
+    font-weight: var(--font-weight);
+    color: black;
+}
+
+form{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #container{
@@ -23,9 +38,12 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 80%;
 }
 
 #dropdown-container select{
+    max-width: 40rem;
+    width: 100%;
     margin: 1rem auto;
     padding: 0.3rem;
     font-size: var(--medium);
@@ -34,8 +52,11 @@ body{
     color: black;
     border-radius: var(--radius);
     border: none;
-    bottom: 0;  /*aligns the dropdown to the bottom of the container*/
     cursor: pointer;
+    text-align-last: center;    /*aligns the text in the dropdown to the center*/
+    text-align: center;         
+    -moz-text-align-last: center;  /*aligns the text in the dropdown to the center for mozilla*/
+    white-space: normal;         
 }
 
 #dropdown-container select option{
@@ -44,8 +65,20 @@ body{
     cursor: pointer;
 }
 
-#dropdown-container select:hover{
+#dropdown-container select:hover, .submit input:hover{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-
+.submit input{
+    margin: 1rem auto;
+    padding: 0.3rem;
+    font-size: var(--medium);
+    font-weight: var(--font-weight);
+    background-color: var(--antiquewhite);
+    color: black;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+}
