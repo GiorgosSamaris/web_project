@@ -42,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $response = array(
                     'status' => "success",
                     'message' => "Login successful! Welcome, $username!",
-                    'type' => "customer"
+                    'type' => "customer",
+                    'user_id' => $result['u_id']
                 );
             }
         }
