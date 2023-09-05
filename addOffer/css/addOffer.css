@@ -1,8 +1,8 @@
 :root{
     --antiquewhite: antiquewhite;
-    --cadetblue: cadetblue;
     --radius: 0.4rem;
     --medium: medium;
+    --large: large;
     --font-weight: 600;
 }
 
@@ -10,12 +10,14 @@ body{
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+    background-color: #46a094;
 }
 
 label{
-    font-size: var(--medium);
+    font-size: var(--large);
     font-weight: var(--font-weight);
     color: black;
+    /* margin-bottom: -1rem; */
 }
 
 form{
@@ -24,10 +26,13 @@ form{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-color: darkcyan;
+    border-radius: 0.6rem;
+    border : 0.2rem solid transparent;
+    padding: 0.3rem;
 }
 
 #container{
-    background-color: var(--cadetblue);
     height: 100vh;
     display: flex;
     align-items: center;
@@ -44,7 +49,7 @@ form{
 #dropdown-container select{
     max-width: 40rem;
     width: 100%;
-    margin: 1rem auto;
+    margin: 0.5rem auto;
     padding: 0.3rem;
     font-size: var(--medium);
     font-weight: var(--font-weight);
@@ -70,7 +75,7 @@ form{
 }
 
 .submit input{
-    margin: 1rem auto;
+    margin: 0.5rem auto;
     padding: 0.3rem;
     font-size: var(--medium);
     font-weight: var(--font-weight);

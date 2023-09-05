@@ -15,10 +15,30 @@
 <body>
     <div id ="container">
         <form class="submit">
-            <div id = "dropdown-container"></div>
+            <div id = "dropdown-container">
+                <div class = "category-container" id = "category-container">
+                    <label for="category">Select category</label>
+                    <select class="category" name="category"id="select-category">
+                        <option value = ""></option>
+                    </select>
+                </div>
+                <div class = "subcategory-container" id = "subcategory-container">
+                    <label for="subcategory">Select subcategory</label>
+                    <select class="subcategory" name="subcategory"id="select-subcategory">
+                        <option value = ""></option>
+                    </select>
+                </div>
+                <div class = "product-container" id = "product-container">
+                    <label for="product">Select product</label>
+                    <select class="product" name="product"id="select-product">
+                        <option value = ""></option>
+                    </select>
+                </div>
+            </div>
             <label for="offer-price">Provide price of selected product</label>
-            <input type="text" name = "offer-price" id="price-input">
-            <input type="submit" value = "Add offer">
+            <input type="number" step="0.05" name = "offer-price" id="price-input">
+            <input type = "button" value = "Add offer" onclick = "newOffer()">
+
         </form>
     </div>
     <script src="js/addOffer.js"></script>
