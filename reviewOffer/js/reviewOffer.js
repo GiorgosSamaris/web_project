@@ -8,7 +8,6 @@ let storeId = parseInt(JSON.parse(sessionStorage.getItem("storeId")));
 
 async function initializePage(){
     offersList = await JSON.parse(sessionStorage.getItem("offers"));
-    // console.log(offersList);
     updateListContent();
 }
 
@@ -16,25 +15,26 @@ async function initializePage(){
 function updateListContent(){
     listContent =  "<b>" + '<ul>'
     offersList.forEach(function(offer){
-        // console.log(offer.name.replace(/\//g, "_"));
         listContent += '<div class = "list-item-container">' + 
         '<li offer-id = "'+ offer.offer_id +'">' + offer.name + '<br>' + 
         "price: " + offer.offer_price + "&euro;" + '<br>' +
         '<div class = date-likes-dislikes>' +
         "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
         '<i id = "like" offer-id ="' + offer.offer_id + '" class="fa-solid fa-thumbs-up ' +
-            //checks whether stock is greater than 0 and adjusts the color of the icon accordingly
-            (offer.in_stock > 0 ?                                                               
-            'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
+        //checks whether stock is greater than 0 and adjusts the color of the icon accordingly
+        (offer.in_stock > 0 ? 'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
         //specific attribute for icons for each offer to add event listeners
         '<i id = "dislike" offer-id = "' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
-            (offer.in_stock > 0 ?
-            'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
+        (offer.in_stock > 0 ? 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
         '</div>' + 
-        "<br>" + "In stock: " + offer.in_stock + "<br>" +
+        '<div class = "stock-icon-container">' + "In stock: " + offer.in_stock + "&nbsp" + 
+        '<i class="fa-solid fa-exclamation fa-lg" style="color: #fa0000;" title = "'+ 
+        (offer.in_stock > 0 ? "Out of stock? Click here to report it!" : "In stock? Click here to report it") + '"></i>' + '</div>' +
         (
             //checks whether the price has decreased in the last day or week and adjusts the icon accordingly
-            (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
+            (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? 
+            '<i class="fa-solid fa-check fa-lg color-green" title = "This offer meets the criteria for points reward">' + "</i>" : 
+            '<i class="fa-solid fa-xmark fa-lg color-red" title = "This offer doesn\'t meet the criteria for points reward">' + "</i>"
         ) + 
         (offer.offer_id === offerId ? getOfferImage(offer): "")
         +'</li>' + '</div>';
@@ -59,6 +59,7 @@ initializePage();
 
 
 //#region  event listeners
+
 // Adding a click event listener to the list container
 document.getElementById("list-container").addEventListener('click', async function(event) {
     // scroll into view when you click on an offer and show the image
@@ -68,22 +69,22 @@ document.getElementById("list-container").addEventListener('click', async functi
             behavior: 'smooth', 
             block: 'center'
         });
-        // console.log("offerId" + offerId);
     } 
     // if you click on the like or dislike icon, update the database and the list
-    else if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
-        // console.log(parseInt(event.target.getAttribute('offer-id')));
+    else if (event.target.matches('.fa-thumbs-up') && !event.target.matches('.greyed-out')) {    //element whose class name matches the string
         await likeUpdate(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
         offersList = await fetchOffers(storeId);
     } 
-    else if (event.target.matches('.fa-thumbs-down')) {
-        // console.log(parseInt(event.target.getAttribute('offer-id')));
+    else if (event.target.matches('.fa-thumbs-down') && !event.target.matches('.greyed-out')) {
         await dislikeUpdate(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
+        offersList = await fetchOffers(storeId);
+    } else if (event.target.matches('.fa-exclamation')) {
+        // console.log("offer_id: " + parseInt(event.target.parentElement.parentElement.getAttribute('offer-id')));
+        await reportStock(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
         offersList = await fetchOffers(storeId);
     }
     // you clicked somewhere else, so hide the image
     else {
-        // console.log("else");
         offerId = null;
     }
     updateListContent();
@@ -145,6 +146,10 @@ async function dislikeUpdate(offId) {
             }
         });
     });
+}
+
+async function reportStock(offId) {
+
 }
 
 //#endregion
