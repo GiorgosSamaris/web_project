@@ -1,6 +1,19 @@
 var password = document.getElementById("password");
 var username = document.getElementById("username");
+var passwordInput = document.getElementById("input-password");
+var eye = document.getElementById("eye");
 
+eye.addEventListener("click", function () {
+    if (password.type === "password") {
+        password.type = "text";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+    } else {
+        password.type = "password";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+    }
+});
 
 $(document).ready(function(){
     $("#loginForm").submit(function (event){
@@ -19,6 +32,7 @@ $(document).ready(function(){
             if (response.status === "success") {
                     $("#response").html(response.message);
                     if(response.type === "customer"){
+                        sessionStorage.setItem("userId", response.user_id);
                         window.location.href = "/maps/maps.html"; 
                     }
                     if(response.type === "admin"){

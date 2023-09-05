@@ -1,20 +1,33 @@
 //#region initilization
-// import * as fs from "fs";
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
-let index = 1;
 let userpos;
 let popupContent = "";
-let mymap = L.map('mapid');
+var profileContent = "";
 
+var popupOpen = false;
+var popupContainer;
+
+let mymap = L.map('mapid');
+var markersLayer = new L.LayerGroup(); 
+
+let allOffersList = [];
+
+//Store lists
 let storesList = [];
 let productsList = [];
 var offersList = []; 
-// const fs = require('fs');|
-// let exportList;
 
-// import{fillExportList} from 'exportOffers.js';
+//User lists
+// let userId = parseInt(sessionStorage.getItem("userId"));
+let likeDislikeHistory;
+let userScore;
+let userTokens;
+let offersSubmitted = [];
+//============== Testing ==============
+let userId = 203; //comment this out when testing is done, uncomment line 24
+//#endregion
 
 //#region Icons
 
@@ -95,9 +108,7 @@ const storeIcons = {
     "ΚΡΟΝΟΣ": greyIcon,
 };
 //#endregion
-
-
-var markersLayer = new L.LayerGroup();  
+ 
 let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(mymap);
@@ -105,22 +116,21 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, storeId) {
+    // popup50 = false;
     // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
-        // console.log(feature.properties.store_name);
-        //show name
-        // console.log(feature.properties.store_name);
+        popupContent += '<div class = "description">';
         if (feature.properties.store_name) {
             // console.log(store_name);
-            popupContent += feature.properties.store_name + "<br>";
+            popupContent += feature.properties.store_name + '<br>';
         } 
-        popupContent += "Current offers: " + "<br>";
+        popupContent += "Current offers" + '</div>';
         popupContent += '<ul class = "offers-container" >';
         offersList.forEach((offer) => {
             popupContent += '<div class = "offer-container">'+ "<li>" + 
                             offer.name + " " + '<br>'+
-                            "Price: " + offer.offer_price + "&euro;" + "<br>" +
+                            "Price: " + offer.offer_price + "&euro;" + '<br>' +
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
                             '<i class="fa-solid fa-thumbs-up ' +
@@ -130,7 +140,7 @@ function popupContentStores(feature,isClose, storeId) {
                                 (offer.in_stock > 0 ?
                                 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
                             '</div>' +
-                            "<br>" + "In stock: " + offer.in_stock + "<br>" +
+                            '<br>' + "In stock: " + offer.in_stock + '<br>' +
                             (
                                 (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
                             ) +
@@ -138,34 +148,31 @@ function popupContentStores(feature,isClose, storeId) {
 
         });
         popupContent += "</ul>"; 
-        popupContent += "<br>" 
         if(isClose === true){
             popupContent += '<div class = "button-container">';
-            popupContent += '<button type = "submit" class = "add-offer" id = "'+ storeId +'"> Add Offer </button>';
+            popupContent += '<button type = "button" class = "add-offer" id = "add-offer-button" onclick = "addOffer('+storeId+')"> Add Offer </button>';
             popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
-            
-        } 
-        // fetchInventory(1);
-        // const addButton = document.getElementById("add-button");
-        // addButton.addEventListener("click",async function(){
-            //     console.log("add button clicked");
-            //     await fetchProducts();
-            //     popupContent += '<div class = "add-offer-container">';
-            //     popupContent += 'button class = "accordion"> Add Offer </button>';
-            //     popupContent += '<div class = "panel">';
-            //     popupContent += '<ul class = "general-categories">';
-            //     popupContent += '<li>' +  + '</li>'
-            //     popupContent += '</div>';
-            // });
-            
-            popupContent += "</b>";
-            popupContent += '</div>'
-            return popupContent;
-        }
+            // addOfferButton = document.getElementById("add-offer-button");
+            // console.log(addOfferButton);
+            // popup50 = true;
+        }   
+        popupContent += "</b>";
+        popupContent += '</div>'
+        return popupContent;
+}
+
+
+async function addOffer(storeId){
+    sessionStorage.setItem("storeId", JSON.stringify(storeId));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
+    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
+    window.location.href= "../addOffer/addOffer.html";
+}
+
 function exportOffers(){
-    console.log(offersList);
     sessionStorage.setItem("offers", JSON.stringify(offersList));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
     window.location.href= "../reviewOffer/review_offer.html";
 }
 
@@ -195,6 +202,66 @@ function userStoreDistance(lat1, lon1 , lat2, lon2) {
     return [roundedDistance, distanceInMeters];
 }
 
+function generateProfileContent(userId) {
+    const profileContainer = document.getElementById("profile-container");
+
+    //user credentials  
+    profileContent = '<div class = "credentials-container">' + 
+                    '<label for = "username" class = "user-credentials"> Type new username </label>' +
+                    '<input type = "password" class = "user-credentials" id = "username" >' +    //needs actual username
+                    '<button type = "submit"> Change username </button>' +
+                    '<label for = "password" class = "user-credentials"> Type new password </label>' +
+                    '<input type = "password" class = "user-credentials" id = "password" >' +    //needs actual password
+                    '<button type = "submit" > Change password </button>' +
+                    '</div>';
+
+    //user offers history
+    profileContent += '<div class = "offers-submitted-container">' + 
+                        '<label>Offers Submitted</label>' + '<br>' +
+                        '<ul class = "offers-submitted">';
+    offersSubmitted.forEach((offer) => {
+                profileContent += '<li>' + offer.name + '<br>' +
+                                   "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
+                                   "Stock: " + offer.in_stock + '<br>' +
+                                   //offers submitted likes dislikes container(osld)
+                                   '<span id = "osld-container" >' + 
+                                   '<i class="fa-solid fa-thumbs-up color-green"></i>' + "&nbsp" + offer.number_of_likes + "&nbsp" + 
+                                   '<i class="fa-solid fa-thumbs-down color-red"></i>' + "&nbsp" + offer.number_of_dislikes + 
+                                   '</span>' + '<br>' +
+                                   "Price when submitted: " + offer.offer_price + "&euro;" + '<br>' +
+                                   "Submitted at: " + offer.creation_date + 
+                                   '</li>' ;
+    });
+    profileContent += '</ul>' + '</div>';
+
+    //user like dislike history
+    profileContent += '<div class = "like-dislike-history-container">' + 
+                        '<label>Like/Dislike History</label>' + '<br>' + 
+                        '<ul class = "like-dislike-history">';
+    console.log(likeDislikeHistory);
+    likeDislikeHistory.forEach((like) => {
+        profileContent += '<li>' + 
+        like.name + '<br>' +
+        (like.rate_value === "LIKE"? "Liked" : "Disliked" ) + '<br>' + 
+        "Rating date/time: " + like.creation_date +
+        '</li>';
+    });
+    profileContent +=  '</ul>' + '</div>';
+
+    //user score
+    profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + '<br>' +
+                    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
+                    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
+                    '</div>';
+    //user tokens
+    profileContent += '<div class = "user-tokens-container">' + '<label>Tokens</label>' + '<br>' +
+                    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
+                    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
+                    '</div>';
+
+    profileContainer.innerHTML = profileContent;
+}
+
 // fetch products/inventory
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
@@ -207,6 +274,63 @@ async function fetchInventory(storeId) {
             success: function (store_inventory) {
                 // console.log(store_inventory);   
                 resolve(store_inventory);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function fetchUserScore(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_score.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_score) {
+                // console.log(user_score);   
+                resolve(user_score);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function fetchUserTokens(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_tokens.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_tokens) {
+                // console.log(user_tokens);   
+                resolve(user_tokens);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function fetchUserLikeHistory(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_likes_history.php',
+            data: {
+                userId: userId
+            },
+            success: function (user_likes) {
+                // console.log(user_likes);   
+                resolve(user_likes);
             },
             error: function (error) {
                 reject(error);
@@ -234,19 +358,52 @@ return new Promise((resolve, reject) => {
 });
 }
 
-function containsWord(inputString, targetWord) {
-    const lowercaseInput = inputString.toLowerCase(); // Convert input string to lowercase
-    const lowercaseTarget = targetWord.toLowerCase(); // Convert target word to lowercase
+async function fetchAllOffers() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_all_offers.php',
+            success: function (store_offers) {
+                resolve(store_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+    }
 
-    const words = lowercaseInput.split(/\s+/); // Split the lowercase input string into an array of words
-    return words.includes(lowercaseTarget); // Check if the array of words includes the lowercase target word
+async function fetchUserOffers(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_user_offers.php',
+            data: {
+                userId: userId
+            },
+            success: function (users_offers) {
+                // console.log(store_offers);   
+                resolve(users_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
 }
 
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
-    let isClose = false;    
+
+    //fetch data from database
+    userScore = await fetchUserScore(userId);
+    userTokens = await fetchUserTokens(userId);
+    likeDislikeHistory = await fetchUserLikeHistory(userId);
+    offersSubmitted = await fetchUserOffers(userId);
+    allOffersList = await fetchAllOffers();
+    console.log(offersSubmitted);  
     L.geoJson(stores_json, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
@@ -254,7 +411,7 @@ async function initializeMap() {
             const storeLat = layer.feature.properties.latitude;
             const storeLon = layer.feature.properties.longitude;
             const address = layer.feature.properties.address;
-            var isClose = layer.feature.properties.isClose;
+            // var isClose = layer.feature.properties.isClose;
 
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
 
@@ -269,15 +426,23 @@ async function initializeMap() {
             } else {
                 layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
             }
+
             if (currStoreDist[1] <= 70) {
-                    isClose = true;
                     layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, true, storeId));
+                    sessionStorage.setItem("storeId", JSON.stringify(storeId));
+                    if(popupContainer != null){
+                        popupContainer.addEventListener("click", function(event){
+                            console.log(popupContainer);
+                            if(event.target.id === "add-offer-button"){
+                                console.log("add offer clicked");
+                            }
+                        });
+                    }
                 });
             } else {
-                isClose = false;
                 layer.on('click', async function () {
                     // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
@@ -286,7 +451,7 @@ async function initializeMap() {
             }
         }
     }).addTo(markersLayer);     //adds the stores in the markersLayer  
-            
+
     var searchBar = new L.Control.Search({
         position: 'topleft',
         layer: markersLayer,
@@ -346,6 +511,7 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
+var addOfferButton;
 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
@@ -366,8 +532,23 @@ profileButton.addEventListener("click", function(){
         profileContainer.classList.add("profile-container-vis");
         mapContainer.classList.remove("map-vis");
         mapContainer.classList.add("map-inv");
+        generateProfileContent(); 
     }   
         
 });
+
+// markersLayer.eachLayer(function(layer) {
+//     popupOpen = false;
+//     popupOpen = layer.isPopupOpen();
+//     if(popupOpen === true){
+//         console.log("popup is open");
+//         popupContainer = document.getElementsByClassName("popup-container");
+//         popupContent.addEventListener("click", function(event){
+//             if(event.target.id === "add-offer-button"){
+//                 console.log("add offer clicked");
+//             }
+//         });
+//     }
+// });
 //#endregion
 

@@ -37,8 +37,7 @@ label{
     font-size: larger;
 }
 
-.input {
-    /* border: 0.15rem solid black; */
+.input-username {
     border: transparent;
     border-radius: 0.4rem;
     margin: 0 10rem 0.5rem;
@@ -48,13 +47,14 @@ label{
     font-weight: bold;
     text-align: center;
     background-color: antiquewhite;
-}
-
-.input:focus {
     outline: none;
 }
 
-.input:hover {
+.input-username:focus, .input-password:focus {
+    outline: none;
+}
+
+.input-username:hover, .password-container:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -75,5 +75,32 @@ label{
     padding: 0;
 }
 
+.password-container{
+    position: relative;
+    border: transparent;
+    border-radius: 0.4rem;
+    margin: 0 10rem 0.5rem;
+    padding: 2%;
+    width: 100%;
+    background-color: antiquewhite;
+}
 
+.password-container input {
+    width: 100%;
+    font-size: large;
+    font-weight: 600;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.password-container i {
+    position: absolute;
+    right: 2%;  /* 2% of the parent's width from the right edge of the parent */
+    top: 50%;   /* moves the element's edge by 50% of the parent's height */
+    transform: translateY(-50%);    /* moves the element up by 50% of its own height */
+    cursor: pointer;   
+    
+}
 

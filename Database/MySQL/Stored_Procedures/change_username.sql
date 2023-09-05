@@ -9,7 +9,7 @@ BEGIN
         UPDATE user SET username = n_username WHERE user_id = id;
         SELECT "1";
     ELSE
-        SELECT "0"; #user already_exitsts
+        SELECT "0"; #user already_exists
     END IF;
 END$
 DELIMITER ;
