@@ -32,6 +32,7 @@ $(document).ready(function(){
             if (response.status === "success") {
                     $("#response").html(response.message);
                     if(response.type === "customer"){
+                        sessionStorage.setItem("userId", response.user_id);
                         window.location.href = "/maps/maps.html"; 
                     }
                     if(response.type === "admin"){
