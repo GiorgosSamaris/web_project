@@ -20,13 +20,13 @@ let productsList = [];
 var offersList = []; 
 
 //User lists
-// let userId = parseInt(sessionStorage.getItem("userId"));
+let userId = parseInt(sessionStorage.getItem("userId"));
 let likeDislikeHistory;
 let userScore;
 let userTokens;
 let offersSubmitted = [];
 //============== Testing ==============
-let userId = 203; //comment this out when testing is done, uncomment line 24
+// let userId = 203; //comment this out when testing is done, uncomment line 24
 //#endregion
 
 //#region Icons
