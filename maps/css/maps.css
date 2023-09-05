@@ -1,6 +1,6 @@
 :root{
     --antiquewhite: antiquewhite;
-    --cadetblue: cadetblue;
+    --background: #46a094;
     --radius: 0.6rem;
     --medium: medium;
 }
@@ -11,7 +11,8 @@ input{
 
 .like-dislike-history-container label,
 .user-score-container label,
-.user-tokens-container label {
+.user-tokens-container label,
+.offers-submitted-container label {
     font-size: large;
     font-weight: 600;
     border-bottom: 0.2rem solid var(--antiquewhite);
@@ -28,11 +29,14 @@ input{
 body {
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
 #display{
-    height: 95vh;
+    height: fit-content;
+    max-height: 95vh;
+    overflow-y: auto;
 }
 
 #page-container {
@@ -59,13 +63,13 @@ body {
 /* ======= Popup Content ======= */
 .leaflet-popup-content-wrapper {
     box-shadow: none;
-    background: var(--cadetblue);
+    background: var(--background);
 }
 
 .popup-container {
     text-align: center;
     display: block;
-    background-color: var(--cadetblue);
+    background-color: var(--background);
     border-radius: 0.6rem;
     height: fit-content;
 }
@@ -172,7 +176,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--cadetblue);
+    background-color: var(--background);
     overflow-y: auto;
 }
 
@@ -210,27 +214,32 @@ body {
     font-weight: 600;
 }
 
+.credentials-container button{
+    margin: 0.5rem 0;
+    padding: 0.3rem;
+    font-size: var(--medium);
+    background-color: var(--antiquewhite);
+    border-radius: var(--radius);
+}
+
+.credentials-container button:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
 .offers-submitted-container{
     text-align: center;
     width: 70%;
     max-width: 35rem;
 }
 
-.offers-submitted-container label {
-    font-size: large;
-    font-weight: 600;
-    border-bottom: 0.2rem solid var(--antiquewhite);
-}
-
 .offers-submitted-container ul{
     max-height: 30vh;
-    overflow-y: auto;   /*scrollbar appears when the content is too big*/
+    overflow-y: auto;
     padding-left: 0;
     list-style-type: none;
 }
 
 .offers-submitted-container li{
-    text-align: center;
     font-size: var(--medium);
     font-weight: 600;
     background-color: var(--antiquewhite);
@@ -238,12 +247,9 @@ body {
     margin: 0.3rem auto;
     padding: 0.3rem;
     color: black;
-    width: 100%;
-}
+    text-align: center;
 
-#osld-container{ /*offers submitted like dislike container*/
-    display: inline;
-    align-items: center;
+    /* white-space: pre-wrap; */
 }
 
 .like-dislike-history-container {

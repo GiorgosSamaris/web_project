@@ -2,7 +2,6 @@
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
-let index = 1;
 let userpos;
 let popupContent = "";
 var profileContent = "";
@@ -13,18 +12,21 @@ var popupContainer;
 let mymap = L.map('mapid');
 var markersLayer = new L.LayerGroup(); 
 
+let allOffersList = [];
+
 //Store lists
 let storesList = [];
 let productsList = [];
 var offersList = []; 
 
 //User lists
+// let userId = parseInt(sessionStorage.getItem("userId"));
 let likeDislikeHistory;
 let userScore;
 let userTokens;
 let offersSubmitted = [];
 //============== Testing ==============
-let userId = 203;
+let userId = 203; //comment this out when testing is done, uncomment line 24
 //#endregion
 
 //#region Icons
@@ -121,14 +123,14 @@ function popupContentStores(feature,isClose, storeId) {
         popupContent += '<div class = "description">';
         if (feature.properties.store_name) {
             // console.log(store_name);
-            popupContent += feature.properties.store_name + "<br>";
+            popupContent += feature.properties.store_name + '<br>';
         } 
         popupContent += "Current offers" + '</div>';
         popupContent += '<ul class = "offers-container" >';
         offersList.forEach((offer) => {
             popupContent += '<div class = "offer-container">'+ "<li>" + 
                             offer.name + " " + '<br>'+
-                            "Price: " + offer.offer_price + "&euro;" + "<br>" +
+                            "Price: " + offer.offer_price + "&euro;" + '<br>' +
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
                             '<i class="fa-solid fa-thumbs-up ' +
@@ -138,7 +140,7 @@ function popupContentStores(feature,isClose, storeId) {
                                 (offer.in_stock > 0 ?
                                 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
                             '</div>' +
-                            "<br>" + "In stock: " + offer.in_stock + "<br>" +
+                            '<br>' + "In stock: " + offer.in_stock + '<br>' +
                             (
                                 (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? '<i class="fa-solid fa-check">' + "</i>": '<i class="fa-solid fa-xmark">' + "</i>"
                             ) +
@@ -162,7 +164,8 @@ function popupContentStores(feature,isClose, storeId) {
 
 
 async function addOffer(storeId){
-    console.log("add offer clicked");
+    sessionStorage.setItem("storeId", JSON.stringify(storeId));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
     sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
     window.location.href= "../addOffer/addOffer.html";
 }
@@ -204,25 +207,27 @@ function generateProfileContent(userId) {
 
     //user credentials  
     profileContent = '<div class = "credentials-container">' + 
-                    '<label for = "username" class = "user-credentials"> Username </label>' +
-                    '<input type = "password" class = "user-credentials" id = "username" value = "mple" readonly>' +    //needs actual username
-                    '<label for = "password" class = "user-credentials"> Password </label>' +
-                    '<input type = "password" class = "user-credentials" id = "password" value = "customer" readonly>' +    //needs actual password
+                    '<label for = "username" class = "user-credentials"> Type new username </label>' +
+                    '<input type = "password" class = "user-credentials" id = "username" >' +    //needs actual username
+                    '<button type = "submit"> Change username </button>' +
+                    '<label for = "password" class = "user-credentials"> Type new password </label>' +
+                    '<input type = "password" class = "user-credentials" id = "password" >' +    //needs actual password
+                    '<button type = "submit" > Change password </button>' +
                     '</div>';
 
     //user offers history
     profileContent += '<div class = "offers-submitted-container">' + 
-                        '<label>Offers Submitted</label>' + "<br>" +
+                        '<label>Offers Submitted</label>' + '<br>' +
                         '<ul class = "offers-submitted">';
     offersSubmitted.forEach((offer) => {
                 profileContent += '<li>' + offer.name + '<br>' +
                                    "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
                                    "Stock: " + offer.in_stock + '<br>' +
                                    //offers submitted likes dislikes container(osld)
-                                   '<div id = "osld-container" >' + 
-                                   '<i class="fa-solid fa-thumbs-up color-green"></i>' + "&nbsp" + offer.number_of_likes + "&nbsp" + "&nbsp" + 
+                                   '<span id = "osld-container" >' + 
+                                   '<i class="fa-solid fa-thumbs-up color-green"></i>' + "&nbsp" + offer.number_of_likes + "&nbsp" + 
                                    '<i class="fa-solid fa-thumbs-down color-red"></i>' + "&nbsp" + offer.number_of_dislikes + 
-                                   '</div>' + '<br>' +
+                                   '</span>' + '<br>' +
                                    "Price when submitted: " + offer.offer_price + "&euro;" + '<br>' +
                                    "Submitted at: " + offer.creation_date + 
                                    '</li>' ;
@@ -230,22 +235,21 @@ function generateProfileContent(userId) {
     profileContent += '</ul>' + '</div>';
 
     //user like dislike history
-    profileContent += '<div class = "like-dislike-history-container">' + '<Label>Like/Dislike History</label>' + "<br>" + 
-    '<ul class = "like-dislike-history">';
+    profileContent += '<div class = "like-dislike-history-container">' + 
+                        '<label>Like/Dislike History</label>' + '<br>' + 
+                        '<ul class = "like-dislike-history">';
+    console.log(likeDislikeHistory);
     likeDislikeHistory.forEach((like) => {
-        // offersList.forEach((offer) => {     
-        //     if(offer.offer_id == like.offer_id){
-                profileContent += '<li>' + 
-                "offer id: " + like.offer_id + '<br>' +
-                (like.rate_value === "LIKE"? "Liked" : "Disliked" ) + '<br>' +
-                "Rating date/time: " + like.rating_date +'</li>';
-            // }
-        // });
+        profileContent += '<li>' + 
+        like.name + '<br>' +
+        (like.rate_value === "LIKE"? "Liked" : "Disliked" ) + '<br>' + 
+        "Rating date/time: " + like.creation_date +
+        '</li>';
     });
     profileContent +=  '</ul>' + '</div>';
 
     //user score
-    profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + "<br>" +
+    profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + '<br>' +
                     '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
                     '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
                     '</div>';
@@ -398,34 +402,8 @@ async function initializeMap() {
     userTokens = await fetchUserTokens(userId);
     likeDislikeHistory = await fetchUserLikeHistory(userId);
     offersSubmitted = await fetchUserOffers(userId);
-    console.log(offersSubmitted);
-
-    // console.log(likeDislikeHistory);
-    // console.log(userScore);
-    // console.log(userTokens);
-
-    
-    // console.log(fetchUserOffers(userId));
-    // document.getElementById("list-container").addEventListener('click', async function(event) {
-    //     if (event.target.matches('.list-item-container li')) {
-    //         offerId = parseInt(event.target.getAttribute('offer-id'));
-    //         event.target.scrollIntoView({
-    //             behavior: 'smooth', 
-    //             block: 'center'
-    //         });
-    //         updateListContent();
-    //     } 
-    //     else if(event.target.matches('#like') || event.target.matches('#dislike')){
-    //         if (event.target.matches('.fa-thumbs-up')) {    //element whose class name matches the string
-    //             await findOfferByIdAndUpdate(parseInt(event.target.getAttribute('offer-id')), "up");    //gets the value of the attribute offer-id
-    //         } else if (event.target.matches('.fa-thumbs-down')) {
-    //             await findOfferByIdAndUpdate(parseInt(event.target.getAttribute('offer-id')), "down");
-    //         }
-    //     } else {
-    //         offerId = null;
-    //         updateListContent();
-    //     }
-    // });   
+    allOffersList = await fetchAllOffers();
+    console.log(offersSubmitted);  
     L.geoJson(stores_json, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
