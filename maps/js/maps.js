@@ -1,4 +1,5 @@
 //#region initilization
+let results = [];
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
@@ -10,8 +11,8 @@ var popupOpen = false;
 var popupContainer;
 
 let mymap = L.map('mapid');
-var markersLayer = new L.LayerGroup(); 
-
+var markersLayer = new L.LayerGroup().addTo(mymap); 
+var secondaryLayer = new L.LayerGroup(); 
 let allOffersList = [];
 
 //Store lists
@@ -21,6 +22,7 @@ var offersList = [];
 
 //User lists
 // let userId = parseInt(sessionStorage.getItem("userId"));
+var newUsername;
 let likeDislikeHistory;
 let userScore;
 let userTokens;
@@ -118,6 +120,7 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 function popupContentStores(feature,isClose, storeId) {
     // popup50 = false;
     // console.log(offersList);
+    const categorySet = new Set();
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         popupContent += '<div class = "description">';
@@ -134,11 +137,9 @@ function popupContentStores(feature,isClose, storeId) {
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
                             '<i class="fa-solid fa-thumbs-up ' +
-                                (offer.in_stock > 0 ?
-                                'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
+                            (offer.in_stock > 0 ? 'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
                             '<i class="fa-solid fa-thumbs-down ' +
-                                (offer.in_stock > 0 ?
-                                'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
+                            (offer.in_stock > 0 ? 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
                             '</div>' +
                             '<br>' + "In stock: " + offer.in_stock + '<br>' +
                             (
@@ -206,14 +207,17 @@ function generateProfileContent(userId) {
     const profileContainer = document.getElementById("profile-container");
 
     //user credentials  
-    profileContent = '<div class = "credentials-container">' + 
-                    '<label for = "username" class = "user-credentials"> Type new username </label>' +
-                    '<input type = "password" class = "user-credentials" id = "username" >' +    //needs actual username
-                    '<button type = "submit"> Change username </button>' +
-                    '<label for = "password" class = "user-credentials"> Type new password </label>' +
-                    '<input type = "password" class = "user-credentials" id = "password" >' +    //needs actual password
-                    '<button type = "submit" > Change password </button>' +
-                    '</div>';
+    var profileContent = '<div class="credentials-container">' +
+                        '<label for="username" class="user-credentials">Type new username</label>' +
+                        '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
+                        '<button type="button" onclick="changeUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+                        '<label for="password" class="user-credentials">Type new password</label>' +
+                        '<input type="password" class="user-credentials" id="password">' +
+                        '<button type="submit">Change password</button>' +
+                        '</div>';
+
+    
+
 
     //user offers history
     profileContent += '<div class = "offers-submitted-container">' + 
@@ -282,6 +286,25 @@ async function fetchInventory(storeId) {
     });
 }
 
+async function fetchUsername(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_username.php',
+            data: {
+                userId: userId
+            },
+            success: function (username) {
+                // console.log(user_score);   
+                resolve(username);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
 async function fetchUserScore(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -290,9 +313,9 @@ async function fetchUserScore(userId) {
             data: {
                 userId: userId
             },
-            success: function (user_score) {
+            success: function (username) {
                 // console.log(user_score);   
-                resolve(user_score);
+                resolve(username);
             },
             error: function (error) {
                 reject(error);
@@ -300,6 +323,7 @@ async function fetchUserScore(userId) {
         });
     });
 }
+
 
 async function fetchUserTokens(userId) {
     return new Promise((resolve, reject) => {
@@ -358,21 +382,6 @@ return new Promise((resolve, reject) => {
 });
 }
 
-async function fetchAllOffers() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "POST",
-            url: 'php/fetch_all_offers.php',
-            success: function (store_offers) {
-                resolve(store_offers);
-            },
-            error: function (error) {
-                reject(error);
-            }
-        });
-    });
-    }
-
 async function fetchUserOffers(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -392,18 +401,43 @@ async function fetchUserOffers(userId) {
     });
 }
 
+async function changeUsername(userId, newUsername) {
+    console.log(userId);
+    console.log(newUsername);
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/change_username.php',
+            data: {
+                userId: userId,
+                newUsername: newUsername
+            },
+            // datatype: "json",
+            success: function (username_change) {
+                console.log(username_change);   
+                resolve(username_change);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
 
     //fetch data from database
+    username = await fetchUsername(userId);
     userScore = await fetchUserScore(userId);
     userTokens = await fetchUserTokens(userId);
     likeDislikeHistory = await fetchUserLikeHistory(userId);
     offersSubmitted = await fetchUserOffers(userId);
-    allOffersList = await fetchAllOffers();
-    console.log(offersSubmitted);  
+    // allOffersList = await fetchAllOffers();
+    // console.log(offersSubmitted);  
+    markersLayer.clearLayers();
     L.geoJson(stores_json, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
@@ -411,31 +445,37 @@ async function initializeMap() {
             const storeLat = layer.feature.properties.latitude;
             const storeLon = layer.feature.properties.longitude;
             const address = layer.feature.properties.address;
-            // var isClose = layer.feature.properties.isClose;
-
+            const categorySet = new Set();
+    
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
-
-            if (storeIcons.hasOwnProperty(storeName)) {// checks if the store name is in the storeIcons object
-                layer.setIcon(storeIcons[storeName]);   //assigns the appropriate icon to the marker
+    
+            if (storeIcons.hasOwnProperty(storeName)) {
+                layer.setIcon(storeIcons[storeName]);
             } 
-                
+    
             if(address != "Unknown"){
-            //combines two features into one for use in search if the second attribute exists
                 layer.feature.properties.searchProp = storeName + ', ' + address;
-            //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
             } else {
                 layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
             }
-
+    
             if (currStoreDist[1] <= 70) {
-                    layer.on('click', async function () {
-                    // const offers = await fetchOffers(storeName);
+                layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
+                    const existingCategories = layer.feature.properties.searchProp.split(', ');
+                    existingCategories.forEach(category => {
+                        categorySet.add(category);
+                    });
+                    offersList.forEach((offer) => {
+                        categorySet.add(offer.category_name);
+                    });
+                    layer.feature.properties.searchProp += ', ' + Array.from(categorySet).join(', ');
+    
                     layer.bindPopup(popupContentStores(feature, true, storeId));
                     sessionStorage.setItem("storeId", JSON.stringify(storeId));
+    
                     if(popupContainer != null){
                         popupContainer.addEventListener("click", function(event){
-                            console.log(popupContainer);
                             if(event.target.id === "add-offer-button"){
                                 console.log("add offer clicked");
                             }
@@ -444,35 +484,51 @@ async function initializeMap() {
                 });
             } else {
                 layer.on('click', async function () {
-                    // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
+                    const existingCategories = layer.feature.properties.searchProp.split(', ');
+                    existingCategories.forEach(category => {
+                        categorySet.add(category);
+                    });
+                    offersList.forEach((offer) => {
+                        categorySet.add(offer.category_name);
+                    });
+                    layer.feature.properties.searchProp += ', ' + Array.from(categorySet).join(', ');
+    
                     layer.bindPopup(popupContentStores(feature, false, storeId));
                 });
             }
         }
-    }).addTo(markersLayer);     //adds the stores in the markersLayer  
-
+    }).addTo(markersLayer);
+    var group = L.LayerGroup(markersLayer, secondaryLayer);
     var searchBar = new L.Control.Search({
         position: 'topleft',
-        layer: markersLayer,
+        layer: group,
         propertyName: 'searchProp', 
         zoom: 16,
         initial: false,  //initially hides the search bar,
         exactMatch: false,
         tipAutoSubmit: true,
-        buildTip: function(text, val) {
-            // console.log(val);
-            //return the names of the stores and their type
-            // markersLayer.eachLayer((layer) => {
-                // if(layer.feature.properties.store_id != val.layer.feature.properties.store_id){
-                        // var mark = document.getElementByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive");
-                        // mark.classlist.add("");
-                        // console.log(layer.feature.properties);
-                        // markerProcess(layer);
-                        // console.log(val.layer.getIcon());
-                // });
-            // });  
-            return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
+        buildTip: function (text, val) {
+            if (val.layer.feature) {
+                markersLayer.eachLayer(function (layer) {
+                    layer.eachLayer(function (layerInner) {
+                        if(!layerInner.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
+                            layer.removeLayer(layerInner);
+                            secondaryLayer.addLayer(layerInner);
+                        }
+                    });
+                });
+                secondaryLayer.eachLayer(function (layer) {
+                    if(layer.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
+                        markersLayer.eachLayer(function (layerInner) {
+                            layerInner.addLayer(layer);
+                        });
+                        secondaryLayer.removeLayer(layer);
+                        console.log("peos");
+                    }
+                });
+            }
+            return '<a href="#" class="tip-results">' + text + '</a>' + '&nbsp' + '<br>';
         }
     }).addTo(mymap);
 }
@@ -511,8 +567,13 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
+// const usernameField = document.getElementById("username");
 var addOfferButton;
 
+// // usernameField.addEventListener('input', function(event){
+// //     newUsername = event.target.value;
+// // });
+// 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
         mapContainer.classList.remove("map-inv");
@@ -536,6 +597,10 @@ profileButton.addEventListener("click", function(){
     }   
         
 });
+
+// changeUsernameButton.addEventListener("click", function(){
+//     changeUsername()
+// });
 
 // markersLayer.eachLayer(function(layer) {
 //     popupOpen = false;

@@ -36,7 +36,8 @@ $(document).ready(function(){
                         window.location.href = "/maps/maps.html"; 
                     }
                     if(response.type === "admin"){
-                        // window.location.href = ""; s 
+                        sessionStorage.setItem("userId", -1); //since no customer has a negative id
+                        window.location.href = "/maps/maps.html"; 
                     }
               } else if (response.status === "fail") {
                     $("#response").html(response.message);
