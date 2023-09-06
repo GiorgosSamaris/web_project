@@ -4,6 +4,7 @@
     --medium: medium;
     --large: large;
     --font-weight: 600;
+    --border: 0.2rem solid transparent;
 }
 
 body{
@@ -13,25 +14,6 @@ body{
     background-color: #46a094;
 }
 
-label{
-    font-size: var(--large);
-    font-weight: var(--font-weight);
-    color: black;
-    /* margin-bottom: -1rem; */
-}
-
-form{
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: darkcyan;
-    border-radius: 0.6rem;
-    border : 0.2rem solid transparent;
-    padding: 0.3rem;
-}
-
 #container{
     height: 100vh;
     display: flex;
@@ -39,7 +21,82 @@ form{
     justify-content: center;    /*center horizontally*/
 }
 
+#search-select-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 70%;
+    max-width: 40rem;
+    border-radius: 0.6rem;
+    border : var(--border);
+    background-color: darkcyan;
+}
+
+#search-select-container label{
+    max-width: 25rem;
+    white-space: normal;
+    font-size: var(--large);
+    font-weight: var(--font-weight);
+    color: black;
+}
+
+#search-results {
+    text-align: center;
+}
+
+#search-results ul {
+    max-height: 6rem;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0.1rem;
+    list-style-type: none;
+}
+
+#search-results ul li {
+    padding: 0.2rem;
+    margin: 0.1rem 0;
+    color: black;
+    cursor: pointer;
+    border: 0.15rem solid black;
+    border-radius: var(--radius);
+}
+
+
+#input-container {
+    text-align: center;
+    margin: 0.5rem auto;
+    background-color: antiquewhite;
+    border-radius: var(--radius);
+    width: 80%;
+    max-width: 30rem;
+}
+
+#input-container input {
+    outline: none;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: transparent;
+    text-align: center;
+    font-weight: 600;
+    font-size: var(--medium);
+    color: black;
+    width: 70%;
+}
+
+::placeholder{
+    color: black;
+    font-weight: 600;
+    font-size: var(--medium);
+    opacity: 1; /* Firefox */
+}
+
+
 #dropdown-container{
+    text-align: center;
+    margin: 0.5rem auto;
+    padding: 0.3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,7 +131,7 @@ form{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.submit input{
+#dropdown-container input{
     margin: 0.5rem auto;
     padding: 0.3rem;
     font-size: var(--medium);

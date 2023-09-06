@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/addOffer.css">
 
+    <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
 
     <!-- favicon fix -->
     <link rel="shortcut icon" href="#">
@@ -14,8 +18,17 @@
 </head>
 <body>
     <div id ="container">
-        <form class="submit">
-            <div id = "dropdown-container">
+        <div id = "search-select-container">
+            <label id="title">To find a product either type in the search bar or use the dropdown menu below!</label>
+            <div id = "input-container">
+                <input type="search" id = "search-input-field" placeholder="Search product..">
+                <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                <br>
+                <div id="search-results">
+                    <ul id="results-list"></ul>
+                </div>
+            </div>
+            <div id = "dropdown-container" >
                 <div class = "category-container" id = "category-container">
                     <label for="category">Select category</label>
                     <select class="category" name="category"id="select-category">
@@ -34,12 +47,11 @@
                         <option value = ""></option>
                     </select>
                 </div>
+                <label for="offer-price">Provide price of selected product</label>
+                <input type="number" step="0.05" name = "offer-price" id="price-input">
+                <input type = "button" value = "Add offer" onclick = "newOffer()">
             </div>
-            <label for="offer-price">Provide price of selected product</label>
-            <input type="number" step="0.05" name = "offer-price" id="price-input">
-            <input type = "button" value = "Add offer" onclick = "newOffer()">
-
-        </form>
+        </div>
     </div>
     <script src="js/addOffer.js"></script>
 </body>

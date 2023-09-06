@@ -88,8 +88,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     });
+
+    $('#container').on('click', () => {
+        $('#results-list').empty();
+    });
+
+    $('#search-input-field').on('focus', function() {
+        var userInput = $(this).val();
+        if(userInput === "") {
+            productSelectionObj = null;
+            fillSubcategories(null);
+            fillProducts(null, null);
+            fillCategories();
+        }
+    });
+
+    $('#search-input-field').on('input', function() {
+        var userInput = $(this).val();  // get's the user input
+        displayResults(userInput);
+        // set rest of the selection to match product category and subcategory
+        $('.list-item').on('click', function(event) {
+            document.querySelector('#search-input-field').value = event.target.innerText;
+            document.querySelector('#select-category').value = inventoryItems.categories.find(category => category.subcategories.some(subcategory => subcategory.products.some(product => product.name === event.target.innerText))).name;
+            document.querySelector('#select-subcategory').value = inventoryItems.categories.flatMap(category => category.subcategories).find(subcategory => subcategory.products.some(product => product.name === event.target.innerText)).name;
+            document.querySelector('#select-product').value = inventoryItems.categories.flatMap(category => category.subcategories).flatMap(subcategory => subcategory.products).find(product => product.name === event.target.innerText).name;
+            productSelectionObj = (inventoryItems.categories.flatMap(category => category.subcategories).flatMap(subcategory => subcategory.products).find(product => product.name === event.target.innerText)) || null;
+        });
+        if(userInput === ""){
+            // reset all selections
+            productSelectionObj = null;
+            fillSubcategories(null);
+            fillProducts(null, null);
+            fillCategories();
+        }
+    });
 });
 
+function displayResults(userInput) {
+    // clear previous results
+    $('#results-list').empty();
+    // show results
+    inventoryItems.categories.forEach((category) => {
+        category.subcategories.forEach((subcategory) => {
+            subcategory.products.forEach((product) => {
+                if(product.name.toLowerCase().includes(userInput.toLowerCase())){
+                    $('#results-list').append('<li class="list-item">' + product.name + '</li>');
+                }
+            });
+        });
+    });
+}
 
 function fillCategories() {
     // always show all categories
