@@ -1,6 +1,5 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-include(dirname(__DIR__) . '/../azureConnection/azureConn.php');
+include(dirname(__DIR__) . '/azureConnection/azureConn.php');
 
 $result = $conn->query("SELECT * FROM store;");
 $features = array();
@@ -45,8 +44,7 @@ $geojson = array(
 );
 
 $json = json_encode($geojson, JSON_UNESCAPED_UNICODE);
-file_put_contents(__DIR__ . '/../json/stores.geojson', $json);
-
+file_put_contents(__DIR__ . '/../maps/json/stores.geojson', $json);
 function checkIfStoreHasActiveOffers($conn, $storeID)
 {
     // Query the 'Offer' table to check if the store has active offers
