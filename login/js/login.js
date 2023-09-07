@@ -15,40 +15,78 @@ eye.addEventListener("click", function () {
     }
 });
 
-$(document).ready(function(){
-    $("#loginForm").submit(function (event){
+function showLoader() {
+    document.querySelector('.loader').style.display = 'block';
+}
+  
+function hideLoader() {
+    document.querySelector('.loader').style.display = 'none';
+}
+  
+
+// ...
+
+function fetchStores(callback) {
+    $.ajax({
+        type: "POST",
+        url: 'fetch_stores.php',
+        success: function (stores) {
+            callback(stores);
+        },
+        error: function (error) {
+            // Handle the error if needed
+        }
+    });
+}
+
+$(document).ready(function () {
+    $("#loginForm").submit(function (event) {
         event.preventDefault();
+        showLoader();
         var loginData = {
             username: $("#username").val(),
             password: $("#password").val(),
         };
+
         $.ajax({
             type: "POST",
             url: "validate_user.php",
             data: loginData,
             dataType: "json",
             success: function (response) {
-            console.log(response);
-            if (response.status === "success") {
+                console.log(response);
+
+                if (response.status === "success") {
                     $("#response").html(response.message);
-                    if(response.type === "customer"){
+                    if (response.type === "customer") {
                         sessionStorage.setItem("userId", response.user_id);
-                        window.location.href = "/maps/maps.html"; 
+                        // Call fetchStores independently
+                        fetchStores(function (stores) {
+                            // Do something with 'stores' if needed
+                            window.location.href = "/maps/maps.html";
+                        });
                     }
-                    if(response.type === "admin"){
+                    if (response.type === "admin") {
                         sessionStorage.setItem("userId", -1); //since no customer has a negative id
-                        window.location.href = "/maps/maps.html"; 
+                        // Call fetchStores independently
+                        fetchStores(function (stores) {
+                            // Do something with 'stores' if needed
+                            window.location.href = "/maps/maps.html";
+                        });
                     }
-              } else if (response.status === "fail") {
+                } else if (response.status === "fail") {
+                    hideLoader();
                     $("#response").html(response.message);
-              } else {
+                } else {
+                    hideLoader();
                     $("#response").html("An error occurred while processing your request.");
-              }
-          },
+                }
+            },
             error: function (xhr, status, error) {
-                console.error("AJAX Error: " + status, error);
+                hideLoader();
+                console.error("AJAX Error:", status, error);
                 $("#response").html("An error occurred while processing your request.");
-                console.log(xhr.responseText); 
+                console.log(xhr.responseText);
             },
         });
     });
