@@ -1,4 +1,5 @@
 //#region initilization
+
 let results = [];
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
@@ -12,9 +13,6 @@ var popupContainer;
 
 let mymap = L.map('mapid');
 var markersLayer = new L.LayerGroup().addTo(mymap); 
-var secondaryLayer = new L.LayerGroup(); 
-let allOffersList = [];
-
 //Store lists
 let storesList = [];
 let productsList = [];
@@ -118,14 +116,11 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, storeId) {
-    // popup50 = false;
-    // console.log(offersList);
     const categorySet = new Set();
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         popupContent += '<div class = "description">';
         if (feature.properties.store_name) {
-            // console.log(store_name);
             popupContent += feature.properties.store_name + '<br>';
         } 
         popupContent += "Current offers" + '</div>';
@@ -154,9 +149,6 @@ function popupContentStores(feature,isClose, storeId) {
             popupContent += '<button type = "button" class = "add-offer" id = "add-offer-button" onclick = "addOffer('+storeId+')"> Add Offer </button>';
             popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
-            // addOfferButton = document.getElementById("add-offer-button");
-            // console.log(addOfferButton);
-            // popup50 = true;
         }   
         popupContent += "</b>";
         popupContent += '</div>'
@@ -164,68 +156,56 @@ function popupContentStores(feature,isClose, storeId) {
 }
 
 
-async function addOffer(storeId){
-    sessionStorage.setItem("storeId", JSON.stringify(storeId));
-    sessionStorage.setItem("userId", JSON.stringify(userId));
-    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
-    window.location.href= "../addOffer/addOffer.html";
-}
-
-function exportOffers(){
-    sessionStorage.setItem("offers", JSON.stringify(offersList));
-    sessionStorage.setItem("userId", JSON.stringify(userId));
-    window.location.href= "../reviewOffer/review_offer.html";
-}
 
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
     //using the haversine Formula
     const R = 6371.0; //Earth's radius in km
-
+    
     //convert lat and lon to radians
     const lat1Rad = (Math.PI / 180) * lat1;
     const lon1Rad = (Math.PI / 180) * lon1; 
     const lat2Rad = (Math.PI / 180) * lat2;
     const lon2Rad = (Math.PI / 180) * lon2; 
-
+    
     //calculate difference
     const latDifference = lat2Rad - lat1Rad;
     const lonDifference = lon2Rad - lon1Rad;
-
+    
     //formula
     const a = Math.sin(latDifference / 2) * Math.sin(latDifference / 2) +
-              Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
               Math.sin(lonDifference / 2) * Math.sin(lonDifference / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     const distanceInMeters = distance * 1000;
     const roundedDistance = distance.toFixed(2);
-
+    
     return [roundedDistance, distanceInMeters];
 }
 
 function generateProfileContent(userId) {
     const profileContainer = document.getElementById("profile-container");
-
+    
     //user credentials  
     var profileContent = '<div class="credentials-container">' +
-                        '<label for="username" class="user-credentials">Type new username</label>' +
-                        '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
-                        '<button type="button" onclick="changeUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
-                        '<label for="password" class="user-credentials">Type new password</label>' +
-                        '<input type="password" class="user-credentials" id="password">' +
-                        '<button type="submit">Change password</button>' +
-                        '</div>';
-
+    '<label for="username" class="user-credentials">Type new username</label>' +
+    '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
+    '<button type="button" onclick="changeUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+    '<label for="password" class="user-credentials">Type new password</label>' +
+    '<input type="password" class="user-credentials" id="password">' +
+    '<button type="submit">Change password</button>' +
+    '</div>';
     
-
-
+    
+    
+    
     //user offers history
     profileContent += '<div class = "offers-submitted-container">' + 
-                        '<label>Offers Submitted</label>' + '<br>' +
-                        '<ul class = "offers-submitted">';
+    '<label>Offers Submitted</label>' + '<br>' +
+    '<ul class = "offers-submitted">';
     offersSubmitted.forEach((offer) => {
                 profileContent += '<li>' + offer.name + '<br>' +
-                                   "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
+                "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
                                    "Stock: " + offer.in_stock + '<br>' +
                                    //offers submitted likes dislikes container(osld)
                                    '<span id = "osld-container" >' + 
@@ -237,12 +217,11 @@ function generateProfileContent(userId) {
                                    '</li>' ;
     });
     profileContent += '</ul>' + '</div>';
-
+    
     //user like dislike history
     profileContent += '<div class = "like-dislike-history-container">' + 
-                        '<label>Like/Dislike History</label>' + '<br>' + 
-                        '<ul class = "like-dislike-history">';
-    console.log(likeDislikeHistory);
+    '<label>Like/Dislike History</label>' + '<br>' + 
+    '<ul class = "like-dislike-history">';
     likeDislikeHistory.forEach((like) => {
         profileContent += '<li>' + 
         like.name + '<br>' +
@@ -251,17 +230,17 @@ function generateProfileContent(userId) {
         '</li>';
     });
     profileContent +=  '</ul>' + '</div>';
-
+    
     //user score
     profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + '<br>' +
-                    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
-                    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
-                    '</div>';
+    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
+    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
+    '</div>';
     //user tokens
     profileContent += '<div class = "user-tokens-container">' + '<label>Tokens</label>' + '<br>' +
-                    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
-                    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
-                    '</div>';
+    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
+    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
+    '</div>';
 
     profileContainer.innerHTML = profileContent;
 }
@@ -276,7 +255,6 @@ async function fetchInventory(storeId) {
                 storeId: storeId
             },
             success: function (store_inventory) {
-                // console.log(store_inventory);   
                 resolve(store_inventory);
             },
             error: function (error) {
@@ -295,7 +273,6 @@ async function fetchUsername(userId) {
                 userId: userId
             },
             success: function (username) {
-                // console.log(user_score);   
                 resolve(username);
             },
             error: function (error) {
@@ -314,7 +291,6 @@ async function fetchUserScore(userId) {
                 userId: userId
             },
             success: function (username) {
-                // console.log(user_score);   
                 resolve(username);
             },
             error: function (error) {
@@ -334,7 +310,6 @@ async function fetchUserTokens(userId) {
                 userId: userId
             },
             success: function (user_tokens) {
-                // console.log(user_tokens);   
                 resolve(user_tokens);
             },
             error: function (error) {
@@ -353,7 +328,6 @@ async function fetchUserLikeHistory(userId) {
                 userId: userId
             },
             success: function (user_likes) {
-                // console.log(user_likes);   
                 resolve(user_likes);
             },
             error: function (error) {
@@ -364,21 +338,20 @@ async function fetchUserLikeHistory(userId) {
 }
 
 async function fetchOffers(storeId) {
-return new Promise((resolve, reject) => {
-    $.ajax({
-        type: "POST",
-        url: 'php/fetch_offers.php',
-        data: {
-            storeId: storeId
-        },
-        success: function (store_offers) {
-            // console.log(store_offers);   
-            resolve(store_offers);
-        },
-        error: function (error) {
-            reject(error);
-        }
-    });
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_offers.php',
+            data: {
+                storeId: storeId
+            },
+            success: function (store_offers) {
+                resolve(store_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
 });
 }
 
@@ -390,8 +363,7 @@ async function fetchUserOffers(userId) {
             data: {
                 userId: userId
             },
-            success: function (users_offers) {
-                // console.log(store_offers);   
+            success: function (users_offers) { 
                 resolve(users_offers);
             },
             error: function (error) {
@@ -402,8 +374,6 @@ async function fetchUserOffers(userId) {
 }
 
 async function changeUsername(userId, newUsername) {
-    console.log(userId);
-    console.log(newUsername);
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
@@ -412,9 +382,7 @@ async function changeUsername(userId, newUsername) {
                 userId: userId,
                 newUsername: newUsername
             },
-            // datatype: "json",
             success: function (username_change) {
-                console.log(username_change);   
                 resolve(username_change);
             },
             error: function (error) {
@@ -424,29 +392,39 @@ async function changeUsername(userId, newUsername) {
     });
 }
 
+async function addOffer(storeId){
+    sessionStorage.setItem("storeId", JSON.stringify(storeId));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
+    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
+    window.location.href= "../addOffer/addOffer.html";
+}
+
+function exportOffers(){
+    sessionStorage.setItem("offers", JSON.stringify(offersList));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
+    window.location.href= "../reviewOffer/review_offer.html";
+}
+
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
-
-    //fetch data from database
-    username = await fetchUsername(userId);
-    userScore = await fetchUserScore(userId);
-    userTokens = await fetchUserTokens(userId);
-    likeDislikeHistory = await fetchUserLikeHistory(userId);
-    offersSubmitted = await fetchUserOffers(userId);
-    // allOffersList = await fetchAllOffers();
-    // console.log(offersSubmitted);  
     markersLayer.clearLayers();
-    L.geoJson(stores_json, {    //pulls data from GeoJSON file
+    const storesPath = 'json/stores.geojson';
+
+    fetch(storesPath)
+    .then(response => response.json())
+    .then(data => {
+    L.geoJson(data, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
             const storeId = layer.feature.properties.store_id;
             const storeLat = layer.feature.properties.latitude;
             const storeLon = layer.feature.properties.longitude;
             const address = layer.feature.properties.address;
-            const categorySet = new Set();
-    
+            // new
+            const categories = layer.feature.properties.distinct_categories;
+            const hasActiveOffers = layer.feature.properties.has_active_offers;
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
     
             if (storeIcons.hasOwnProperty(storeName)) {
@@ -462,72 +440,44 @@ async function initializeMap() {
             if (currStoreDist[1] <= 70) {
                 layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
-                    const existingCategories = layer.feature.properties.searchProp.split(', ');
-                    existingCategories.forEach(category => {
-                        categorySet.add(category);
-                    });
-                    offersList.forEach((offer) => {
-                        categorySet.add(offer.category_name);
-                    });
-                    layer.feature.properties.searchProp += ', ' + Array.from(categorySet).join(', ');
-    
                     layer.bindPopup(popupContentStores(feature, true, storeId));
                     sessionStorage.setItem("storeId", JSON.stringify(storeId));
-    
-                    if(popupContainer != null){
-                        popupContainer.addEventListener("click", function(event){
-                            if(event.target.id === "add-offer-button"){
-                                console.log("add offer clicked");
-                            }
-                        });
-                    }
                 });
             } else {
                 layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
-                    const existingCategories = layer.feature.properties.searchProp.split(', ');
-                    existingCategories.forEach(category => {
-                        categorySet.add(category);
-                    });
-                    offersList.forEach((offer) => {
-                        categorySet.add(offer.category_name);
-                    });
-                    layer.feature.properties.searchProp += ', ' + Array.from(categorySet).join(', ');
-    
                     layer.bindPopup(popupContentStores(feature, false, storeId));
                 });
             }
         }
-    }).addTo(markersLayer);
-    var group = L.LayerGroup(markersLayer, secondaryLayer);
+    }).addTo(markersLayer);});
     var searchBar = new L.Control.Search({
         position: 'topleft',
-        layer: group,
+        layer: markersLayer,
         propertyName: 'searchProp', 
         zoom: 16,
         initial: false,  //initially hides the search bar,
         exactMatch: false,
         tipAutoSubmit: true,
         buildTip: function (text, val) {
-            if (val.layer.feature) {
-                markersLayer.eachLayer(function (layer) {
-                    layer.eachLayer(function (layerInner) {
-                        if(!layerInner.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
-                            layer.removeLayer(layerInner);
-                            secondaryLayer.addLayer(layerInner);
-                        }
-                    });
-                });
-                secondaryLayer.eachLayer(function (layer) {
-                    if(layer.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
-                        markersLayer.eachLayer(function (layerInner) {
-                            layerInner.addLayer(layer);
-                        });
-                        secondaryLayer.removeLayer(layer);
-                        console.log("peos");
-                    }
-                });
-            }
+            // if (val.layer.feature) {
+            //     markersLayer.eachLayer(function (layer) {
+            //         layer.eachLayer(function (layerInner) {
+            //             if(!layerInner.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
+            //                 layer.removeLayer(layerInner);
+            //                 secondaryLayer.addLayer(layerInner);
+            //             }
+            //         });
+            //     });
+            //     secondaryLayer.eachLayer(function (layer) {
+            //         if(layer.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
+            //             markersLayer.eachLayer(function (layerInner) {
+            //                 layerInner.addLayer(layer);
+            //             });
+            //             secondaryLayer.removeLayer(layer);
+            //         }
+            //     });
+            // }
             return '<a href="#" class="tip-results">' + text + '</a>' + '&nbsp' + '<br>';
         }
     }).addTo(mymap);
@@ -567,12 +517,7 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
-// const usernameField = document.getElementById("username");
-var addOfferButton;
 
-// // usernameField.addEventListener('input', function(event){
-// //     newUsername = event.target.value;
-// // });
 // 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
@@ -583,37 +528,24 @@ mapButton.addEventListener("click", function(){
     }
 });
 
-profileButton.addEventListener("click", function(){
+profileButton.addEventListener("click", async function(){
     if(mapButtonLabel.classList.contains("active")){
         mapButtonLabel.classList.remove("active");
-        console.log(mapButtonLabel.classList.value);
     }
     if(profileContainer.classList.contains("profile-container-inv") && mapContainer.classList.contains("map-vis")){
         profileContainer.classList.remove("profile-container-inv");
         profileContainer.classList.add("profile-container-vis");
         mapContainer.classList.remove("map-vis");
         mapContainer.classList.add("map-inv");
+        username = await fetchUsername(userId);
+        userScore = await fetchUserScore(userId);
+        userTokens = await fetchUserTokens(userId);
+        likeDislikeHistory = await fetchUserLikeHistory(userId);
+        offersSubmitted = await fetchUserOffers(userId);
         generateProfileContent(); 
     }   
         
 });
 
-// changeUsernameButton.addEventListener("click", function(){
-//     changeUsername()
-// });
-
-// markersLayer.eachLayer(function(layer) {
-//     popupOpen = false;
-//     popupOpen = layer.isPopupOpen();
-//     if(popupOpen === true){
-//         console.log("popup is open");
-//         popupContainer = document.getElementsByClassName("popup-container");
-//         popupContent.addEventListener("click", function(event){
-//             if(event.target.id === "add-offer-button"){
-//                 console.log("add offer clicked");
-//             }
-//         });
-//     }
-// });
 //#endregion
 
