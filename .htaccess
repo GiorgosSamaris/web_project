@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^maps/?$ /var/www/gocart.net/html/maps/maps.html [NC,L]
