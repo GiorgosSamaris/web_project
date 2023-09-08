@@ -33,7 +33,7 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-#display{
+#display {
     height: fit-content;
     max-height: 95vh;
     overflow-y: auto;
@@ -45,7 +45,6 @@ body {
 }
 
 /* ======= Map Styling */
-
 .map-vis{
     height: 95vh; 
     width: 100%;
@@ -56,6 +55,20 @@ body {
 }
 
 /* ======= Search Plugin ======= */
+
+.filter-container{
+    width: 20%;
+}
+
+#category-search{
+    background-color: white;
+    border-radius: 0.6rem;
+    padding: 0.2rem;
+    outline: none;
+    border: none;
+    font-size: var(--medium);
+}
+
 .leaflet-control-search .search-tip {
     white-space: normal;
     width: 6rem;
@@ -179,6 +192,31 @@ body {
     background-color: var(--background);
     overflow-y: auto;
 }
+
+#password-requirements-inv {
+    display: none;
+}
+
+#password-requirements-vis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: medium;
+    justify-content: center;
+    margin: 1rem;
+    border: 0.15rem solid black;
+    border-radius: 0.4rem;
+    background-color: antiquewhite;
+}
+
+.valid {
+    color: green;
+}
+
+.invalid {
+    color: red;
+}
+
 
 .credentials-container, 
 .offers-submitted-container, 

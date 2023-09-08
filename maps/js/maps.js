@@ -105,7 +105,6 @@ const storeIcons = {
     "AB ": yellowIcon,
     "Βασιλόπουλος": yellowIcon,
     "ΒΑΣΙΛΟΠΟΥΛΟΣ": yellowIcon,
-    "Kiosk": blackIcon,
     "Mini Market": goldIcon,
     "ΚΡΟΝΟΣ": greyIcon,
 };
@@ -156,8 +155,6 @@ function popupContentStores(feature,isClose, storeId) {
         return popupContent;
 }
 
-
-
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
     //using the haversine Formula
     const R = 6371.0; //Earth's radius in km
@@ -191,9 +188,17 @@ function generateProfileContent(userId) {
     var profileContent = '<div class="credentials-container">' +
     '<label for="username" class="user-credentials">Type new username</label>' +
     '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
-    '<button type="button" onclick="changeUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+    '<button type="button" onclick="checkAndUpdateUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
     '<label for="password" class="user-credentials">Type new password</label>' +
     '<input type="password" class="user-credentials" id="password">' +
+    // <i class="fa-regular fa-eye-slash fa-lg" id="eye"></i> to be added
+    '<div id ="password-requirements-inv">' +
+        '<h3 id="message_h3">Password must contain:</h3>' +
+        '<p id="characters" class="invalid"><b>At least 8 characters</b></p>' +
+        '<p id="uppercase" class="invalid"><b>At least one uppercase</b></p>'+
+        '<p id="symbol" class="invalid"><b>At least one symbol</b></p>' +
+        '<p id="number" class="invalid"><b>At least one number</b></p>' +
+    '</div>' +
     '<button type="submit">Change password</button>' +
     '</div>';
     
@@ -245,7 +250,7 @@ function generateProfileContent(userId) {
 
     profileContainer.innerHTML = profileContent;
 }
-
+//#region 
 // fetch products/inventory on store click
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
@@ -281,7 +286,6 @@ async function getCategories() {
     });
 }
 
-//#region 
 // populate profile info
 async function fetchUsername(userId) {
     return new Promise((resolve, reject) => {
@@ -430,6 +434,8 @@ function exportOffers(){
     window.location.href= "../reviewOffer/review_offer.html";
 }
 
+
+// add empty ""
 function filterCategories(selectedCategory){
     markersLayer.eachLayer(function(layer) {
         layer.eachLayer(function(innerLayer) {
@@ -453,8 +459,21 @@ function filterCategories(selectedCategory){
             // console.log("added: " + layer.feature.properties.distinct_categories);
         }
     });
-    console.log("done");
 }
+
+async function checkAndUpdateUsername(userId, newUsername)
+{
+    result = await changeUsername(userId, newUsername);
+    if(result == 0)
+    {
+        alert("username changed!");
+    }
+    else
+    {
+        alert("username already exists");   
+    }
+}
+
 
 // build map
 async function initializeMap() {
@@ -478,9 +497,12 @@ async function initializeMap() {
             const hasActiveOffers = layer.feature.properties.has_active_offers;
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
     
-            if (storeIcons.hasOwnProperty(storeName)) {
+            if (storeIcons.hasOwnProperty(storeName) && layer.feature.properties.has_active_offers) {
                 layer.setIcon(storeIcons[storeName]);
-            } 
+            }
+            if(!layer.feature.properties.has_active_offers ){   
+                layer.setIcon(blackIcon);  
+            }
     
             if(address != "Unknown"){
                 layer.feature.properties.searchProp = storeName + ', ' + address;
@@ -493,13 +515,13 @@ async function initializeMap() {
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, true, storeId));
                     sessionStorage.setItem("storeId", JSON.stringify(storeId));
+                    layer.openPopup();
                 });
             } else {
                 layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, false, storeId));
-                    // mymap.openPopup(layer._popup);
-                    layer.openPopup(layer._popup);
+                    layer.openPopup();
                 });
             }
         }
@@ -517,14 +539,35 @@ async function initializeMap() {
             return '<a href="#" class="tip-results">' + text + '</a>' + '&nbsp' + '<br>';
         }
     }).addTo(mymap);
-    // await new Promise(r => setTimeout(r, 4000));
-    // filterCategories("Για κατοικίδια");
-    // await new Promise(r => setTimeout(r, 2000));
-    // filterCategories("Βρεφικά Είδη");
 
+    var filterBar = new L.Control.Search({
+        position: 'topleft'
+    }); 
+
+
+    filterBar.onAdd = function(mymap) {
+        let div = L.DomUtil.create('div', 'filter-container');
+        div.innerHTML = '<select name="categories" id="category-search">' +
+                        '<option value="All categories">All categories</option>' +
+                        '</select>';
+                        return div
+                    }
+        filterBar.addTo(mymap);
+        $('#category-search').empty();
+        $('#category-search').append('<option value="">All Categories</option>');
+        const categories = await getCategories();
+        categories.forEach((category) => {
+            $('#category-search').append('<option value="' + category.name + '">' + category.name + '</option>');
+    });
+    // filter event listener
+    selectCategory = document.querySelector('#category-search');
+    selectCategory.addEventListener('change', function(event) {
+            filterCategories(event.target.value);
+    });
 }
 
 //#endregion
+
 
 
 //#region user's location
@@ -559,8 +602,10 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
+const password = document.getElementById("password");
+const requirements = document.getElementById("password-requirements-inv");
+// const eye = document.getElementById("eye");
 
-// 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
         mapContainer.classList.remove("map-inv");
@@ -586,8 +631,85 @@ profileButton.addEventListener("click", async function(){
         offersSubmitted = await fetchUserOffers(userId);
         generateProfileContent(); 
     }   
-        
+    
 });
+
+password.onfocus = function () {
+    checkRequirementsVisibility();
+  };
+  
+  password.onblur = function () {
+    // checkRequirementsVisibility();
+    requirements.id = "password-requirements-inv";
+  };
+  
+  password.onkeyup = function () {
+    // Validate characters
+    var char_num = /[a-z]/g;
+    if (password.value.match(char_num) && password.value.length >= 8) {
+      char.classList.remove("invalid");
+      char.classList.add("valid");
+    } else {
+      char.classList.remove("valid");
+      char.classList.add("invalid");
+    }
+  
+    // Validate uppercase letter
+    var uprcase = /[A-Z]/g;
+    if (password.value.match(uprcase)) {
+      uppercase.classList.remove("invalid");
+      uppercase.classList.add("valid");
+    } else {
+      uppercase.classList.remove("valid");
+      uppercase.classList.add("invalid");
+    }
+  
+    // Validate numbers
+    var numbers = /[0-9]/g;
+    if (password.value.match(numbers)) {
+      number.classList.remove("invalid");
+      number.classList.add("valid");
+    } else {
+      number.classList.remove("valid");
+      number.classList.add("invalid");
+    }
+  
+    var symbols = /(?=.*[^\w\d\s])/g;
+    if (password.value.match(symbols)) {
+      symbol.classList.remove("invalid");
+      symbol.classList.add("valid");
+    } else {
+      symbol.classList.remove("valid");
+      symbol.classList.add("invalid");
+    }
+  
+    // Check if all conditions are met to hide the requirements element
+    checkRequirementsVisibility();
+  };
+  
+  function checkRequirementsVisibility(){
+      if (
+      char.classList.contains("valid") &&
+      uppercase.classList.contains("valid") &&
+      symbol.classList.contains("valid") &&
+      number.classList.contains("valid") ) {
+        requirements.id = "password-requirements-inv";
+      } else {
+        requirements.id = "password-requirements-vis";
+      }
+  }
+
+//   eye.addEventListener("click", function () {
+//     if (password.type === "password") {
+//       password.type = "text";
+//       eye.classList.remove("fa-eye-slash");
+//       eye.classList.add("fa-eye");
+//     } else {
+//       password.type = "password";
+//       eye.classList.remove("fa-eye");
+//       eye.classList.add("fa-eye-slash");
+//     }
+//   });
 
 //#endregion
 

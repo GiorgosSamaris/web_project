@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP EVENT IF EXISTS calculate_tokens;
 
 -- Calculates tokens for each customer and resets customer.current_score
