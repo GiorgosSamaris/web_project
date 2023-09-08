@@ -191,7 +191,7 @@ function generateProfileContent(userId) {
     var profileContent = '<div class="credentials-container">' +
     '<label for="username" class="user-credentials">Type new username</label>' +
     '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
-    '<button type="button" onclick="changeUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+    '<button type="button" onclick="checkAndUpdateUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
     '<label for="password" class="user-credentials">Type new password</label>' +
     '<input type="password" class="user-credentials" id="password">' +
     '<button type="submit">Change password</button>' +
@@ -412,7 +412,21 @@ async function changeUsername(userId, newUsername) {
     });
 }
 
-// navigate to add offer
+async function checkAndUpdateUsername(userId, newUsername)
+{
+    not_exists = await changeUsername(userId, newUsername);
+    console.log(not_exists);
+    if (not_exists==1)
+    {
+        console.log("username changed!");
+    }
+    else
+    {
+        console.log("username already exists");
+    }
+    
+}
+
 async function addOffer(storeId){
     sessionStorage.setItem("storeId", JSON.stringify(storeId));
     sessionStorage.setItem("userId", JSON.stringify(userId));

@@ -13,7 +13,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username_change = $conn->prepare("CALL change_username(?,?);");
     $username_change->bind_param("si",  $username, $user_id );
     if ($username_change->execute()) {
-        echo "success";
+        $username_change = $username_change->get_result();
+        $result = $username_change->fetch_assoc();
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
     } 
     else {
         echo "could not execute";
