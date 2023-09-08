@@ -13,6 +13,8 @@ var popupContainer;
 
 let mymap = L.map('mapid');
 var markersLayer = new L.LayerGroup().addTo(mymap); 
+var hiddenLayer = new L.LayerGroup(); 
+
 //Store lists
 let storesList = [];
 let productsList = [];
@@ -116,7 +118,6 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, storeId) {
-    const categorySet = new Set();
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         popupContent += '<div class = "description">';
@@ -245,7 +246,7 @@ function generateProfileContent(userId) {
     profileContainer.innerHTML = profileContent;
 }
 
-// fetch products/inventory
+// fetch products/inventory on store click
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -264,6 +265,23 @@ async function fetchInventory(storeId) {
     });
 }
 
+// get all names of categories for filter search
+async function getCategories() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_category_names.php',
+            success: function (categories) {
+                resolve(categories);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// populate profile info
 async function fetchUsername(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -337,24 +355,6 @@ async function fetchUserLikeHistory(userId) {
     });
 }
 
-async function fetchOffers(storeId) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "POST",
-            url: 'php/fetch_offers.php',
-            data: {
-                storeId: storeId
-            },
-            success: function (store_offers) {
-                resolve(store_offers);
-            },
-            error: function (error) {
-                reject(error);
-            }
-        });
-});
-}
-
 async function fetchUserOffers(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -373,6 +373,26 @@ async function fetchUserOffers(userId) {
     });
 }
 
+// fetch store offers on store click
+async function fetchOffers(storeId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_offers.php',
+            data: {
+                storeId: storeId
+            },
+            success: function (store_offers) {
+                resolve(store_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
+
+// 
 async function changeUsername(userId, newUsername) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -392,6 +412,7 @@ async function changeUsername(userId, newUsername) {
     });
 }
 
+// navigate to add offer
 async function addOffer(storeId){
     sessionStorage.setItem("storeId", JSON.stringify(storeId));
     sessionStorage.setItem("userId", JSON.stringify(userId));
@@ -399,28 +420,55 @@ async function addOffer(storeId){
     window.location.href= "../addOffer/addOffer.html";
 }
 
+// navigate to review offer
 function exportOffers(){
     sessionStorage.setItem("offers", JSON.stringify(offersList));
     sessionStorage.setItem("userId", JSON.stringify(userId));
     window.location.href= "../reviewOffer/review_offer.html";
 }
 
+function filterCategories(selectedCategory){
+    markersLayer.eachLayer(function(layer) {
+        layer.eachLayer(function(innerLayer) {
+            if(!innerLayer.feature.properties.distinct_categories.includes(selectedCategory)){
+                layer.removeLayer(innerLayer);
+                hiddenLayer.addLayer(innerLayer);
+                // console.log("removed: " + innerLayer.feature.properties.distinct_categories);
+            }
+            else{
+                // console.log("not removed: " + innerLayer.feature.properties.distinct_categories);
+            }
+        });
+    });
+
+    hiddenLayer.eachLayer(function(layer) {
+        if(layer.feature.properties.distinct_categories.includes(selectedCategory)){
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
+            // console.log("added: " + layer.feature.properties.distinct_categories);
+        }
+    });
+    console.log("done");
+}
+
+// build map
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
     const storesPath = 'json/stores.geojson';
-
-    fetch(storesPath)
+    await fetch(storesPath)
     .then(response => response.json())
     .then(data => {
     L.geoJson(data, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
-            const storeId = layer.feature.properties.store_id;
-            const storeLat = layer.feature.properties.latitude;
-            const storeLon = layer.feature.properties.longitude;
+            const storeId = parseInt(layer.feature.properties.store_id);
+            const storeLat = parseFloat(layer.feature.geometry.coordinates[1]);
+            const storeLon = parseFloat(layer.feature.geometry.coordinates[0]);
             const address = layer.feature.properties.address;
             // new
             const categories = layer.feature.properties.distinct_categories;
@@ -459,28 +507,15 @@ async function initializeMap() {
         initial: false,  //initially hides the search bar,
         exactMatch: false,
         tipAutoSubmit: true,
-        buildTip: function (text, val) {
-            // if (val.layer.feature) {
-            //     markersLayer.eachLayer(function (layer) {
-            //         layer.eachLayer(function (layerInner) {
-            //             if(!layerInner.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
-            //                 layer.removeLayer(layerInner);
-            //                 secondaryLayer.addLayer(layerInner);
-            //             }
-            //         });
-            //     });
-            //     secondaryLayer.eachLayer(function (layer) {
-            //         if(layer.feature.properties.store_name.includes(val.layer.feature.properties.store_name)){
-            //             markersLayer.eachLayer(function (layerInner) {
-            //                 layerInner.addLayer(layer);
-            //             });
-            //             secondaryLayer.removeLayer(layer);
-            //         }
-            //     });
-            // }
+        buildTip: function (text) {
             return '<a href="#" class="tip-results">' + text + '</a>' + '&nbsp' + '<br>';
         }
     }).addTo(mymap);
+    // await new Promise(r => setTimeout(r, 4000));
+    // filterCategories("Για κατοικίδια");
+    // await new Promise(r => setTimeout(r, 2000));
+    // filterCategories("Βρεφικά Είδη");
+
 }
 
 //#endregion
@@ -512,6 +547,7 @@ mymap.setView([38.2462420, 21.7350847], 16);
 initializeMap();
 
 //#region Switch tabs
+// build profile
 const mapButton = document.getElementById("tab1");
 const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
