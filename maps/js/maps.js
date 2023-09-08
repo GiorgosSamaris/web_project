@@ -281,6 +281,7 @@ async function getCategories() {
     });
 }
 
+//#region 
 // populate profile info
 async function fetchUsername(userId) {
     return new Promise((resolve, reject) => {
@@ -412,6 +413,8 @@ async function changeUsername(userId, newUsername) {
     });
 }
 
+//#endregion
+
 // navigate to add offer
 async function addOffer(storeId){
     sessionStorage.setItem("storeId", JSON.stringify(storeId));
@@ -495,10 +498,13 @@ async function initializeMap() {
                 layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, false, storeId));
+                    // mymap.openPopup(layer._popup);
+                    layer.openPopup(layer._popup);
                 });
             }
         }
     }).addTo(markersLayer);});
+    
     var searchBar = new L.Control.Search({
         position: 'topleft',
         layer: markersLayer,
