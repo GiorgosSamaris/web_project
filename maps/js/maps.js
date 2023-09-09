@@ -33,6 +33,26 @@ let userId = 203; //comment this out when testing is done, uncomment line 24
 
 //#region Icons
 
+var cashAndCarryIcon = L.icon({
+    iconUrl:'images/1cAc.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]});
+
+var arapis3A = L.icon({
+    iconUrl:'images/3a.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]}
+);
+
+var ABbasilopoulos = L.icon({
+    iconUrl:'images/ab.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]}
+);
+
 var redIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -97,16 +117,40 @@ var goldIcon = L.icon({
     popupAnchor: [1, -34]});
 
 const storeIcons = {
-    "Σκλαβενίτης": redIcon,
-    "Ανδρικόπουλος": greenIcon,
-    "ΑΝΔΡΙΚΟΠΟΥΛΟΣ": greenIcon,
-    "Lidl": violetIcon,
-    "Μασούτης": orangeIcon,
-    "AB ": yellowIcon,
-    "Βασιλόπουλος": yellowIcon,
-    "ΒΑΣΙΛΟΠΟΥΛΟΣ": yellowIcon,
+    "3A": redIcon,
+    "3A ARAPIS": redIcon,
+    "3Α Αράπης": redIcon,
+    "Carna": redIcon,
+    "Ena Cash And Carry": redIcon,
+    "Kiosk": greenIcon,
+    "Kronos": yellowIcon,
+    "Lidl": yellowIcon,
+    "Markoulas": goldIcon,
     "Mini Market": goldIcon,
-    "ΚΡΟΝΟΣ": greyIcon,
+    "My market": blueIcon,
+    "MyMarket": blueIcon,
+    "No supermarket": goldIcon,
+    "Papakos": goldIcon,
+    "Spar": greenIcon,
+    "Super Market Θεοδωρόπουλος": goldIcon,
+    "Super Market ΚΡΟΝΟΣ": yellowIcon,
+    "The Mart": goldIcon,
+    "Unknown": greyIcon,
+    "ΑΒ Shop & Go": blueIcon,
+    "ΑΒ Βασιλόπουλος": blueIcon,
+    "Ανδρικόπουλος": blueIcon,
+    "Ανδρικόπουλος - Supermarket": blueIcon,
+    "Ανδρικόπουλος Super Market": blueIcon,
+    "Γαλαξίας": blueIcon,
+    "ΚΡΟΝΟΣ - (Σκαγιοπουλείου)": yellowIcon,
+    "Κρόνος": yellowIcon,
+    "Μασούτης": redIcon,
+    "Περίπτερο": greenIcon,
+    "Ρουμελιώτης SUPER Market": greenIcon,
+    "Σκλαβενίτης": orangeIcon,
+    "Σουπερμάρκετ Ανδρικόπουλος": blueIcon,
+    "Φίλιππας": goldIcon,
+
 };
 //#endregion
  
@@ -286,6 +330,22 @@ async function getCategories() {
     });
 }
 
+// get distinct names of stores in database
+async function getDistinctStores() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_store_names.php',
+            success: function (stores) {
+                resolve(stores);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
 // populate profile info
 async function fetchUsername(userId) {
     return new Promise((resolve, reject) => {
@@ -435,31 +495,71 @@ function exportOffers(){
 }
 
 
-// add empty ""
 function filterCategories(selectedCategory){
-    markersLayer.eachLayer(function(layer) {
-        layer.eachLayer(function(innerLayer) {
-            if(!innerLayer.feature.properties.distinct_categories.includes(selectedCategory)){
-                layer.removeLayer(innerLayer);
-                hiddenLayer.addLayer(innerLayer);
-                // console.log("removed: " + innerLayer.feature.properties.distinct_categories);
-            }
-            else{
-                // console.log("not removed: " + innerLayer.feature.properties.distinct_categories);
-            }
-        });
-    });
-
-    hiddenLayer.eachLayer(function(layer) {
-        if(layer.feature.properties.distinct_categories.includes(selectedCategory)){
+    if(selectedCategory === ""){
+        // add all hidden layers
+        hiddenLayer.eachLayer(function(layer) {
             hiddenLayer.removeLayer(layer);
             markersLayer.eachLayer(function(markerLayer) {
                 markerLayer.addLayer(layer);
             });
-            // console.log("added: " + layer.feature.properties.distinct_categories);
-        }
-    });
+        });
+    }
+    else{ 
+        // remove all layers that do not have the selected category
+        markersLayer.eachLayer(function(layer) {
+            layer.eachLayer(function(innerLayer) {
+                if(!innerLayer.feature.properties.distinct_categories.includes(selectedCategory)){
+                    layer.removeLayer(innerLayer);
+                    hiddenLayer.addLayer(innerLayer);
+                }
+            });
+        });
+        // add all layers that have the selected category
+        hiddenLayer.eachLayer(function(layer) {
+            if(layer.feature.properties.distinct_categories.includes(selectedCategory)){
+                hiddenLayer.removeLayer(layer);
+                markersLayer.eachLayer(function(markerLayer) {
+                    markerLayer.addLayer(layer);
+                });
+            }
+        });
+    }
 }
+
+// filter stores
+function filterCategories(selectedStore){
+    if(selectedStore === ""){
+        // add all hidden layers
+        hiddenLayer.eachLayer(function(layer) {
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
+        });
+    }
+    else{ 
+        // remove all layers that do not have the selected store
+        markersLayer.eachLayer(function(layer) {
+            layer.eachLayer(function(innerLayer) {
+                if(!(innerLayer.feature.properties.store_name === selectedStore)){
+                    layer.removeLayer(innerLayer);
+                    hiddenLayer.addLayer(innerLayer);
+                }
+            });
+        });
+        // add all layers that have the selected store
+        hiddenLayer.eachLayer(function(layer) {
+            if(layer.feature.properties.store_name === selectedStore){
+                hiddenLayer.removeLayer(layer);
+                markersLayer.eachLayer(function(markerLayer) {
+                    markerLayer.addLayer(layer);
+                });
+            }
+        });
+    }
+}
+
 
 async function checkAndUpdateUsername(userId, newUsername)
 {
@@ -527,6 +627,7 @@ async function initializeMap() {
         }
     }).addTo(markersLayer);});
     
+    // search bar for names / distance
     var searchBar = new L.Control.Search({
         position: 'topleft',
         layer: markersLayer,
@@ -540,29 +641,58 @@ async function initializeMap() {
         }
     }).addTo(mymap);
 
-    var filterBar = new L.Control.Search({
+    // category filter
+    var categoryFilterBar = new L.Control.Search({
         position: 'topleft'
     }); 
 
 
-    filterBar.onAdd = function(mymap) {
+    categoryFilterBar.onAdd = function(mymap) {
         let div = L.DomUtil.create('div', 'filter-container');
         div.innerHTML = '<select name="categories" id="category-search">' +
                         '<option value="All categories">All categories</option>' +
                         '</select>';
                         return div
-                    }
-        filterBar.addTo(mymap);
+        }
+        categoryFilterBar.addTo(mymap);
+        // populate category filter
         $('#category-search').empty();
         $('#category-search').append('<option value="">All Categories</option>');
         const categories = await getCategories();
         categories.forEach((category) => {
             $('#category-search').append('<option value="' + category.name + '">' + category.name + '</option>');
     });
-    // filter event listener
+    // category filter event listener
     selectCategory = document.querySelector('#category-search');
     selectCategory.addEventListener('change', function(event) {
-            filterCategories(event.target.value);
+        filterCategories(event.target.value);
+    });
+
+
+
+    // store filter
+    var storeFilterBar = new L.Control.Search({
+        position: 'topleft'
+    }); 
+    storeFilterBar.onAdd = function() {
+        let div = L.DomUtil.create('div', 'filter-container');
+        div.innerHTML = '<select name="stores" id="store-search">' +
+                        '<option value="All categories">All categories</option>' +
+                        '</select>';
+                        return div
+        }
+    // populate store filter
+    storeFilterBar.addTo(mymap);
+        $('#store-search').empty();
+        $('#store-search').append('<option value="">All Stores</option>');
+        const stores = await getDistinctStores();
+        stores.forEach((store) => {
+            $('#store-search').append('<option value="' + store.store_name + '">' + store.store_name + '</option>');
+    });
+    // store filter event listener
+    selectStore = document.querySelector('#store-search');
+    selectStore.addEventListener('change', function(event) {
+        filterCategories(event.target.value);
     });
 }
 

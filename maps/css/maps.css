@@ -69,6 +69,15 @@ body {
     font-size: var(--medium);
 }
 
+#store-search{
+    background-color: white;
+    border-radius: 0.6rem;
+    padding: 0.2rem;
+    outline: none;
+    border: none;
+    font-size: var(--medium);
+}
+
 .leaflet-control-search .search-tip {
     white-space: normal;
     width: 6rem;
