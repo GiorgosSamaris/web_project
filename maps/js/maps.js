@@ -31,6 +31,11 @@ let offersSubmitted = [];
 let userId = 203; //comment this out when testing is done, uncomment line 24
 //#endregion
 
+var uppercase;
+var char;
+var numbers;
+var symbols;
+var requirements;
 //#region Icons
 
 var cashAndCarryIcon = L.icon({
@@ -48,7 +53,7 @@ var arapis3A = L.icon({
 
 var ABbasilopoulos = L.icon({
     iconUrl:'images/ab.png',
-    iconSize: [25, 41],
+    iconSize: [50, 82],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]}
 );
@@ -225,14 +230,14 @@ function userStoreDistance(lat1, lon1 , lat2, lon2) {
     return [roundedDistance, distanceInMeters];
 }
 
-function generateProfileContent(userId) {
+function generateProfileContent() {
     const profileContainer = document.getElementById("profile-container");
     
     //user credentials  
     var profileContent = '<div class="credentials-container">' +
     '<label for="username" class="user-credentials">Type new username</label>' +
     '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
-    '<button type="button" onclick="checkAndUpdateUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+    '<button type="button" onclick="checkAndUpdateUsername($(\'#username\').val())">Change username</button>' + // Use escaped single quotes
     '<label for="password" class="user-credentials">Type new password</label>' +
     '<input type="password" class="user-credentials" id="password">' +
     // <i class="fa-regular fa-eye-slash fa-lg" id="eye"></i> to be added
@@ -242,8 +247,7 @@ function generateProfileContent(userId) {
         '<p id="uppercase" class="invalid"><b>At least one uppercase</b></p>'+
         '<p id="symbol" class="invalid"><b>At least one symbol</b></p>' +
         '<p id="number" class="invalid"><b>At least one number</b></p>' +
-    '</div>' +
-    '<button type="submit">Change password</button>' +
+    '</div>' + '<button onclick="changeValidPassword($(\'#password\').val())">Change password</button>' +
     '</div>';
     
     
@@ -293,8 +297,68 @@ function generateProfileContent(userId) {
     '</div>';
 
     profileContainer.innerHTML = profileContent;
+
+    const password = document.getElementById("password");
+    requirements = document.getElementById("password-requirements-inv");
+    char = document.getElementById("characters");
+    uppercase = document.getElementById("uppercase");
+    symbol = document.getElementById("symbol");
+    vnumber = document.getElementById("number");
+
+    password.onfocus = function () {
+        checkRequirementsVisibility();
+    };
+
+    password.onblur = function () {
+        // checkRequirementsVisibility();
+        requirements.id = "password-requirements-inv";
+    };
+
+    password.onkeyup = function () {
+        // Validate characters
+        var char_num = /[a-z]/g;
+    if (password.value.match(char_num) && password.value.length >= 8) {
+        char.classList.remove("invalid");
+        char.classList.add("valid");
+    } else {
+        char.classList.remove("valid");
+        char.classList.add("invalid");
+    }
+
+    // Validate uppercase letter
+    uprcase = /[A-Z]/g;
+    if (password.value.match(uprcase)) {
+        uppercase.classList.remove("invalid");
+        uppercase.classList.add("valid");
+    } else {
+        uppercase.classList.remove("valid");
+        uppercase.classList.add("invalid");
+     }
+
+    // Validate numbers
+    numbers = /[0-9]/g;
+    if (password.value.match(numbers)) {
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+    } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+    }
+
+   symbols = /(?=.*[^\w\d\s])/g;
+    if (password.value.match(symbols)) {
+        symbol.classList.remove("invalid");
+        symbol.classList.add("valid");
+    } else {
+        symbol.classList.remove("valid");
+        symbol.classList.add("invalid");
+    }
+
+    // Check if all conditions are met to hide the requirements element
+    checkRequirementsVisibility();
+};
 }
-//#region 
+//#region fetch functions
 // fetch products/inventory on store click
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
@@ -314,7 +378,7 @@ async function fetchInventory(storeId) {
     });
 }
 
-// get all names of categories for filter search
+// get all names of categories for filtered search
 async function getCategories() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -330,7 +394,7 @@ async function getCategories() {
     });
 }
 
-// get distinct names of stores in database
+// get distinct names of stores in database for filtered search
 async function getDistinctStores() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -458,7 +522,7 @@ async function fetchOffers(storeId) {
 }
 
 // 
-async function changeUsername(userId, newUsername) {
+async function changeUsername(newUsername) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
@@ -471,6 +535,27 @@ async function changeUsername(userId, newUsername) {
                 resolve(username_change);
             },
             error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function changePassword(newPassword) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/change_password.php',
+            data: {
+                userId: userId,
+                newPassword: newPassword
+            },
+            success: function (password_change) {
+                alert("Password changed");
+                resolve(password_change);
+            },
+            error: function (error) {
+                alert("Password not changed" + error);
                 reject(error);
             }
         });
@@ -539,7 +624,7 @@ function filterCategories(selectedStore){
         });
     }
     else{ 
-        // remove all layers that do not have the selected store
+        // remove all layers that do not have the selected store name
         markersLayer.eachLayer(function(layer) {
             layer.eachLayer(function(innerLayer) {
                 if(!(innerLayer.feature.properties.store_name === selectedStore)){
@@ -548,7 +633,7 @@ function filterCategories(selectedStore){
                 }
             });
         });
-        // add all layers that have the selected store
+        // add all layers that have the selected store name
         hiddenLayer.eachLayer(function(layer) {
             if(layer.feature.properties.store_name === selectedStore){
                 hiddenLayer.removeLayer(layer);
@@ -561,9 +646,8 @@ function filterCategories(selectedStore){
 }
 
 
-async function checkAndUpdateUsername(userId, newUsername)
-{
-    result = await changeUsername(userId, newUsername);
+async function checkAndUpdateUsername(newUsername){
+    result = await changeUsername(newUsername);
     if(result == 0)
     {
         alert("username changed!");
@@ -582,49 +666,52 @@ async function initializeMap() {
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
     const storesPath = 'json/stores.geojson';
-    await fetch(storesPath)
-    .then(response => response.json())
-    .then(data => {
-    L.geoJson(data, {    //pulls data from GeoJSON file
-        onEachFeature: function(feature, layer) {
-            const storeName = layer.feature.properties.store_name;
-            const storeId = parseInt(layer.feature.properties.store_id);
-            const storeLat = parseFloat(layer.feature.geometry.coordinates[1]);
-            const storeLon = parseFloat(layer.feature.geometry.coordinates[0]);
-            const address = layer.feature.properties.address;
-            // new
-            const categories = layer.feature.properties.distinct_categories;
-            const hasActiveOffers = layer.feature.properties.has_active_offers;
-            var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
-    
-            if (storeIcons.hasOwnProperty(storeName) && layer.feature.properties.has_active_offers) {
-                layer.setIcon(storeIcons[storeName]);
+    await fetch(storesPath).then(response => response.json()).then(data => {
+        L.geoJson(data, {    //pulls data from GeoJSON file
+            onEachFeature: function(feature, layer) {
+                const storeName = layer.feature.properties.store_name;
+                const storeId = parseInt(layer.feature.properties.store_id);
+                const storeLat = parseFloat(layer.feature.geometry.coordinates[1]);
+                const storeLon = parseFloat(layer.feature.geometry.coordinates[0]);
+                const address = layer.feature.properties.address;
+                // new
+                const categories = layer.feature.properties.distinct_categories;
+                const hasActiveOffers = layer.feature.properties.has_active_offers;
+                var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
+            
+
+                // set pin icon
+                if (storeIcons.hasOwnProperty(storeName) && layer.feature.properties.has_active_offers) {
+                    layer.setIcon(storeIcons[storeName]);
+                }
+                if(!layer.feature.properties.has_active_offers ){   
+                    layer.setIcon(blackIcon);  
+                }
+            
+                // text to search for
+                if(address != "Unknown"){
+                    layer.feature.properties.searchProp = storeName + ', ' + address;
+                } else {
+                    layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
+                }
+            
+                if (currStoreDist[1] <= 70) {
+                    // build popup for close stores
+                    layer.on('click', async function () {
+                        offersList = await fetchOffers(storeId);
+                        layer.bindPopup(popupContentStores(feature, true, storeId));
+                        sessionStorage.setItem("storeId", JSON.stringify(storeId));
+                        layer.openPopup();
+                    });
+                } else {
+                    // build popup for far stores
+                    layer.on('click', async function () {
+                        offersList = await fetchOffers(storeId);
+                        layer.bindPopup(popupContentStores(feature, false, storeId));
+                        layer.openPopup();
+                    });
+                }
             }
-            if(!layer.feature.properties.has_active_offers ){   
-                layer.setIcon(blackIcon);  
-            }
-    
-            if(address != "Unknown"){
-                layer.feature.properties.searchProp = storeName + ', ' + address;
-            } else {
-                layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
-            }
-    
-            if (currStoreDist[1] <= 70) {
-                layer.on('click', async function () {
-                    offersList = await fetchOffers(storeId);
-                    layer.bindPopup(popupContentStores(feature, true, storeId));
-                    sessionStorage.setItem("storeId", JSON.stringify(storeId));
-                    layer.openPopup();
-                });
-            } else {
-                layer.on('click', async function () {
-                    offersList = await fetchOffers(storeId);
-                    layer.bindPopup(popupContentStores(feature, false, storeId));
-                    layer.openPopup();
-                });
-            }
-        }
     }).addTo(markersLayer);});
     
     // search bar for names / distance
@@ -647,7 +734,7 @@ async function initializeMap() {
     }); 
 
 
-    categoryFilterBar.onAdd = function(mymap) {
+    categoryFilterBar.onAdd = function() {
         let div = L.DomUtil.create('div', 'filter-container');
         div.innerHTML = '<select name="categories" id="category-search">' +
                         '<option value="All categories">All categories</option>' +
@@ -732,8 +819,6 @@ const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
-const password = document.getElementById("password");
-const requirements = document.getElementById("password-requirements-inv");
 // const eye = document.getElementById("eye");
 
 mapButton.addEventListener("click", function(){
@@ -746,6 +831,7 @@ mapButton.addEventListener("click", function(){
 });
 
 profileButton.addEventListener("click", async function(){
+
     if(mapButtonLabel.classList.contains("active")){
         mapButtonLabel.classList.remove("active");
     }
@@ -760,74 +846,30 @@ profileButton.addEventListener("click", async function(){
         likeDislikeHistory = await fetchUserLikeHistory(userId);
         offersSubmitted = await fetchUserOffers(userId);
         generateProfileContent(); 
-    }   
-    
+    } 
 });
 
 
+
+function changeValidPassword(newPassword){
+    if(checkRequirementsVisibility()){
+        changePassword(newPassword);
+    }
+}
+
 function checkRequirementsVisibility(){
-      if (
-      char.classList.contains("valid") &&
-      uppercase.classList.contains("valid") &&
-      symbol.classList.contains("valid") &&
-      number.classList.contains("valid") ) {
-          requirements.id = "password-requirements-inv";
-      } else {
+    if (
+        char.classList.contains("valid") &&
+        uppercase.classList.contains("valid") &&
+        symbol.classList.contains("valid") &&
+        number.classList.contains("valid") ) {
+        requirements.id = "password-requirements-inv";
+        return true;
+    } else {
         requirements.id = "password-requirements-vis";
-      }
-      password.onfocus = function () {
-          checkRequirementsVisibility();
-        };
-        
-        password.onblur = function () {
-          // checkRequirementsVisibility();
-          requirements.id = "password-requirements-inv";
-        };
-        
-        password.onkeyup = function () {
-          // Validate characters
-          var char_num = /[a-z]/g;
-          if (password.value.match(char_num) && password.value.length >= 8) {
-            char.classList.remove("invalid");
-            char.classList.add("valid");
-          } else {
-            char.classList.remove("valid");
-            char.classList.add("invalid");
-          }
-        
-          // Validate uppercase letter
-          var uprcase = /[A-Z]/g;
-          if (password.value.match(uprcase)) {
-            uppercase.classList.remove("invalid");
-            uppercase.classList.add("valid");
-          } else {
-            uppercase.classList.remove("valid");
-            uppercase.classList.add("invalid");
-          }
-        
-          // Validate numbers
-          var numbers = /[0-9]/g;
-          if (password.value.match(numbers)) {
-            number.classList.remove("invalid");
-            number.classList.add("valid");
-          } else {
-            number.classList.remove("valid");
-            number.classList.add("invalid");
-          }
-        
-          var symbols = /(?=.*[^\w\d\s])/g;
-          if (password.value.match(symbols)) {
-            symbol.classList.remove("invalid");
-            symbol.classList.add("valid");
-          } else {
-            symbol.classList.remove("valid");
-            symbol.classList.add("invalid");
-          }
-        
-          // Check if all conditions are met to hide the requirements element
-          checkRequirementsVisibility();
-        };
-  }
+        return false;
+    }
+}
 
 //   eye.addEventListener("click", function () {
 //     if (password.type === "password") {

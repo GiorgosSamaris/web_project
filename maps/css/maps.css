@@ -216,6 +216,13 @@ body {
     border: 0.15rem solid black;
     border-radius: 0.4rem;
     background-color: antiquewhite;
+    height: 10%;
+    /* max-height: 10rem; */
+    width: 90%;
+}
+
+#password-requirements-vis p {
+    margin: clamp(0.5rem, 5%, 1rem);
 }
 
 .valid {
@@ -241,7 +248,6 @@ body {
     align-items: center;
     justify-content: center;
     max-width: 35rem;
-    max-height: 15rem;
     height: 15%;
     width: 50%;
 }
