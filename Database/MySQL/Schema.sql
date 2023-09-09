@@ -26,8 +26,8 @@
   CREATE TABLE customer (
     customer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
     email VARCHAR(45) NOT NULL,
-    overall_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-    this_months_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    overall_tokens INT UNSIGNED NOT NULL DEFAULT 0,
+    last_months_tokens INT UNSIGNED NOT NULL DEFAULT 0,
     current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY  (customer_id),

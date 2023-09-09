@@ -1,4 +1,6 @@
 //#region initilization
+
+let results = [];
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
@@ -10,9 +12,8 @@ var popupOpen = false;
 var popupContainer;
 
 let mymap = L.map('mapid');
-var markersLayer = new L.LayerGroup(); 
-
-let allOffersList = [];
+var markersLayer = new L.LayerGroup().addTo(mymap); 
+var hiddenLayer = new L.LayerGroup(); 
 
 //Store lists
 let storesList = [];
@@ -20,16 +21,37 @@ let productsList = [];
 var offersList = []; 
 
 //User lists
-let userId = parseInt(sessionStorage.getItem("userId"));
+// let userId = parseInt(sessionStorage.getItem("userId"));
+var newUsername;
 let likeDislikeHistory;
 let userScore;
 let userTokens;
 let offersSubmitted = [];
 //============== Testing ==============
-// let userId = 203; //comment this out when testing is done, uncomment line 24
+let userId = 203; //comment this out when testing is done, uncomment line 24
 //#endregion
 
 //#region Icons
+
+var cashAndCarryIcon = L.icon({
+    iconUrl:'images/1cAc.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]});
+
+var arapis3A = L.icon({
+    iconUrl:'images/3a.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]}
+);
+
+var ABbasilopoulos = L.icon({
+    iconUrl:'images/ab.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]}
+);
 
 var redIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -95,17 +117,40 @@ var goldIcon = L.icon({
     popupAnchor: [1, -34]});
 
 const storeIcons = {
-    "Σκλαβενίτης": redIcon,
-    "Ανδρικόπουλος": greenIcon,
-    "ΑΝΔΡΙΚΟΠΟΥΛΟΣ": greenIcon,
-    "Lidl": violetIcon,
-    "Μασούτης": orangeIcon,
-    "AB ": yellowIcon,
-    "Βασιλόπουλος": yellowIcon,
-    "ΒΑΣΙΛΟΠΟΥΛΟΣ": yellowIcon,
-    "Kiosk": blackIcon,
+    "3A": redIcon,
+    "3A ARAPIS": redIcon,
+    "3Α Αράπης": redIcon,
+    "Carna": redIcon,
+    "Ena Cash And Carry": redIcon,
+    "Kiosk": greenIcon,
+    "Kronos": yellowIcon,
+    "Lidl": yellowIcon,
+    "Markoulas": goldIcon,
     "Mini Market": goldIcon,
-    "ΚΡΟΝΟΣ": greyIcon,
+    "My market": blueIcon,
+    "MyMarket": blueIcon,
+    "No supermarket": goldIcon,
+    "Papakos": goldIcon,
+    "Spar": greenIcon,
+    "Super Market Θεοδωρόπουλος": goldIcon,
+    "Super Market ΚΡΟΝΟΣ": yellowIcon,
+    "The Mart": goldIcon,
+    "Unknown": greyIcon,
+    "ΑΒ Shop & Go": blueIcon,
+    "ΑΒ Βασιλόπουλος": blueIcon,
+    "Ανδρικόπουλος": blueIcon,
+    "Ανδρικόπουλος - Supermarket": blueIcon,
+    "Ανδρικόπουλος Super Market": blueIcon,
+    "Γαλαξίας": blueIcon,
+    "ΚΡΟΝΟΣ - (Σκαγιοπουλείου)": yellowIcon,
+    "Κρόνος": yellowIcon,
+    "Μασούτης": redIcon,
+    "Περίπτερο": greenIcon,
+    "Ρουμελιώτης SUPER Market": greenIcon,
+    "Σκλαβενίτης": orangeIcon,
+    "Σουπερμάρκετ Ανδρικόπουλος": blueIcon,
+    "Φίλιππας": goldIcon,
+
 };
 //#endregion
  
@@ -116,13 +161,10 @@ let tiles = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 //#region Functions
 
 function popupContentStores(feature,isClose, storeId) {
-    // popup50 = false;
-    // console.log(offersList);
     popupContent = '<div class = "popup-container">';
         popupContent += "<b>";       //reset the content because its a global variable
         popupContent += '<div class = "description">';
         if (feature.properties.store_name) {
-            // console.log(store_name);
             popupContent += feature.properties.store_name + '<br>';
         } 
         popupContent += "Current offers" + '</div>';
@@ -134,11 +176,9 @@ function popupContentStores(feature,isClose, storeId) {
                             '<div class = date-likes-dislikes>' +
                             "Created: " + offer.creation_date.split(' ')[0] + " " + //splits the date and time and takes only the date
                             '<i class="fa-solid fa-thumbs-up ' +
-                                (offer.in_stock > 0 ?
-                                'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
+                            (offer.in_stock > 0 ? 'color-green' : 'greyed-out') + '"></i> ' + offer.number_of_likes + " " + 
                             '<i class="fa-solid fa-thumbs-down ' +
-                                (offer.in_stock > 0 ?
-                                'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
+                            (offer.in_stock > 0 ? 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
                             '</div>' +
                             '<br>' + "In stock: " + offer.in_stock + '<br>' +
                             (
@@ -153,75 +193,69 @@ function popupContentStores(feature,isClose, storeId) {
             popupContent += '<button type = "button" class = "add-offer" id = "add-offer-button" onclick = "addOffer('+storeId+')"> Add Offer </button>';
             popupContent += '<button type = "submit" class = "review-offer" onclick = "exportOffers()" > Review </button>';
             popupContent += '</div>';
-            // addOfferButton = document.getElementById("add-offer-button");
-            // console.log(addOfferButton);
-            // popup50 = true;
         }   
         popupContent += "</b>";
         popupContent += '</div>'
         return popupContent;
 }
 
-
-async function addOffer(storeId){
-    sessionStorage.setItem("storeId", JSON.stringify(storeId));
-    sessionStorage.setItem("userId", JSON.stringify(userId));
-    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
-    window.location.href= "../addOffer/addOffer.html";
-}
-
-function exportOffers(){
-    sessionStorage.setItem("offers", JSON.stringify(offersList));
-    sessionStorage.setItem("userId", JSON.stringify(userId));
-    window.location.href= "../reviewOffer/review_offer.html";
-}
-
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
     //using the haversine Formula
     const R = 6371.0; //Earth's radius in km
-
+    
     //convert lat and lon to radians
     const lat1Rad = (Math.PI / 180) * lat1;
     const lon1Rad = (Math.PI / 180) * lon1; 
     const lat2Rad = (Math.PI / 180) * lat2;
     const lon2Rad = (Math.PI / 180) * lon2; 
-
+    
     //calculate difference
     const latDifference = lat2Rad - lat1Rad;
     const lonDifference = lon2Rad - lon1Rad;
-
+    
     //formula
     const a = Math.sin(latDifference / 2) * Math.sin(latDifference / 2) +
-              Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) * 
               Math.sin(lonDifference / 2) * Math.sin(lonDifference / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
     const distanceInMeters = distance * 1000;
     const roundedDistance = distance.toFixed(2);
-
+    
     return [roundedDistance, distanceInMeters];
 }
 
 function generateProfileContent(userId) {
     const profileContainer = document.getElementById("profile-container");
-
+    
     //user credentials  
-    profileContent = '<div class = "credentials-container">' + 
-                    '<label for = "username" class = "user-credentials"> Type new username </label>' +
-                    '<input type = "password" class = "user-credentials" id = "username" >' +    //needs actual username
-                    '<button type = "submit"> Change username </button>' +
-                    '<label for = "password" class = "user-credentials"> Type new password </label>' +
-                    '<input type = "password" class = "user-credentials" id = "password" >' +    //needs actual password
-                    '<button type = "submit" > Change password </button>' +
-                    '</div>';
-
+    var profileContent = '<div class="credentials-container">' +
+    '<label for="username" class="user-credentials">Type new username</label>' +
+    '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
+    '<button type="button" onclick="checkAndUpdateUsername(userId, $(\'#username\').val())">Change username</button>' + // Use escaped single quotes
+    '<label for="password" class="user-credentials">Type new password</label>' +
+    '<input type="password" class="user-credentials" id="password">' +
+    // <i class="fa-regular fa-eye-slash fa-lg" id="eye"></i> to be added
+    '<div id ="password-requirements-inv">' +
+        '<h3 id="message_h3">Password must contain:</h3>' +
+        '<p id="characters" class="invalid"><b>At least 8 characters</b></p>' +
+        '<p id="uppercase" class="invalid"><b>At least one uppercase</b></p>'+
+        '<p id="symbol" class="invalid"><b>At least one symbol</b></p>' +
+        '<p id="number" class="invalid"><b>At least one number</b></p>' +
+    '</div>' +
+    '<button type="submit">Change password</button>' +
+    '</div>';
+    
+    
+    
+    
     //user offers history
     profileContent += '<div class = "offers-submitted-container">' + 
-                        '<label>Offers Submitted</label>' + '<br>' +
-                        '<ul class = "offers-submitted">';
+    '<label>Offers Submitted</label>' + '<br>' +
+    '<ul class = "offers-submitted">';
     offersSubmitted.forEach((offer) => {
                 profileContent += '<li>' + offer.name + '<br>' +
-                                   "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
+                "Status: " + (offer.active === 0? "Not Active" : "Active") + '<br>' +
                                    "Stock: " + offer.in_stock + '<br>' +
                                    //offers submitted likes dislikes container(osld)
                                    '<span id = "osld-container" >' + 
@@ -233,12 +267,11 @@ function generateProfileContent(userId) {
                                    '</li>' ;
     });
     profileContent += '</ul>' + '</div>';
-
+    
     //user like dislike history
     profileContent += '<div class = "like-dislike-history-container">' + 
-                        '<label>Like/Dislike History</label>' + '<br>' + 
-                        '<ul class = "like-dislike-history">';
-    console.log(likeDislikeHistory);
+    '<label>Like/Dislike History</label>' + '<br>' + 
+    '<ul class = "like-dislike-history">';
     likeDislikeHistory.forEach((like) => {
         profileContent += '<li>' + 
         like.name + '<br>' +
@@ -247,22 +280,22 @@ function generateProfileContent(userId) {
         '</li>';
     });
     profileContent +=  '</ul>' + '</div>';
-
+    
     //user score
     profileContent += '<div class = "user-score-container">' + '<label>Score</label>' + '<br>' +
-                    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
-                    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
-                    '</div>';
+    '<p>Current month\'s score: ' + userScore[0].current_score + '</p>' +
+    '<p>Total Score: '  + userScore[0].overall_score + '</p>' +
+    '</div>';
     //user tokens
     profileContent += '<div class = "user-tokens-container">' + '<label>Tokens</label>' + '<br>' +
-                    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
-                    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
-                    '</div>';
+    '<p>' + "Previous month's tokens: " + userTokens[0].last_months_tokens + '</p>' +
+    '<p>' + "Tokens since registration: " + userTokens[0].overall_tokens + '</p>' +
+    '</div>';
 
     profileContainer.innerHTML = profileContent;
 }
-
-// fetch products/inventory
+//#region 
+// fetch products/inventory on store click
 async function fetchInventory(storeId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -272,8 +305,58 @@ async function fetchInventory(storeId) {
                 storeId: storeId
             },
             success: function (store_inventory) {
-                // console.log(store_inventory);   
                 resolve(store_inventory);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// get all names of categories for filter search
+async function getCategories() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_category_names.php',
+            success: function (categories) {
+                resolve(categories);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// get distinct names of stores in database
+async function getDistinctStores() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_store_names.php',
+            success: function (stores) {
+                resolve(stores);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// populate profile info
+async function fetchUsername(userId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_username.php',
+            data: {
+                userId: userId
+            },
+            success: function (username) {
+                resolve(username);
             },
             error: function (error) {
                 reject(error);
@@ -290,9 +373,8 @@ async function fetchUserScore(userId) {
             data: {
                 userId: userId
             },
-            success: function (user_score) {
-                // console.log(user_score);   
-                resolve(user_score);
+            success: function (username) {
+                resolve(username);
             },
             error: function (error) {
                 reject(error);
@@ -300,6 +382,7 @@ async function fetchUserScore(userId) {
         });
     });
 }
+
 
 async function fetchUserTokens(userId) {
     return new Promise((resolve, reject) => {
@@ -310,7 +393,6 @@ async function fetchUserTokens(userId) {
                 userId: userId
             },
             success: function (user_tokens) {
-                // console.log(user_tokens);   
                 resolve(user_tokens);
             },
             error: function (error) {
@@ -329,7 +411,6 @@ async function fetchUserLikeHistory(userId) {
                 userId: userId
             },
             success: function (user_likes) {
-                // console.log(user_likes);   
                 resolve(user_likes);
             },
             error: function (error) {
@@ -339,40 +420,6 @@ async function fetchUserLikeHistory(userId) {
     });
 }
 
-async function fetchOffers(storeId) {
-return new Promise((resolve, reject) => {
-    $.ajax({
-        type: "POST",
-        url: 'php/fetch_offers.php',
-        data: {
-            storeId: storeId
-        },
-        success: function (store_offers) {
-            // console.log(store_offers);   
-            resolve(store_offers);
-        },
-        error: function (error) {
-            reject(error);
-        }
-    });
-});
-}
-
-async function fetchAllOffers() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "POST",
-            url: 'php/fetch_all_offers.php',
-            success: function (store_offers) {
-                resolve(store_offers);
-            },
-            error: function (error) {
-                reject(error);
-            }
-        });
-    });
-    }
-
 async function fetchUserOffers(userId) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -381,8 +428,7 @@ async function fetchUserOffers(userId) {
             data: {
                 userId: userId
             },
-            success: function (users_offers) {
-                // console.log(store_offers);   
+            success: function (users_offers) { 
                 resolve(users_offers);
             },
             error: function (error) {
@@ -392,66 +438,196 @@ async function fetchUserOffers(userId) {
     });
 }
 
+// fetch store offers on store click
+async function fetchOffers(storeId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/fetch_offers.php',
+            data: {
+                storeId: storeId
+            },
+            success: function (store_offers) {
+                resolve(store_offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
+
+// 
+async function changeUsername(userId, newUsername) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/change_username.php',
+            data: {
+                userId: userId,
+                newUsername: newUsername
+            },
+            success: function (username_change) {
+                resolve(username_change);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+//#endregion
+
+// navigate to add offer
+async function addOffer(storeId){
+    sessionStorage.setItem("storeId", JSON.stringify(storeId));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
+    sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
+    window.location.href= "../addOffer/addOffer.html";
+}
+
+// navigate to review offer
+function exportOffers(){
+    sessionStorage.setItem("offers", JSON.stringify(offersList));
+    sessionStorage.setItem("userId", JSON.stringify(userId));
+    window.location.href= "../reviewOffer/review_offer.html";
+}
+
+
+function filterCategories(selectedCategory){
+    if(selectedCategory === ""){
+        // add all hidden layers
+        hiddenLayer.eachLayer(function(layer) {
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
+        });
+    }
+    else{ 
+        // remove all layers that do not have the selected category
+        markersLayer.eachLayer(function(layer) {
+            layer.eachLayer(function(innerLayer) {
+                if(!innerLayer.feature.properties.distinct_categories.includes(selectedCategory)){
+                    layer.removeLayer(innerLayer);
+                    hiddenLayer.addLayer(innerLayer);
+                }
+            });
+        });
+        // add all layers that have the selected category
+        hiddenLayer.eachLayer(function(layer) {
+            if(layer.feature.properties.distinct_categories.includes(selectedCategory)){
+                hiddenLayer.removeLayer(layer);
+                markersLayer.eachLayer(function(markerLayer) {
+                    markerLayer.addLayer(layer);
+                });
+            }
+        });
+    }
+}
+
+// filter stores
+function filterCategories(selectedStore){
+    if(selectedStore === ""){
+        // add all hidden layers
+        hiddenLayer.eachLayer(function(layer) {
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
+        });
+    }
+    else{ 
+        // remove all layers that do not have the selected store
+        markersLayer.eachLayer(function(layer) {
+            layer.eachLayer(function(innerLayer) {
+                if(!(innerLayer.feature.properties.store_name === selectedStore)){
+                    layer.removeLayer(innerLayer);
+                    hiddenLayer.addLayer(innerLayer);
+                }
+            });
+        });
+        // add all layers that have the selected store
+        hiddenLayer.eachLayer(function(layer) {
+            if(layer.feature.properties.store_name === selectedStore){
+                hiddenLayer.removeLayer(layer);
+                markersLayer.eachLayer(function(markerLayer) {
+                    markerLayer.addLayer(layer);
+                });
+            }
+        });
+    }
+}
+
+
+async function checkAndUpdateUsername(userId, newUsername)
+{
+    result = await changeUsername(userId, newUsername);
+    if(result == 0)
+    {
+        alert("username changed!");
+    }
+    else
+    {
+        alert("username already exists");   
+    }
+}
+
+
+// build map
 async function initializeMap() {
     mymap.setView([testLat,testLon], 17);
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
-
-    //fetch data from database
-    userScore = await fetchUserScore(userId);
-    userTokens = await fetchUserTokens(userId);
-    likeDislikeHistory = await fetchUserLikeHistory(userId);
-    offersSubmitted = await fetchUserOffers(userId);
-    allOffersList = await fetchAllOffers();
-    console.log(offersSubmitted);  
-    L.geoJson(stores_json, {    //pulls data from GeoJSON file
+    markersLayer.clearLayers();
+    const storesPath = 'json/stores.geojson';
+    await fetch(storesPath)
+    .then(response => response.json())
+    .then(data => {
+    L.geoJson(data, {    //pulls data from GeoJSON file
         onEachFeature: function(feature, layer) {
             const storeName = layer.feature.properties.store_name;
-            const storeId = layer.feature.properties.store_id;
-            const storeLat = layer.feature.properties.latitude;
-            const storeLon = layer.feature.properties.longitude;
+            const storeId = parseInt(layer.feature.properties.store_id);
+            const storeLat = parseFloat(layer.feature.geometry.coordinates[1]);
+            const storeLon = parseFloat(layer.feature.geometry.coordinates[0]);
             const address = layer.feature.properties.address;
-            // var isClose = layer.feature.properties.isClose;
-
+            // new
+            const categories = layer.feature.properties.distinct_categories;
+            const hasActiveOffers = layer.feature.properties.has_active_offers;
             var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
-
-            if (storeIcons.hasOwnProperty(storeName)) {// checks if the store name is in the storeIcons object
-                layer.setIcon(storeIcons[storeName]);   //assigns the appropriate icon to the marker
-            } 
-                
+    
+            if (storeIcons.hasOwnProperty(storeName) && layer.feature.properties.has_active_offers) {
+                layer.setIcon(storeIcons[storeName]);
+            }
+            if(!layer.feature.properties.has_active_offers ){   
+                layer.setIcon(blackIcon);  
+            }
+    
             if(address != "Unknown"){
-            //combines two features into one for use in search if the second attribute exists
                 layer.feature.properties.searchProp = storeName + ', ' + address;
-            //layer here refers to the layer that contains the JSON items and feature refers to the JSON object being used
             } else {
                 layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
             }
-
+    
             if (currStoreDist[1] <= 70) {
-                    layer.on('click', async function () {
-                    // const offers = await fetchOffers(storeName);
+                layer.on('click', async function () {
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, true, storeId));
                     sessionStorage.setItem("storeId", JSON.stringify(storeId));
-                    if(popupContainer != null){
-                        popupContainer.addEventListener("click", function(event){
-                            console.log(popupContainer);
-                            if(event.target.id === "add-offer-button"){
-                                console.log("add offer clicked");
-                            }
-                        });
-                    }
+                    layer.openPopup();
                 });
             } else {
                 layer.on('click', async function () {
-                    // const offers = await fetchOffers(storeName);
                     offersList = await fetchOffers(storeId);
                     layer.bindPopup(popupContentStores(feature, false, storeId));
+                    layer.openPopup();
                 });
             }
         }
-    }).addTo(markersLayer);     //adds the stores in the markersLayer  
-
+    }).addTo(markersLayer);});
+    
+    // search bar for names / distance
     var searchBar = new L.Control.Search({
         position: 'topleft',
         layer: markersLayer,
@@ -460,24 +636,68 @@ async function initializeMap() {
         initial: false,  //initially hides the search bar,
         exactMatch: false,
         tipAutoSubmit: true,
-        buildTip: function(text, val) {
-            // console.log(val);
-            //return the names of the stores and their type
-            // markersLayer.eachLayer((layer) => {
-                // if(layer.feature.properties.store_id != val.layer.feature.properties.store_id){
-                        // var mark = document.getElementByClassName("leaflet-marker-icon leaflet-zoom-animated leaflet-interactive");
-                        // mark.classlist.add("");
-                        // console.log(layer.feature.properties);
-                        // markerProcess(layer);
-                        // console.log(val.layer.getIcon());
-                // });
-            // });  
-            return '<a href="#" class="tip-results">'+text + '</a>' + '&nbsp' +  '<br>';
+        buildTip: function (text) {
+            return '<a href="#" class="tip-results">' + text + '</a>' + '&nbsp' + '<br>';
         }
     }).addTo(mymap);
+
+    // category filter
+    var categoryFilterBar = new L.Control.Search({
+        position: 'topleft'
+    }); 
+
+
+    categoryFilterBar.onAdd = function(mymap) {
+        let div = L.DomUtil.create('div', 'filter-container');
+        div.innerHTML = '<select name="categories" id="category-search">' +
+                        '<option value="All categories">All categories</option>' +
+                        '</select>';
+                        return div
+        }
+        categoryFilterBar.addTo(mymap);
+        // populate category filter
+        $('#category-search').empty();
+        $('#category-search').append('<option value="">All Categories</option>');
+        const categories = await getCategories();
+        categories.forEach((category) => {
+            $('#category-search').append('<option value="' + category.name + '">' + category.name + '</option>');
+    });
+    // category filter event listener
+    selectCategory = document.querySelector('#category-search');
+    selectCategory.addEventListener('change', function(event) {
+        filterCategories(event.target.value);
+    });
+
+
+
+    // store filter
+    var storeFilterBar = new L.Control.Search({
+        position: 'topleft'
+    }); 
+    storeFilterBar.onAdd = function() {
+        let div = L.DomUtil.create('div', 'filter-container');
+        div.innerHTML = '<select name="stores" id="store-search">' +
+                        '<option value="All categories">All categories</option>' +
+                        '</select>';
+                        return div
+        }
+    // populate store filter
+    storeFilterBar.addTo(mymap);
+        $('#store-search').empty();
+        $('#store-search').append('<option value="">All Stores</option>');
+        const stores = await getDistinctStores();
+        stores.forEach((store) => {
+            $('#store-search').append('<option value="' + store.store_name + '">' + store.store_name + '</option>');
+    });
+    // store filter event listener
+    selectStore = document.querySelector('#store-search');
+    selectStore.addEventListener('change', function(event) {
+        filterCategories(event.target.value);
+    });
 }
 
 //#endregion
+
 
 
 //#region user's location
@@ -506,12 +726,15 @@ mymap.setView([38.2462420, 21.7350847], 16);
 initializeMap();
 
 //#region Switch tabs
+// build profile
 const mapButton = document.getElementById("tab1");
 const mapButtonLabel = document.getElementById("map-button-label");
 const profileButton = document.getElementById("tab2");
 const mapContainer = document.getElementById("mapid");
 const profileContainer = document.getElementById("profile-container");
-var addOfferButton;
+const password = document.getElementById("password");
+const requirements = document.getElementById("password-requirements-inv");
+// const eye = document.getElementById("eye");
 
 mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
@@ -522,33 +745,104 @@ mapButton.addEventListener("click", function(){
     }
 });
 
-profileButton.addEventListener("click", function(){
+profileButton.addEventListener("click", async function(){
     if(mapButtonLabel.classList.contains("active")){
         mapButtonLabel.classList.remove("active");
-        console.log(mapButtonLabel.classList.value);
     }
     if(profileContainer.classList.contains("profile-container-inv") && mapContainer.classList.contains("map-vis")){
         profileContainer.classList.remove("profile-container-inv");
         profileContainer.classList.add("profile-container-vis");
         mapContainer.classList.remove("map-vis");
         mapContainer.classList.add("map-inv");
+        username = await fetchUsername(userId);
+        userScore = await fetchUserScore(userId);
+        userTokens = await fetchUserTokens(userId);
+        likeDislikeHistory = await fetchUserLikeHistory(userId);
+        offersSubmitted = await fetchUserOffers(userId);
         generateProfileContent(); 
     }   
-        
+    
 });
 
-// markersLayer.eachLayer(function(layer) {
-//     popupOpen = false;
-//     popupOpen = layer.isPopupOpen();
-//     if(popupOpen === true){
-//         console.log("popup is open");
-//         popupContainer = document.getElementsByClassName("popup-container");
-//         popupContent.addEventListener("click", function(event){
-//             if(event.target.id === "add-offer-button"){
-//                 console.log("add offer clicked");
-//             }
-//         });
+
+function checkRequirementsVisibility(){
+      if (
+      char.classList.contains("valid") &&
+      uppercase.classList.contains("valid") &&
+      symbol.classList.contains("valid") &&
+      number.classList.contains("valid") ) {
+          requirements.id = "password-requirements-inv";
+      } else {
+        requirements.id = "password-requirements-vis";
+      }
+      password.onfocus = function () {
+          checkRequirementsVisibility();
+        };
+        
+        password.onblur = function () {
+          // checkRequirementsVisibility();
+          requirements.id = "password-requirements-inv";
+        };
+        
+        password.onkeyup = function () {
+          // Validate characters
+          var char_num = /[a-z]/g;
+          if (password.value.match(char_num) && password.value.length >= 8) {
+            char.classList.remove("invalid");
+            char.classList.add("valid");
+          } else {
+            char.classList.remove("valid");
+            char.classList.add("invalid");
+          }
+        
+          // Validate uppercase letter
+          var uprcase = /[A-Z]/g;
+          if (password.value.match(uprcase)) {
+            uppercase.classList.remove("invalid");
+            uppercase.classList.add("valid");
+          } else {
+            uppercase.classList.remove("valid");
+            uppercase.classList.add("invalid");
+          }
+        
+          // Validate numbers
+          var numbers = /[0-9]/g;
+          if (password.value.match(numbers)) {
+            number.classList.remove("invalid");
+            number.classList.add("valid");
+          } else {
+            number.classList.remove("valid");
+            number.classList.add("invalid");
+          }
+        
+          var symbols = /(?=.*[^\w\d\s])/g;
+          if (password.value.match(symbols)) {
+            symbol.classList.remove("invalid");
+            symbol.classList.add("valid");
+          } else {
+            symbol.classList.remove("valid");
+            symbol.classList.add("invalid");
+          }
+        
+          // Check if all conditions are met to hide the requirements element
+          checkRequirementsVisibility();
+        };
+  }
+
+//   eye.addEventListener("click", function () {
+//     if (password.type === "password") {
+//       password.type = "text";
+//       eye.classList.remove("fa-eye-slash");
+//       eye.classList.add("fa-eye");
+//     } else {
+//       password.type = "password";
+//       eye.classList.remove("fa-eye");
+//       eye.classList.add("fa-eye-slash");
 //     }
-// });
+//   });
+
 //#endregion
+
+
+
 

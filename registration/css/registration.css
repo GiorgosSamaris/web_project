@@ -71,7 +71,6 @@ label{
     align-items: center;
     font-size: medium;
     justify-content: center;
-    /* row-gap: 1px; */
     margin: 1rem;
     border: 0.15rem solid black;
     border-radius: 0.4rem;

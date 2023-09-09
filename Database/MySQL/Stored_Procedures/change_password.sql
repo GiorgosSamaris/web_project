@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP PROCEDURE IF EXISTS change_password;
 DELIMITER $
 CREATE PROCEDURE change_password(IN n_password VARCHAR(45), IN id SMALLINT UNSIGNED)
