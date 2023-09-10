@@ -118,6 +118,16 @@ body {
     font-size: var(--medium);
 }
 
+#garbage-container{
+    display: flex;
+    justify-content: flex-end;
+}
+
+#garbage{
+    margin-bottom: 1rem;
+    margin-right: 0.3rem;
+}
+
 .add-offer, .review-offer{
     display: block;
     margin: 0 auto; /* 0 margin for top and bottom 
@@ -219,10 +229,12 @@ body {
     height: 10%;
     /* max-height: 10rem; */
     width: 90%;
+    max-width: 15rem;
+    text-align: center;
 }
 
 #password-requirements-vis p {
-    margin: clamp(0.5rem, 5%, 1rem);
+    margin: clamp(0.3rem, 0.5rem, 0.7rem) 0;
 }
 
 .valid {
