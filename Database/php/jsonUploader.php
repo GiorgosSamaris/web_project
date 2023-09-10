@@ -13,6 +13,7 @@
     $added_prod = false;
     $added_price = false;
     $added_store = false;
+    $added_prod_id = false;
     
     echo "Converting...\n";
     $jsonPath = $argv[1];
@@ -25,20 +26,35 @@
     if(array_key_exists("products", $jsonData))
     {
         $products = $jsonData["products"];
-
         $added_prod = true;
-        
+
+        if(array_key_exists("id", $products[0]))
+        {
+            $added_prod_id = true;
+        }
         //create the csv file and open it for writing
         $csvPath = "/var/lib/mysql-files/products.csv";
         $filePointer = fopen($csvPath, "w");
         
+
         //write csv header
-        fputs($filePointer, "subcategory| name\n");
+        if($added_prod_id == true )
+        {
+            fputs($filePointer, "id| subcategory| name\n"); 
+        }
+        else
+        {
+            fputs($filePointer, "subcategory| name\n");
+
+        }
     
         //insert json data to csv
         foreach( $products as $p )
         {
-            
+            if($added_prod_id == true)
+            {
+                fputs($filePointer,($p["id"]."|"));
+            }
             fputs($filePointer,($p["subcategory"]."|".$p["name"]."\n"));
             
         }
@@ -167,6 +183,7 @@
 
     if($added_cat == true)
     {
+        echo "Inserted Categories: \n";
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/categories.csv'
         INTO TABLE temp_category
@@ -187,6 +204,7 @@
     }
     if($added_sub_cat == true)
     {
+        echo "Inserted subcategories: \n";
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/sub_categories.csv'
         INTO TABLE temp_subcategory
@@ -206,20 +224,44 @@
 
     if($added_prod == true)
     {
-        $statement = 
-        "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv'
-        INTO TABLE temp_product
-        FIELDS TERMINATED BY '|'
-        LINES TERMINATED BY '\n'
-        IGNORE 1 LINES(subcategory_id, name)
-        ;";
-    
-        try{
-            $cat_insert = $conn->query($statement);
-        }
-        catch (mysqli_sql_exception $e)
+        if($added_prod_id == true)
         {
-            echo "Error occured during product insert: $e\n";
+            echo "Inserted Products with id: \n";
+            $statement = 
+            "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv' 
+            INTO TABLE temp_product
+            FIELDS TERMINATED BY '|'
+            LINES TERMINATED BY '\n'
+            IGNORE 1 LINES(product_id, subcategory_id, name)
+            ;";
+            
+            try{
+                $cat_insert = $conn->query($statement);
+            }
+            catch (mysqli_sql_exception $e)
+            {
+                echo "Error occured during product insert: $e\n";
+            }
+        }
+        else
+        {
+            echo "Inserted Products without id: \n";
+            $statement = 
+            "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv' 
+            INTO TABLE temp_product
+            FIELDS TERMINATED BY '|'
+            LINES TERMINATED BY '\n'
+            IGNORE 1 LINES(subcategory_id, name)
+            ;";
+            
+            try{
+                $cat_insert = $conn->query($statement);
+            }
+            catch (mysqli_sql_exception $e)
+            {
+                echo "Error occured during product insert: $e\n";
+            }
+
         }
 
     }
@@ -238,7 +280,7 @@
         }
         catch (mysqli_sql_exception $e)
         {
-            echo "Error occured during product insert: $e\n";
+            echo "Error occured during price insert: $e\n";
         }
 
     }
@@ -260,6 +302,10 @@
         }
 
     }
+    // if($added_prod|$added_sub_cat|$added_cat)
+    // {
+    //     $
+    // }
 
 
     
