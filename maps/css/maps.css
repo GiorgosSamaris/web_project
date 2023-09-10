@@ -117,6 +117,10 @@ body {
     background-color: var(--antiquewhite);
     font-size: var(--medium);
 }
+#garbage-btn{
+    background-color: transparent;
+    border: none;
+}
 
 #garbage-container{
     display: flex;
@@ -125,7 +129,7 @@ body {
 
 #garbage{
     margin-bottom: 1rem;
-    margin-right: 0.3rem;
+    margin-right: 1.8rem;
 }
 
 .add-offer, .review-offer{

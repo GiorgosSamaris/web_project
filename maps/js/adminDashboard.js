@@ -51,3 +51,22 @@ function generateAdminDashboardContent() {
     profileContainer.innerHTML = profileContent;
 }
 
+
+
+async function deleteOffer(offer_id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/delete_offer.php',
+            data: {
+                offer_id: offer_id
+            },
+            success: function (deleted) {
+                resolve(deleted);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
