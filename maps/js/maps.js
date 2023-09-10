@@ -516,7 +516,7 @@ async function initializeMap() {
 
 async function adminDelete(offer_id){
     await deleteOffer(offer_id);
-    document.getElementById(offer_id).remove()
+    document.getElementById(offer_id).remove();
 }
 //#region user's location
 //get users location

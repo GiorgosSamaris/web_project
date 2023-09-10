@@ -1,6 +1,6 @@
 <?php
-    //include 'localhostConn.php';
-    include 'azureConn.php';
+    include 'localhostConn.php';
+    // include 'azureConn.php';
 
     // $conn = mysqli_init();
     // mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
@@ -169,7 +169,7 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/categories.csv'
-        INTO TABLE category
+        INTO TABLE temp_category
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES;";
@@ -189,7 +189,7 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/sub_categories.csv'
-        INTO TABLE subcategory
+        INTO TABLE temp_subcategory
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES;";
@@ -208,10 +208,11 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv'
-        INTO TABLE product
+        INTO TABLE temp_product
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
-        IGNORE 1 LINES(subcategory_id, name);";
+        IGNORE 1 LINES(subcategory_id, name)
+        ;";
     
         try{
             $cat_insert = $conn->query($statement);
@@ -227,7 +228,7 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
-        INTO TABLE price_history
+        INTO TABLE temp_price_history
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES(product_id,price_date,average_price);";
