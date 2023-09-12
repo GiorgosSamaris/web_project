@@ -24,20 +24,6 @@ function hideLoader() {
 }
   
 
-// ...
-
-function fetchStores(callback) {
-    $.ajax({
-        type: "POST",
-        url: 'fetch_stores.php',
-        success: function (stores) {
-            callback(stores);
-        },
-        error: function (error) {
-            // Handle the error if needed
-        }
-    });
-}
 
 $(document).ready(function () {
     $("#loginForm").submit(function (event) {
@@ -60,19 +46,11 @@ $(document).ready(function () {
                     $("#response").html(response.message);
                     if (response.type === "customer") {
                         sessionStorage.setItem("userId", response.user_id);
-                        // Call fetchStores independently
-                        fetchStores(function (stores) {
-                            // Do something with 'stores' if needed
-                            window.location.href = "/maps/maps.html";
-                        });
+                        window.location.href = "/maps/maps.html";
                     }
                     if (response.type === "admin") {
                         sessionStorage.setItem("userId", -1); //since no customer has a negative id
-                        // Call fetchStores independently
-                        fetchStores(function (stores) {
-                            // Do something with 'stores' if needed
-                            window.location.href = "/maps/maps.html";
-                        });
+                        window.location.href = "/maps/maps.html";
                     }
                 } else if (response.status === "fail") {
                     hideLoader();

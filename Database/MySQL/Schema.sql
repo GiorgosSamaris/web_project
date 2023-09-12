@@ -166,8 +166,24 @@
     INDEX(customer_id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+  CREATE TABLE temp_category (
+    category_id VARCHAR(32) NOT NULL,
+    name VARCHAR(60) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE OR REPLACE VIEW temp_product AS SELECT subcategory_id,name FROM product;
+  CREATE TABLE temp_subcategory (
+    subcategory_id VARCHAR(32) NOT NULL,
+    category_id VARCHAR(32) NOT NULL,
+    name VARCHAR(80) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE OR REPLACE VIEW temp_price AS SELECT product_id, price_date, average_price FROM price_history;
+  CREATE TABLE temp_product (
+    product_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    subcategory_id VARCHAR(32) NOT NULL,
+    name VARCHAR(128) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+    CREATE TABLE product_mapper (
+    old_product_id MEDIUMINT UNSIGNED NOT NULL,
+    new_product_id MEDIUMINT UNSIGNED NOT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
