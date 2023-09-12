@@ -1,25 +1,43 @@
+:root{
+    --xCenter: center;
+    --yCenter: center;
+}
+
+
 #statistics-container {
     width: 80%;
     height: 60%;
     max-width: 50rem;
     max-height: 40rem;
+    align-items: var(--xCenter);
+    justify-content: var(--yCenter);
+    margin: 0;
 }
 
 #offers-diagram-container{
-    max-height: 30rem;
-    max-width: 40rem;
+    /* max-height: 30rem; */
+    /* max-width: 40rem; */
     display: flex;
     flex-direction: column;
+    align-items: var(--xCenter);
+    justify-content: var(--yCenter);
+    margin-right: 0;
+}
+
+#offers-diagram-container canvas{
+    max-height: 30rem;
+    max-width: 40rem;
+    margin: 0;
 }
 
 #offers-chart {
     background-color: antiquewhite;
     border-radius: 0.6rem;
     border: transparent;
+    margin: 0;
 }
 
 #select-container{
-    display: hidden;
     padding: 0.2rem;
     border-radius: 0.6rem;
     border: 1px solid black;
