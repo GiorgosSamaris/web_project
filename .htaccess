@@ -1,2 +1,12 @@
 RewriteEngine On
 RewriteRule ^maps/?$ /var/www/gocart.net/html/maps/maps.html [NC,L]
+
+<FilesMatch "\.(html|css|js|png|jpg)$">
+    Header set Cache-Control "max-age=63072000, public"
+</FilesMatch>
+
+
+# GZIP compression for text files: HTML, CSS, JS, Text, XML, fonts and images: PNG, JPEG     
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE reviewOffer/img/
+</IfModule>
