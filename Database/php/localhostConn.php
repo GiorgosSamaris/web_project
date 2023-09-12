@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "phpClient";
 $password = "$0ftK1ngsPhP";
-$dbname = "GoCart";
+$dbname = "gocart";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

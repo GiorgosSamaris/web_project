@@ -1,0 +1,49 @@
+#statistics-container {
+    width: 40rem;
+    height: 40rem;
+}
+
+#offers-diagram-container{
+    width: 100%;
+    height: 100%;
+}
+
+#offers-chart {
+    background-color: antiquewhite;
+    border-radius: 0.6rem;
+    border: transparent;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/* #page-selection-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation button,
+#page-numbers{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    border-radius: 0.6rem;
+}
+
+#page-numbers:hover,
+.navigation button:not(.disabled):hover{   
+    background-color: #f1f1f1;
+}
+
+#page-numbers.active {
+    background-color: antiquewhite;
+    color: black;
+}
+
+.hidden {
+    display: none;
+} */
