@@ -304,7 +304,7 @@
 
     }
 
-    //Call store procedures for temp table merge to main
+    // //Call store procedures for temp table merge to main
     if($added_prod)
     {
         $statement = "CALL products_temp_merge();";
