@@ -19,10 +19,20 @@ async function generateAdminDashboardContent() {
     
     //statistics container
     profileContent += '<div id = "statistics-container">' + 
-                    '<div id ="offers-diagram-container">' + 
-                    '<canvas id="offers-chart"></canvas>' + '</div>' +
-                    '<div id ="sales-diagram-container">' + 
-                    '<canvas id="sales-chart"></canvas>' + '</div>' +
+                        '<div id ="offers-diagram-container">' +
+                            '<span id = "select-container">' +
+                                '<label for = "select-year">Select Year: </label>' +
+                                '<select id = "select-year" name = "select-year">' + 
+                                    '<option value = "2023">2023</option>' + 
+                                '</select>' +
+                                '<label for = "select-month">Select Month: </label>' +
+                                '<select id = "select-month" name = "select-month">' + 
+                                    '<option value = "January">January</option>' +
+                                '</select>' +
+                            '</span>' +
+                            '<canvas id="offers-chart"></canvas>' + '</div>' +
+                        '<div id ="sales-diagram-container">' + 
+                            '<canvas id="sales-chart"></canvas>' + '</div>' +
                     '</div>';
 
     
@@ -47,9 +57,11 @@ async function generateAdminDashboardContent() {
     
     //profile content
     profileContainer.innerHTML = profileContent;
-    console.log(offer_count.map(row => row.offer_date));
+    // console.log(offer_count.map(row => row.offer_date));
     (async function() {      
       const chartCanvas = document.getElementById('offers-chart');
+      const selectYear = document.getElementById('select-year');
+      const selectMonth = document.getElementById('select-month');
       if(chartCanvas)
       {
         const chart = new Chart(chartCanvas,
@@ -61,7 +73,7 @@ async function generateAdminDashboardContent() {
                 {
                     borderColor: 'blue',
                     backgroundColor: 'white',
-                    label: 'Number of offers',
+                    label: selectYear.value + ' ' + selectMonth.value,
                     data: offer_count.map(row => parseInt(row.offer_count)),
                 }
               ]
