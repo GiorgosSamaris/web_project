@@ -6,8 +6,8 @@ BEGIN
     DECLARE done BOOLEAN DEFAULT FALSE;
     -- vars
     DECLARE current_product_id BIGINT DEFAULT 0;
-    DECLARE current_price_date DATE NOT NULL,
-    DECLARE average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0,
+    DECLARE current_price_date DATE;
+    DECLARE average_price DECIMAL(4,2) DEFAULT 0;
     DECLARE price_cursor CURSOR FOR SELECT product_id, price_date, average_price FROM temp_price;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     OPEN price_cursor;

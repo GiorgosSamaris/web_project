@@ -1,21 +1,20 @@
 DROP PROCEDURE IF EXISTS store_temp_merge;
-DROP PROCEDURE IF EXISTS products_price_temp_merge;
 DELIMITER $
-CREATE PROCEDURE products_price_temp_merge()
+CREATE PROCEDURE store_temp_merge()
 BEGIN
     -- handler
     DECLARE done BOOLEAN DEFAULT FALSE;
     -- vars
-    DECLARE current_store_name VARCHAR(27) NOT NULL DEFAULT 'Unknown',
-    DECLARE current_longitude DECIMAL(11,8) NOT NULL,
-    DECLARE current_latitude DECIMAL(10,8) NOT NULL,
-    DECLARE current_map_id VARCHAR(16) NOT NULL,
-    address VARCHAR(40) NOT NULL DEFAULT 'Unknown',
-    DECLARE store_cursor CURSOR FOR SELECT product_id, price_date, average_price FROM temp_price;
+    DECLARE current_store_name VARCHAR(27) DEFAULT 'Unknown';
+    DECLARE current_longitude DECIMAL(11,8);
+    DECLARE current_latitude DECIMAL(10,8);
+    DECLARE current_map_id VARCHAR(16);
+    DECLARE current_address VARCHAR(40) DEFAULT 'Unknown';
+    DECLARE store_cursor CURSOR FOR SELECT store_name, longitude, latitude, map_id, address FROM temp_store;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     OPEN store_cursor;
     store_loop: LOOP
-        FETCH store_cursor INTO current_product_id, current_price_date, average_price;
+        FETCH store_cursor INTO current_store_name, current_longitude, current_latitude, current_map_id, current_address;
         IF done THEN
             LEAVE store_loop;
         END IF;

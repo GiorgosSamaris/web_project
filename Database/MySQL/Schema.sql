@@ -1,7 +1,7 @@
 
-  DROP SCHEMA IF EXISTS GoCart;
-  CREATE SCHEMA GoCart;
-  USE GoCart;
+  DROP SCHEMA IF EXISTS gocart;
+  CREATE SCHEMA gocart;
+  USE gocart;
 
   --
   -- Table structure for table `User`
@@ -195,6 +195,6 @@
     longitude DECIMAL(11,8) NOT NULL,
     latitude DECIMAL(10,8) NOT NULL,
     map_id VARCHAR(16) NOT NULL,
-    address VARCHAR(40) NOT NULL DEFAULT 'Unknown',
+    address VARCHAR(40) NOT NULL DEFAULT 'Unknown'
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

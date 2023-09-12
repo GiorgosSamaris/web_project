@@ -201,6 +201,7 @@
             echo "Error occured during category insert: $e\n";
         }
 
+
     }
     if($added_sub_cat == true)
     {
@@ -270,7 +271,7 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
-        INTO TABLE temp_price_history
+        INTO TABLE temp_price
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES(product_id,price_date,average_price);";
@@ -288,7 +289,7 @@
     {
         $statement = 
         "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/stores.csv' 
-        INTO TABLE store
+        INTO TABLE temp_store
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
         IGNORE 1 LINES(store_name,longitude,latitude,map_id,address);";
@@ -298,16 +299,62 @@
         }
         catch (mysqli_sql_exception $e)
         {
-            echo "Error occured during product insert: $e\n";
+            echo "Error occured during store insert: $e\n";
         }
 
     }
-    // if($added_prod|$added_sub_cat|$added_cat)
-    // {
-    //     $
-    // }
 
-
+    //Call store procedures for temp table merge to main
+    if($added_prod)
+    {
+        $statement = "CALL products_temp_merge();";
     
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during product insert: $e\n";
+        }
+    
+        if($cat_insert!=1)
+            echo "Stored procedure for product insertion failed";
+    }
+
+
+
+    if($added_price)
+    {
+        $statement = "CALL products_price_temp_merge();";
+    
+        try{
+            $cat_insert = $conn->query($statement);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during price insert: $e\n";
+        }
+    
+        if($cat_insert!=1)
+            echo "Stored procedure for price insertion failed";
+    }
+
+    if($added_store)
+    {
+        $statement = "CALL store_temp_merge();";
+
+        try{
+            $cat_insert = $conn->query($statement);
+            if($cat_insert!=1)
+            echo "Stored procedure for store insertion failed";
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            echo "Error occured during store insert: $e\n";
+        }
+
+        
+
+    }
 
     ?>
