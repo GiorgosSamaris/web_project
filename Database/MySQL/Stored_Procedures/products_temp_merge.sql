@@ -91,7 +91,7 @@ BEGIN
         ELSEIF (EXISTS(SELECT * FROM product WHERE product.name != current_product_name AND product.product_id = current_product_id)) THEN
             -- different name same id already exists on a different record, so generate a new id and insert
             INSERT INTO product (`name`, `subcategory_id`) VALUES (current_product_name, current_product_subcategory_id);
-            INSERT INTO product_mapper (`old_product_id`, `new_product_id`) VALUES (current_product_id, LAST_INSERT_ID());
+            UPDATE temp_prices SET product_id =  LAST_INSERT() WHERE product_id = current_product_id;
         ELSE
             -- insert new
             INSERT INTO product (`name`, `subcategory_id`, `product_id`) VALUES (current_product_name, current_product_subcategory_id, current_product_id);

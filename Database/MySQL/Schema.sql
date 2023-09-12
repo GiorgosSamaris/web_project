@@ -183,7 +183,18 @@
     name VARCHAR(128) NOT NULL  
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-    CREATE TABLE product_mapper (
-    old_product_id MEDIUMINT UNSIGNED NOT NULL,
-    new_product_id MEDIUMINT UNSIGNED NOT NULL
+    CREATE TABLE temp_price (
+    product_id MEDIUMINT UNSIGNED NOT NULL,
+    price_date DATE NOT NULL,
+    average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+  CREATE TABLE temp_store (
+    store_name VARCHAR(27) NOT NULL DEFAULT 'Unknown',
+    longitude DECIMAL(11,8) NOT NULL,
+    latitude DECIMAL(10,8) NOT NULL,
+    map_id VARCHAR(16) NOT NULL,
+    address VARCHAR(40) NOT NULL DEFAULT 'Unknown',
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
