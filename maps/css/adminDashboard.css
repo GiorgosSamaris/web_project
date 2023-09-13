@@ -1,47 +1,64 @@
-:root{
-    --xCenter: center;
-    --yCenter: center;
+#product-data-edit-container,
+#store-data-edit-container,
+#statistics-container{
+    margin: 0.5rem 0 ;
 }
+
+#product-data-edit-container,
+#store-data-edit-container{
+    /* height: 5%; */
+    width: 20%;
+    max-height: 10rem;
+    align-items: center;
+    text-align: center;
+}
+
+#product-data-edit-container input,
+#store-data-edit-container input{
+    height: 100%;
+    max-height: 5rem;
+}
+    
 
 
 #statistics-container {
-    width: 80%;
-    height: 60%;
-    max-width: 50rem;
-    max-height: 40rem;
-    align-items: var(--xCenter);
-    justify-content: var(--yCenter);
-    margin: 0;
-}
-
-#offers-diagram-container{
-    /* max-height: 30rem; */
-    /* max-width: 40rem; */
+    width: 90%;
+    /* height: 60%; */
+    max-width: 40rem;
+    max-height: 50rem;
     display: flex;
     flex-direction: column;
-    align-items: var(--xCenter);
-    justify-content: var(--yCenter);
-    margin-right: 0;
+    align-items: center;
+    /* justify-content: center; */
 }
 
-#offers-diagram-container canvas{
-    max-height: 30rem;
-    max-width: 40rem;
+#offers-diagram-container,
+#average-discount-diagram-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin: 0;
+    /* height: 50%; */
+    width: 100%;
 }
 
-#offers-chart {
+#offers-chart,
+#average-discount-chart{
+    height: 50%;
+    max-height: 45rem;
+    max-width: 45rem;
+    margin: 0;
     background-color: antiquewhite;
     border-radius: 0.6rem;
     border: transparent;
-    margin: 0;
+    margin: 2rem 0;
 }
 
-#select-container{
+#offers-select-container{
     padding: 0.2rem;
     border-radius: 0.6rem;
     border: 1px solid black;
     width: fit-content;
-    /* margin-bottom: -5%; */
+    white-space: nowrap;
 }
 

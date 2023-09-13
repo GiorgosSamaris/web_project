@@ -1,54 +1,71 @@
-var selectMonth;
-var selectYear;
+let selectMonth;
+let selectYear;
 const monthNames = ["January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"];
-var chart;
+let offerChart;
 
 
 async function generateAdminDashboardContent() {
     profileContainer = document.getElementById('profile-container');
-    let profileContent = '';
+    var profileContent = '';
     let offer_count = await fetchOfferCount();
     let user_leaderboard = await fetchUserLeaderboard();
+    let categories = await getCategories();
+    let subcategories = await getSubcategories();
+    let categoriesMerged = [];
+    let discounts = await getPriceDrop('2023-09-06', 'e4b4de2e31fc43b7b68a0fe4fbfad2e6', 'category');
+    categories.forEach(function (category) {
+        categoryObj = { name: category.name, id: category.category_id, subcategories: [] };
+        categoriesMerged.push(categoryObj);
+        subcategories.forEach(function (subcategory) {
+            if (subcategory.category_id === category.category_id) {
+                categoryObj.subcategories.push(subcategory);
+            }
+        });
+    });
     //extracts the first 4 characters of the date string
     const distinctYears = [...new Set(offer_count.map(row => row.offer_date.substring(0, 4)))]; 
     const distinctMonths = [...new Set(offer_count.map(row => { 
         const monthValue  = parseInt(row.offer_date.substring(5, 7));
         return monthNames[monthValue - 1];
     }))];
-    console.log(distinctYears);
-    console.log(distinctMonths);
-    // console.log(offer_count);
-    // console.log(user_leaderboard);
-
     //product data container
     profileContent = '<div id = "product-data-edit-container">' + 
-                '<input type="file" id="product-file" name="product-file" accept=".json" />' +
-                '</div>';
+                        '<input type="file" id="product-file" name="product-file" accept=".json" />' + 
+                    '</div>';
     //store data container
     profileContent += '<div id = "store-data-edit-container">' + 
-                '<input type="file" id="store-file" name="store-file" accept=".geojson" />' +
-                '</div>';
+                        '<input type="file" id="store-file" name="store-file" accept=".geojson" />' +
+                    '</div>';
 
     
     //statistics container
     profileContent += '<div id = "statistics-container">' + 
                         '<div id ="offers-diagram-container">' +
-                            '<span id = "select-container">' +
+                            '<span id = "offers-select-container">' +
                                 '<label for = "select-year">Select Year: </label>' +
                                 '<select id = "select-year" name = "select-year">' + 
                                 '</select>' +
                                 '<label for = "select-month">Select Month: </label>' +
                                 '<select id = "select-month" name = "select-month">' + 
-                                    '<option value = "All Months">All months</option>' +
+                                    '<option value = "All Months">All Months</option>' +
                                 '</select>' +
                             '</span>' +
-                            '<canvas id="offers-chart"></canvas>' + '</div>' +
-                        '<div id ="sales-diagram-container">' + 
-                            '<canvas id="sales-chart"></canvas>' + '</div>' +
+                            '<canvas id="offers-chart"></canvas>' + 
+                        '</div>' +
+                        '<div id ="average-discount-diagram-container">' + 
+                            "<span id = 'average-discount-select-container'>" +
+                                '<label for = "select-date">Select Date: </label>' +
+                                '<input type = "date" id = "select-date" name = "select-date" value = "2023-09-06">' +
+                                '<label for = "select-category">Select Category or Subcategory: </label>' +
+                                '<select id = "select-category" name = "select-category">' +
+                                '</select>' +
+                            '</span>' +
+                            '<canvas id="average-discount-chart"></canvas>' + 
+                        '</div>' +
                     '</div>';
 
-    
+
     //leaderboard container
     // leaderboard += '<div id = "leaderboard-container">' + 
     //                     '<div id = "list-container">' + '<label>Leaderboard</label>' +
@@ -71,10 +88,12 @@ async function generateAdminDashboardContent() {
     //profile content
     profileContainer.innerHTML = profileContent;
     // console.log(offer_count.map(row => row.offer_date));
-    const chartCanvas = document.getElementById('offers-chart');
+    const offersChart = document.getElementById('offers-chart');
+    const discountsChart = document.getElementById('average-discount-chart');
     selectYear = document.getElementById('select-year');
     selectMonth = document.getElementById('select-month');
-
+    selectCategorySubcategory = document.getElementById('select-category');
+    const selectDate = document.getElementById('select-date');
     distinctYears.forEach((year) => {
         selectYear.innerHTML += '<option value = "' + year + '">' + year + '</option>';
     });
@@ -82,45 +101,72 @@ async function generateAdminDashboardContent() {
     distinctMonths.forEach((month) => {
         selectMonth.innerHTML += '<option value = "' + month + '">' + month + '</option>';
     });
-
-    generateChart(chartCanvas, offer_count, selectYear, selectMonth);
-    selectYear.addEventListener('change', function(){
-        console.log("from dom: " + selectYear.value);
-        chart.data.datasets.label = 'Displayed: ' + selectYear + ' ' + selectMonth;
-
-        // generateChart(chartCanvas, offer_count, selectYear, selectMonth);
+    categoriesMerged.forEach((category) => {
+        selectCategorySubcategory.innerHTML += '<option value="' + category.id + '">' + category.name + '</option>';
+        category.subcategories.forEach((subcategory) => {
+            selectCategorySubcategory.innerHTML += '<option value = "' + subcategory.subcategory_id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + subcategory.name + '</option>';
+        });
     });
-    selectMonth.addEventListener('change', function(){
-        console.log("from dom month: " + selectMonth.value);
+    generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth);
+    generateAverageDiscountChart(discountsChart, discounts);
+    
 
-        const selectedYear = selectYear.value;
-        const selectedMonth = monthNames.indexOf(selectMonth.value) + 1;
-        console.log(selectedYear);
-        console.log(selectedMonth + selectMonth.value);
+    selectYear.addEventListener('change', function(){
+        offerChart.data.datasets.label = 'Displayed: ' + selectYear.value + ' ' + selectMonth.value;
 
-        // generateChart(chartCanvas, offer_count, selectYear, selectMonth);
+    });
+    selectMonth.addEventListener('change', function(event){
+        if(event.target.value != 'All Months')
+        {const selectedYear = selectYear.value;
+            const selectedMonth = monthNames.indexOf(selectMonth.value) + 1;
+            const dateLabels = generateDates(selectedYear, selectedMonth);
 
-        const dateLabels = generateDates(selectedYear, selectedMonth);
-        console.log(dateLabels);
+            const countLabels = dateLabels.map((date) => {  //maps the dateLabels array to an array of offer counts
+                const offer = offer_count.find((row) => row.offer_date === '2023-' + date);   //finds the row with the same date as the current date in the loop
+                if(offer) {
+                    
+                    return parseInt(offer.offer_count);
+                } else {
+                    return 0;
+                }
+            });
+            offerChart.data.labels = dateLabels;
+            offerChart.data.datasets[0].data = countLabels;
+            offerChart.data.datasets[0].label = 'Displayed: ' + selectedYear + ' ' + selectMonth.value;
+            offerChart.update();
+        } else if(event.target.value === 'All Months'){
 
-        chart.data.labels = dateLabels;
-        console.log(chart.data.labels);
-
-        chart.data.datasets.label = 'Displayed: ' + selectYear + ' ' + selectMonth;
-        console.log(chart.data.datasets.label);
-
-        chart.update();
+            offerChart.data.labels = offer_count.map(row => row.offer_date);
+            offerChart.data.datasets[0].data = offer_count.map(row => parseInt(row.offer_count));
+            offerChart.data.datasets[0].label = 'Displayed: ' + selectYear.value + ' ' + selectMonth.value;
+            offerChart.update();
+        }
     }); 
 
-    // const paginationNumbers = document.getElementById("page-numbers");
-    // const paginatedList = document.getElementById("leaderboard-list");
-    // const listItems = paginatedList.querySelectorAll("li");
+    selectCategorySubcategory.addEventListener('change', async function(event){
+        // find whether the selected value is a category or a subcategory
+        let selectedValue = event.target.value;
+        let selectedCategory = categoriesMerged.find((category) => category.id === selectedValue);
+        let selectedSubcategory = categoriesMerged.flatMap((category) => category.subcategories).find((subcategory) => subcategory.subcategory_id === selectedValue);
+        if(selectedSubcategory) {
+            console.log(await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory'));
+        }else if(selectedCategory) {
+            console.log(await getPriceDrop(selectDate.value, selectedCategory.id, 'category'));
+        }
+        else {
+        console.log("error");
+        }
+    });
 
-    // const paginationLimit = 10;
-    // const pageCount = Math.ceil(listItems.length / paginationLimit);
-    // let currentPage = 1;
+// const paginationNumbers = document.getElementById("page-numbers");
+// const paginatedList = document.getElementById("leaderboard-list");
+// const listItems = paginatedList.querySelectorAll("li");
 
-    // const appendPageNumber = (index) => {
+// const paginationLimit = 10;
+// const pageCount = Math.ceil(listItems.length / paginationLimit);
+// let currentPage = 1;
+
+// const appendPageNumber = (index) => {
     //   const pageNumber = document.createElement("button");
     //   pageNumber.className = "page-number";
     //   pageNumber.innerHTML = index;
@@ -131,77 +177,74 @@ async function generateAdminDashboardContent() {
     // };
 
     // const getPaginationNumbers = () => {
-    //   for (let day = 1; day <= pageCount; day++) {
-    //     appendPageNumber(day);
+        //   for (let day = 1; day <= pageCount; day++) {
+            //     appendPageNumber(day);
     //   }
     // };
 
     // const handleActivePageNumber = () => {
-    //   document.querySelectorAll(".page-number").forEach((button) => {
-    //     button.classList.remove("active");
+        //   document.querySelectorAll(".page-number").forEach((button) => {
+            //     button.classList.remove("active");
     //     const pageIndex = Number(button.getAttribute("page-index"));
     //     if (pageIndex == currentPage) {
-    //       button.classList.add("active");
-    //     }
-    //   });
-    // };
-
-    // const setCurrentPage = (pageNum) => {
-    //   currentPage = pageNum;
+        //       button.classList.add("active");
+        //     }
+        //   });
+        // };
+        
+        // const setCurrentPage = (pageNum) => {
+            //   currentPage = pageNum;
     //   handleActivePageNumber();
-
+    
     //   const prevRange = (pageNum - 1) * paginationLimit;
     //   const currRange = pageNum * paginationLimit;
-
+    
     //   listItems.forEach((item, index) => {
     //     item.classList.add("hidden");
     //     if (index >= prevRange && index < currRange) {
-    //       item.classList.remove("hidden");
-    //     }
-    //   });
-    // };
-
-    // window.addEventListener("load", () => {
-    //   getPaginationNumbers();
-    //   setCurrentPage(1);
-
-    //   document.querySelectorAll(".page-number").forEach((button) => {
-    //     const pageIndex = Number(button.getAttribute("page-index"));
-
-    //     if (pageIndex) {
-    //       button.addEventListener("click", () => {
-    //         setCurrentPage(pageIndex);
-    //       });
-    //     }
-    //   });
-    // });
+        //       item.classList.remove("hidden");
+        //     }
+        //   });
+        // };
+        
+        // window.addEventListener("load", () => {
+            //   getPaginationNumbers();
+            //   setCurrentPage(1);
+            
+            //   document.querySelectorAll(".page-number").forEach((button) => {
+                //     const pageIndex = Number(button.getAttribute("page-index"));
+                
+                //     if (pageIndex) {
+                    //       button.addEventListener("click", () => {
+                        //         setCurrentPage(pageIndex);
+                        //       });
+                        //     }
+                        //   });
+                        // });
 }
-
+                    
 function generateDates(year, month) {
     const labels = [];
     const daysInMonth = new Date(year, month, 0).getDate(); //gets the number of days in the month by getting the date of the last day of the month
-    console.log(daysInMonth);
     for (let day = 1; day <= daysInMonth; day++) {
-        const dateString = year + '-' + month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
-        console.log(dateString);
+        const dateString =  month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
         labels.push(dateString);
         //padStart adds a 0 in front of the number if it is less than 10 (e.g. 1 -> 01)
     }
-    console.log(labels);
     return labels;
 }
 
-function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {      
+function generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth) {      
     
-    // const existingChart = Chart.getChart(chartCanvas);
+    // const existingChart = Chart.getChart(offersChart);
 
     // if(existingChart) {
     //     existingChart.destroy();
     // }
     
-    if(chartCanvas)
+    if(offersChart)
     {
-      chart = new Chart(chartCanvas,
+      offerChart = new Chart(offersChart,
         {
           type: 'line',
           data: {
@@ -216,13 +259,15 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
             ]
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
                     text: 'Offers per month',
                     color: 'black',
                     font: {
-                        size: 22,
+                        size: 18,
                         color: 'black',
                         weight: 'bold',
                     },
@@ -232,7 +277,7 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
                     labels: {
                         font: {
                             color: 'black',
-                            size : 16,
+                            size : 14,
                             weight: 'bold',
                         },
                     },
@@ -242,11 +287,11 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
                 x: {
                     display: true,
                     ticks: {
-                        stepSize: 1,
-                        maxTicksLimit: 31,
+                        // stepSize: 1,
+                        maxTicksLimit: 15,
                         font: {
                             color: 'black',
-                            size : 14,
+                            size : 12,
                             weight: 'bold',
                         },
                     },
@@ -255,7 +300,7 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
                         text: 'Date',
                         font: {
                             color: 'black',
-                            size : 16,
+                            size : 12,
                             weight: 'bold',
                         },
                     },
@@ -263,12 +308,12 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
                 y: {
                     display: true,
                     ticks: {
-                        beginAtZero: true,
-                        stepSize: 1,
+                        // beginAtZero: true,
+                        stepSize: 20,
                         maxTicksLimit: 100,
                         font: {
                             color: 'black',
-                            size : 14,
+                            size : 12,
                             weight: 'bold',
                         },
                     },
@@ -277,7 +322,7 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
                         text: 'Number of offers',
                         font: {
                             color: 'black',
-                            size : 16,
+                            size : 12,
                             weight: 'bold',
                         },
                     },
@@ -286,7 +331,103 @@ function generateChart(chartCanvas, offer_count, selectYear, selectMonth) {
           },
       });
   } else {
-      console.log("chartCanvas is null");
+      console.log("offersChart is null");
+  }
+}
+
+function generateAverageDiscountChart(discountsChart, average_discount) {
+    console.log(average_discount.map(row => row.drop_date));
+    console.log(average_discount.map(row => parseFloat(row.drop_percentage)));
+    if(discountsChart)
+    {
+      discountChart = new Chart(discountsChart,
+        {
+          type: 'line',
+          data: {
+            labels: average_discount.map(row => row.drop_date), //x axis
+            datasets: [ //y axis
+              {
+                  borderColor: 'blue',
+                  backgroundColor: 'white',
+                //   label: 'Displayed: ' + selectYear.value + ' ' + selectMonth.value,
+                  data: average_discount.map(row => parseFloat(row.drop_percentage)),
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Discount value per month',
+                    color: 'black',
+                    font: {
+                        size: 18,
+                        color: 'black',
+                        weight: 'bold',
+                    },
+                },
+                legend: {
+                    display: true,
+                    labels: {
+                        font: {
+                            color: 'black',
+                            size : 14,
+                            weight: 'bold',
+                        },
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    display: true,
+                    ticks: {
+                        // stepSize: 1,
+                        maxTicksLimit: 15,
+                        font: {
+                            color: 'black',
+                            size : 12,
+                            weight: 'bold',
+                        },
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        font: {
+                            color: 'black',
+                            size : 12,
+                            weight: 'bold',
+                        },
+                    },
+                },
+                y: {
+                    display: true,
+                    ticks: {
+                        // beginAtZero: true,
+                        stepSize: 20,
+                        maxTicksLimit: 100,
+                        font: {
+                            color: 'black',
+                            size : 12,
+                            weight: 'bold',
+                        },
+                    },
+                    title: {
+                        display: true,
+                        text: 'Number of offers',
+                        font: {
+                            color: 'black',
+                            size : 12,
+                            weight: 'bold',
+                        },
+                    },
+                }
+            },
+          },
+      });
+  } else {
+      console.log("discountsChart is null");
   }
 }
 
@@ -344,7 +485,26 @@ async function fetchUserLeaderboard() {
         });
 });
 }
-
+// 4Y-2m-2d 2023-09-30
+async function getPriceDrop(start_date, content_id, content_type){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_price_drop.php',
+            data: {
+                start_date: start_date,
+                content_id: content_id,
+                content_type: content_type
+            },
+            success: function (offers) {
+                resolve(offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
 async function fetchOfferCount() {
     return new Promise((resolve, reject) => {
         $.ajax({

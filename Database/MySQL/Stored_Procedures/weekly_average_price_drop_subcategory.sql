@@ -35,7 +35,7 @@ OPEN product_cursor;
         END WHILE;
     END LOOP;
     CLOSE product_cursor;
-    SELECT AVG(price_drop), price_date FROM temp_results GROUP BY price_date ORDER BY price_date ASC;
+    SELECT AVG(price_drop) as drop_percentage, price_date as drop_date FROM temp_results GROUP BY price_date ORDER BY price_date ASC;
     DROP TABLE temp_results;
 END$
 DELIMITER ;
