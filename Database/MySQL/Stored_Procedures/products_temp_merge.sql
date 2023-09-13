@@ -97,7 +97,7 @@ BEGIN
             UPDATE temp_price SET product_id =  LAST_INSERT_ID() WHERE product_id = current_product_id;
         ELSE
             -- insert new
-            INSERT INTO product (`name`, `subcategory_id`) VALUES (current_product_name, current_product_subcategory_id);
+            INSERT INTO product (`name`, `subcategory_id`, `product_id`) VALUES (current_product_name, current_product_subcategory_id, current_product_id);
         END IF;
     END LOOP;
     CLOSE product_cursor;
