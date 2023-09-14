@@ -1,5 +1,9 @@
-let selectMonth;
 let selectYear;
+let selectMonth;
+let selectDate;
+let selectedValue;
+let selectedCategory;
+let selectedSubcategory;
 const monthNames = ["January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"];
 let offerChart;
@@ -40,8 +44,7 @@ async function generateAdminDashboardContent() {
 
     
     //statistics container
-    profileContent += '<div id = "statistics-container">' + 
-                        '<div id ="offers-diagram-container">' +
+    profileContent +=  '<div id ="offers-diagram-container">' +
                             '<span id = "offers-select-container">' +
                                 '<label for = "select-year">Select Year: </label>' +
                                 '<select id = "select-year" name = "select-year">' + 
@@ -54,16 +57,16 @@ async function generateAdminDashboardContent() {
                             '<canvas id="offers-chart"></canvas>' + 
                         '</div>' +
                         '<div id ="average-discount-diagram-container">' + 
-                            "<span id = 'average-discount-select-container'>" +
+                            "<div id = 'average-discount-select-container'>" +
                                 '<label for = "select-date">Select Date: </label>' +
-                                '<input type = "date" id = "select-date" name = "select-date" value = "2023-09-06">' +
+                                '<input type = "date" id = "select-date" name = "select-date" value = "2023-09-06">' + '<br>' + 
+                                // '<input type = "text" id = "select-date" name = "select-date">' + '<br>' +
                                 '<label for = "select-category">Select Category or Subcategory: </label>' +
                                 '<select id = "select-category" name = "select-category">' +
                                 '</select>' +
-                            '</span>' +
+                            '</div>' +
                             '<canvas id="average-discount-chart"></canvas>' + 
-                        '</div>' +
-                    '</div>';
+                        '</div>';
 
 
     //leaderboard container
@@ -88,33 +91,41 @@ async function generateAdminDashboardContent() {
     //profile content
     profileContainer.innerHTML = profileContent;
     // console.log(offer_count.map(row => row.offer_date));
+    // flatpickr("#select-date", {
+    //     dateFormat: "Y-m-d",
+    //     defaultDate: "2023-09-06",
+    // });
     const offersChart = document.getElementById('offers-chart');
     const discountsChart = document.getElementById('average-discount-chart');
+    selectDate = document.getElementById('select-date');
     selectYear = document.getElementById('select-year');
     selectMonth = document.getElementById('select-month');
     selectCategorySubcategory = document.getElementById('select-category');
-    const selectDate = document.getElementById('select-date');
-    distinctYears.forEach((year) => {
+
+    
+    distinctYears.forEach((year) => {   //adds the years to the select element
         selectYear.innerHTML += '<option value = "' + year + '">' + year + '</option>';
     });
 
-    distinctMonths.forEach((month) => {
+    distinctMonths.forEach((month) => {  //adds the months to the select element
         selectMonth.innerHTML += '<option value = "' + month + '">' + month + '</option>';
     });
-    categoriesMerged.forEach((category) => {
+
+    categoriesMerged.forEach((category) => {    //adds the categories and subcategories to the select element
         selectCategorySubcategory.innerHTML += '<option value="' + category.id + '">' + category.name + '</option>';
         category.subcategories.forEach((subcategory) => {
             selectCategorySubcategory.innerHTML += '<option value = "' + subcategory.subcategory_id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + subcategory.name + '</option>';
         });
     });
+
     generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth);
     generateAverageDiscountChart(discountsChart, discounts);
     
-
     selectYear.addEventListener('change', function(){
         offerChart.data.datasets.label = 'Displayed: ' + selectYear.value + ' ' + selectMonth.value;
 
     });
+
     selectMonth.addEventListener('change', function(event){
         if(event.target.value != 'All Months')
         {const selectedYear = selectYear.value;
@@ -143,18 +154,53 @@ async function generateAdminDashboardContent() {
         }
     }); 
 
-    selectCategorySubcategory.addEventListener('change', async function(event){
-        // find whether the selected value is a category or a subcategory
-        let selectedValue = event.target.value;
-        let selectedCategory = categoriesMerged.find((category) => category.id === selectedValue);
-        let selectedSubcategory = categoriesMerged.flatMap((category) => category.subcategories).find((subcategory) => subcategory.subcategory_id === selectedValue);
+    selectDate.addEventListener('change', async function(event){
+        selectDate.value = event.target.value;
+        console.log(selectDate.value);
+        
         if(selectedSubcategory) {
+            console.log(selectDate.value);
             console.log(await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory'));
+            const priceDropData = await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory');
+            discountChart.data.labels = priceDropData.map(row => row.drop_date);
+            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.update();
         }else if(selectedCategory) {
+            console.log(selectDate.value);
             console.log(await getPriceDrop(selectDate.value, selectedCategory.id, 'category'));
+            const priceDropData = await getPriceDrop(selectDate.value, selectedCategory.id, 'category');
+            discountChart.data.labels = priceDropData.map(row => row.drop_date);
+            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.update();
         }
         else {
-        console.log("error");
+            console.log("error");
+        }
+    });
+
+    selectCategorySubcategory.addEventListener('change', async function(event){
+        // find whether the selected value is a category or a subcategory
+        selectedValue = event.target.value;
+        selectedCategory = categoriesMerged.find((category) => category.id === selectedValue);
+        selectedSubcategory = categoriesMerged.flatMap((category) => category.subcategories).find((subcategory) => subcategory.subcategory_id === selectedValue);
+        
+        if(selectedSubcategory) {
+            console.log(selectDate.value);
+            console.log(await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory'));
+            const priceDropData = await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory');
+            discountChart.data.labels = priceDropData.map(row => row.drop_date);
+            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.update();
+        }else if(selectedCategory) {
+            console.log(selectDate.value);
+            console.log(await getPriceDrop(selectDate.value, selectedCategory.id, 'category'));
+            const priceDropData = await getPriceDrop(selectDate.value, selectedCategory.id, 'category');
+            discountChart.data.labels = priceDropData.map(row => row.drop_date);
+            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.update();
+        }
+        else {
+            console.log("error");
         }
     });
 

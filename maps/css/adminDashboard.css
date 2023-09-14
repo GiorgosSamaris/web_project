@@ -1,6 +1,5 @@
 #product-data-edit-container,
-#store-data-edit-container,
-#statistics-container{
+#store-data-edit-container{
     margin: 0.5rem 0 ;
 }
 
@@ -18,29 +17,18 @@
     height: 100%;
     max-height: 5rem;
 }
-    
 
-
-#statistics-container {
-    width: 90%;
-    /* height: 60%; */
-    max-width: 40rem;
-    max-height: 50rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* justify-content: center; */
-}
 
 #offers-diagram-container,
 #average-discount-diagram-container{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0;
-    /* height: 50%; */
-    width: 100%;
+    text-align: center;
+    margin: 0.6rem 0;
+    width: 95%;
 }
+
 
 #offers-chart,
 #average-discount-chart{
@@ -51,14 +39,35 @@
     background-color: antiquewhite;
     border-radius: 0.6rem;
     border: transparent;
-    margin: 2rem 0;
+    margin: 0.5rem 0;
 }
 
 #offers-select-container{
     padding: 0.2rem;
     border-radius: 0.6rem;
     border: 1px solid black;
+    max-width: inherit;
     width: fit-content;
+    white-space: nowrap;
+    background-color: antiquewhite;
+}
+
+#average-discount-select-container{
+    padding: 0.2rem;
+    border-radius: 0.6rem;
+    border: 1px solid black;
+    background-color: antiquewhite;
+    max-width: 45rem;
+    width:  fit-content;
+}
+
+#average-discount-select-container label{
     white-space: nowrap;
 }
 
+/* @media (max-width: 768px){
+    input[type = "date"] {
+        font-size: 1rem;
+        padding: 0.1rem;
+    }
+} */
