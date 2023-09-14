@@ -13,6 +13,8 @@ BEGIN
     DECLARE current_product_id BIGINT DEFAULT 0;
     DECLARE current_product_subcategory_id VARCHAR(255) DEFAULT '';
     DECLARE old_subcategory_id VARCHAR(255) DEFAULT '';
+    DECLARE old_product_id BIGINT DEFAULT 0;
+
     -- subcategory vars
     DECLARE current_subcategory_name VARCHAR(255) DEFAULT '';
     DECLARE current_subcategory_id VARCHAR(255) DEFAULT '';
@@ -86,12 +88,13 @@ BEGIN
             -- same name same id already exists on the same record, so ignore
             DELETE FROM temp_product WHERE temp_product.product_id = current_product_id;
         ELSEIF (EXISTS(SELECT * FROM product WHERE product.name = current_product_name AND product.product_id != current_product_id)) THEN
-            -- same name different id already exists on a different record, so update the old id
-            UPDATE product SET product.product_id = current_product_id WHERE product.name = current_product_name;
+            -- same name different id already exists on a different record, so keep the old id
+            SELECT product_id FROM product WHERE product.name = current_product_name AND product.product_id != current_product_id INTO old_product_id;
+            UPDATE temp_price SET product_id =  old_product_id WHERE product_id = current_product_id; 
         ELSEIF (EXISTS(SELECT * FROM product WHERE product.name != current_product_name AND product.product_id = current_product_id)) THEN
             -- different name same id already exists on a different record, so generate a new id and insert
             INSERT INTO product (`name`, `subcategory_id`) VALUES (current_product_name, current_product_subcategory_id);
-            INSERT INTO product_mapper (`old_product_id`, `new_product_id`) VALUES (current_product_id, LAST_INSERT_ID());
+            UPDATE temp_price SET product_id =  LAST_INSERT_ID() WHERE product_id = current_product_id;
         ELSE
             -- insert new
             INSERT INTO product (`name`, `subcategory_id`, `product_id`) VALUES (current_product_name, current_product_subcategory_id, current_product_id);

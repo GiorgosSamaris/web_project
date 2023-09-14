@@ -238,7 +238,7 @@ async function fetchInventory(storeId) {
     });
 }
 
-// get all names of categories for filtered search
+// get all info of categories for filtered search and admin dashboard
 async function getCategories() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -246,6 +246,22 @@ async function getCategories() {
             url: 'php/get_category_names.php',
             success: function (categories) {
                 resolve(categories);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// get all info of subcategories for admin dashboard
+async function getSubcategories() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/get_subcategory_names.php',
+            success: function (subcategories) {
+                resolve(subcategories);
             },
             error: function (error) {
                 reject(error);
@@ -324,12 +340,23 @@ function exportOffers(){
 
 function filterCategories(selectedCategory){
     if(selectedCategory === ""){
-        // add all hidden layers
-        hiddenLayer.eachLayer(function(layer) {
-            hiddenLayer.removeLayer(layer);
-            markersLayer.eachLayer(function(markerLayer) {
-                markerLayer.addLayer(layer);
+        // remove all layers that do not have the selected store name
+        markersLayer.eachLayer(function(layer) {
+            layer.eachLayer(function(innerLayer) {
+                if(!(innerLayer.feature.properties.store_name === selectedStore)){
+                    layer.removeLayer(innerLayer);
+                    hiddenLayer.addLayer(innerLayer);
+                }
             });
+        });
+        // add all layers that have the selected store name
+        hiddenLayer.eachLayer(function(layer) {
+            if(layer.feature.properties.store_name === selectedStore){
+                hiddenLayer.removeLayer(layer);
+                markersLayer.eachLayer(function(markerLayer) {
+                    markerLayer.addLayer(layer);
+                });
+            }
         });
     }
     else{ 
@@ -354,8 +381,9 @@ function filterCategories(selectedCategory){
     }
 }
 
-// filter stores
-function filterCategories(selectedStore){
+
+// filter store
+function filterStoreNames(selectedStore){
     if(selectedStore === ""){
         // add all hidden layers
         hiddenLayer.eachLayer(function(layer) {
@@ -384,6 +412,37 @@ function filterCategories(selectedStore){
                 });
             }
         });
+    }
+}
+function filterStores(selecedStore, selectedCategory){
+    if(selecedStore === ""){
+        filterCategories(selectedCategory);
+    }
+    else{
+        if(selectedCategory === ""){
+            // only filter stone name
+            filterStoreNames(selecedStore);    
+        }
+        else{ 
+            // filter both store name and category
+            markersLayer.eachLayer(function(layer) {
+                layer.eachLayer(function(innerLayer) {
+                    if(!(innerLayer.feature.properties.distinct_categories.includes(selectedCategory) && innerLayer.feature.properties.store_name === selecedStore)){
+                        layer.removeLayer(innerLayer);
+                        hiddenLayer.addLayer(innerLayer);
+                    }
+                });
+            });
+            // add all layers that have the selected category and selected store name
+            hiddenLayer.eachLayer(function(layer) {
+                if(layer.feature.properties.distinct_categories.includes(selectedCategory) && layer.feature.properties.store_name === selecedStore){
+                    hiddenLayer.removeLayer(layer);
+                    markersLayer.eachLayer(function(markerLayer) {
+                        markerLayer.addLayer(layer);
+                    });
+                }
+            });
+        }
     }
 }
 
@@ -481,7 +540,7 @@ async function initializeMap() {
                     // category filter event listener
                     selectCategory = document.querySelector('#category-search');
                     selectCategory.addEventListener('change', function(event) {
-        filterCategories(event.target.value);
+                        filterStores(selectStore.value, event.target.value);
     });
     
     
@@ -508,7 +567,7 @@ async function initializeMap() {
     // store filter event listener
     selectStore = document.querySelector('#store-search');
     selectStore.addEventListener('change', function(event) {
-        filterCategories(event.target.value);
+        filterStores(event.target.value, selectCategory.value);
     });
 }
 
@@ -557,7 +616,6 @@ async function adminDelete(offer_id){
     });
 
 //#endregion
-
 
 
 

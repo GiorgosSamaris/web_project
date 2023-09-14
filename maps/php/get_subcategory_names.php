@@ -5,9 +5,9 @@ header('Content-Type: application/json; charset=utf-8');
 include(dirname(__DIR__).'/../azureConnection/azureConn.php');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if ($categories = $conn->query("SELECT name, category_id FROM category")) {
-        $categories = mysqli_fetch_all($categories, MYSQLI_ASSOC);
-        echo json_encode($categories, JSON_UNESCAPED_UNICODE);
+    if ($subcategories = $conn->query("SELECT name, subcategory_id, category_id FROM subcategory")) {
+        $subcategories = mysqli_fetch_all($subcategories, MYSQLI_ASSOC);
+        echo json_encode($subcategories, JSON_UNESCAPED_UNICODE);
     } 
     else {
         echo "could not execute";

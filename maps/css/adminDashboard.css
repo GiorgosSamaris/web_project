@@ -1,49 +1,73 @@
-#statistics-container {
-    width: 40rem;
-    height: 40rem;
+#product-data-edit-container,
+#store-data-edit-container{
+    margin: 0.5rem 0 ;
 }
 
-#offers-diagram-container{
-    width: 100%;
+#product-data-edit-container,
+#store-data-edit-container{
+    /* height: 5%; */
+    width: 20%;
+    max-height: 10rem;
+    align-items: center;
+    text-align: center;
+}
+
+#product-data-edit-container input,
+#store-data-edit-container input{
     height: 100%;
+    max-height: 5rem;
 }
 
-#offers-chart {
+
+#offers-diagram-container,
+#average-discount-diagram-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0.6rem 0;
+    width: 95%;
+}
+
+
+#offers-chart,
+#average-discount-chart{
+    height: 50%;
+    max-height: 45rem;
+    max-width: 45rem;
+    margin: 0;
     background-color: antiquewhite;
     border-radius: 0.6rem;
     border: transparent;
-    width: 100%;
-    height: 100%;
+    margin: 0.5rem 0;
 }
 
-
-
-/* #page-selection-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    justify-content: center;
-}
-
-.navigation button,
-#page-numbers{
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
+#offers-select-container{
+    padding: 0.2rem;
     border-radius: 0.6rem;
-}
-
-#page-numbers:hover,
-.navigation button:not(.disabled):hover{   
-    background-color: #f1f1f1;
-}
-
-#page-numbers.active {
+    border: 1px solid black;
+    max-width: inherit;
+    width: fit-content;
+    white-space: nowrap;
     background-color: antiquewhite;
-    color: black;
 }
 
-.hidden {
-    display: none;
+#average-discount-select-container{
+    padding: 0.2rem;
+    border-radius: 0.6rem;
+    border: 1px solid black;
+    background-color: antiquewhite;
+    max-width: 45rem;
+    width:  fit-content;
+}
+
+#average-discount-select-container label{
+    white-space: nowrap;
+}
+
+/* @media (max-width: 768px){
+    input[type = "date"] {
+        font-size: 1rem;
+        padding: 0.1rem;
+    }
 } */
