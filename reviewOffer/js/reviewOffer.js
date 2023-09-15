@@ -27,9 +27,9 @@ function updateListContent(){
         '<i id = "dislike" offer-id = "' + offer.offer_id + '" class="fa-solid fa-thumbs-down ' +        
         (offer.in_stock > 0 ? 'color-red' : 'greyed-out') + '"></i> ' + offer.number_of_dislikes + " " +
         '</div>' + 
-        '<div class = "stock-icon-container">' + "In stock: " + offer.in_stock + "&nbsp" + 
-        '<i class="fa-solid fa-exclamation fa-lg" style="color: #fa0000;" title = "'+ 
-        (offer.in_stock > 0 ? "Out of stock? Click here to report it!" : "In stock? Click here to report it") + '"></i>' + '</div>' +
+        '<div class = "stock-icon-container">' + "In stock: " + offer.in_stock + "&nbsp&nbsp&nbsp" + 
+        '<button id="stock-btn" onclick="toggleStock(' + offer.offer_id + ')"><i class="fa-solid fa-exclamation fa-lg" style="color: #fa0000;" title = "'+ 
+        (offer.in_stock > 0 ? "Out of stock? Click here to report it!" : "In stock? Click here to report it") + '"></i>' + '</button></div>' +
         (
             //checks whether the price has decreased in the last day or week and adjusts the icon accordingly
             (offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0)? 
@@ -77,10 +77,6 @@ document.getElementById("list-container").addEventListener('click', async functi
     } 
     else if (event.target.matches('.fa-thumbs-down') && !event.target.matches('.greyed-out')) {
         await dislikeUpdate(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
-        offersList = await fetchOffers(storeId);
-    } else if (event.target.matches('.fa-exclamation')) {
-        // console.log("offer_id: " + parseInt(event.target.parentElement.parentElement.getAttribute('offer-id')));
-        await reportStock(parseInt(event.target.getAttribute('offer-id'))).catch((error) => {console.log(error);});
         offersList = await fetchOffers(storeId);
     }
     // you clicked somewhere else, so hide the image
@@ -148,7 +144,26 @@ async function dislikeUpdate(offId) {
     });
 }
 
-async function reportStock(offId) {
+async function toggleStock(offId) {
+    if(confirm("Are you sure you want to change the stock of this offer?")){
+            await new Promise((resolve, reject) => {
+                $.ajax({
+                    type: "POST",
+                    url: 'php/toggle_stock.php',
+                    data: {
+                        offer_id: offId
+                    },
+                    success: function (success) {
+                        resolve(success);
+                    },
+                    error: function (error) {
+                        reject(error);
+                    }
+                });
+        });
+        offersList = await fetchOffers(storeId);
+        updateListContent();
+    }
 }
 
 //#endregion

@@ -35,14 +35,18 @@ async function generateAdminDashboardContent() {
     }))];
     //product data container
     profileContent = '<div id = "product-data-edit-container">' + 
+                    '<div id = "input-container">' +
                         '<input type="file" id="product-file" name="product-file" accept=".json" />' + 
+                        '<input type="file" id="price-file" name="price-file" accept=".json" />' +
+                    '</div>' + 
+                    '<button type="button" class="submit-products" id="submit-products-button" onclick="submitProducts()"> Submit Products </button>'+
                     '</div>';
     //store data container
     profileContent += '<div id = "store-data-edit-container">' + 
                         '<input type="file" id="store-file" name="store-file" accept=".geojson" />' +
-                    '</div>';
+                        '<button type="button" class="submit-stores" id="submit-stores-button" onclick="submitStores()"> Submit Stores </button>'+
+                        '</div>';
 
-    
     //statistics container
     profileContent +=  '<div id ="offers-diagram-container">' +
                             '<span id = "offers-select-container">' +
@@ -60,8 +64,7 @@ async function generateAdminDashboardContent() {
                             "<div id = 'average-discount-select-container'>" +
                                 '<label for = "select-date">Select Date: </label>' +
                                 '<input type = "date" id = "select-date" name = "select-date" value = "2023-09-06">' + '<br>' + 
-                                // '<input type = "text" id = "select-date" name = "select-date">' + '<br>' +
-                                '<label for = "select-category">Select Category or Subcategory: </label>' +
+                                '<label for = "select-category" id = "select-cat-label">Select Category or Subcategory: </label>' +
                                 '<select id = "select-category" name = "select-category">' +
                                 '</select>' +
                             '</div>' +
@@ -69,40 +72,119 @@ async function generateAdminDashboardContent() {
                         '</div>';
 
 
-    //leaderboard container
-    // leaderboard += '<div id = "leaderboard-container">' + 
-    //                     '<div id = "list-container">' + '<label>Leaderboard</label>' +
-    //                         '<ul id = "leaderboard-list" aria-live = "polite">';
-    // user_leaderboard.forEach((user) => {
-    //                 leaderboard += '<li>' + "username: " + user.username + '<br>' + 
-    //                                 "Last month's tokens: " + user.last_months_tokens +  '<br>' +
-    //                                 "Overall tokens: " + user.overall_tokens + '</li>' ;
-    // });
-
-    // leaderboard += '</ul>' +
-    //                 '<nav id = "page-selection-container">' + 
-    //                     '<button class = "navigation-button" id = "previous-button" title = "Previous Page" aria-label="Previous page"> &lt; </button>' + 
-    //                     '<div id = "page-numbers">' + '</div>' +
-    //                     '<button class = "navigation-button" id = "next-button" title = "Previous Page" aria-label="Next page"> &gt; </button>' + 
-    //                 '</nav>' + 
-    //             '</div>' +
-    //         '</div>';
+    // leaderboard container
+    profileContent += '<div id = "leaderboard-container">' + 
+                        '<div id = "list-container">' + '<label>Leaderboard</label>' +
+                            '<ul id = "leaderboard-list" aria-live = "polite">';
+    profileContent += '</ul>' +
+                        '<nav id = "page-selection-container">' + 
+                            '<select id="page-dropdown" title="Select Page" aria-label="Select Page"></select>' +
+                            '</select>'+
+                            '<button class = "navigation-button" id = "previous-button" title = "Previous Page" aria-label="Previous page"> \&lt\; </button>' + 
+                            '<div id = "page-numbers">' + '</div>' +
+                            '<button class = "navigation-button" id = "next-button" title = "Previous Page" aria-label="Next page"> \&gt\; </button>' + 
+                        '</nav>' + 
+                    '</div>' +
+                '</div>';
     
     //profile content
     profileContainer.innerHTML = profileContent;
-    // console.log(offer_count.map(row => row.offer_date));
-    // flatpickr("#select-date", {
-    //     dateFormat: "Y-m-d",
-    //     defaultDate: "2023-09-06",
-    // });
+    
     const offersChart = document.getElementById('offers-chart');
     const discountsChart = document.getElementById('average-discount-chart');
+
+    const itemsPerPage = 10; // Number of items to display per page
+    let currentPage = 1; // Current page number
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const previousButton = document.getElementById('previous-button');
+    const nextButton = document.getElementById('next-button');
+    const pageNumbers = document.getElementById('page-numbers');
+
     selectDate = document.getElementById('select-date');
     selectYear = document.getElementById('select-year');
     selectMonth = document.getElementById('select-month');
     selectCategorySubcategory = document.getElementById('select-category');
 
+    function displayPage(page) {
+        leaderboardList.innerHTML = ''; // Clear the list
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
     
+        for (let i = startIndex; i < endIndex && i < user_leaderboard.length; i++) {
+            const user = user_leaderboard[i];
+            const listItem = document.createElement('li');
+            listItem.textContent =
+                'Username: ' +
+                user.username +
+                '\nLast month\'s tokens: ' +
+                user.last_months_tokens +
+                '\nOverall tokens: ' +
+                user.overall_tokens;
+            leaderboardList.appendChild(listItem);
+        }
+    }
+
+    function updatePageNumbers() {
+        const totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
+        pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
+        previousButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
+    }
+    
+    // Initial page display
+    displayPage(currentPage);
+    updatePageNumbers();
+    
+    // Event listeners for navigation buttons
+    previousButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayPage(currentPage);
+            updatePageNumbers();
+            updatePageDropdown()
+        }
+    });
+    
+    nextButton.addEventListener('click', () => {
+        const totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayPage(currentPage);
+            updatePageNumbers();
+            updatePageDropdown()
+        }
+    });
+    
+    function updatePageDropdown() {
+        const totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
+        const pageDropdown = document.getElementById('page-dropdown');
+        pageDropdown.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `Page ${i}`;
+            pageDropdown.appendChild(option);
+        }
+    
+        // Set the selected option to the current page
+        pageDropdown.value = currentPage;
+    }
+    
+    // Event listener for page dropdown select change
+    const pageDropdown = document.getElementById('page-dropdown');
+    pageDropdown.addEventListener('change', () => {
+        const selectedPage = parseInt(pageDropdown.value);
+        if (!isNaN(selectedPage) && selectedPage >= 1) {
+            currentPage = selectedPage;
+            displayPage(currentPage);
+            updatePageNumbers();
+        }
+    });
+    
+    // Initial page dropdown setup
+    updatePageDropdown();
+
     distinctYears.forEach((year) => {   //adds the years to the select element
         selectYear.innerHTML += '<option value = "' + year + '">' + year + '</option>';
     });
@@ -203,70 +285,6 @@ async function generateAdminDashboardContent() {
             console.log("error");
         }
     });
-
-// const paginationNumbers = document.getElementById("page-numbers");
-// const paginatedList = document.getElementById("leaderboard-list");
-// const listItems = paginatedList.querySelectorAll("li");
-
-// const paginationLimit = 10;
-// const pageCount = Math.ceil(listItems.length / paginationLimit);
-// let currentPage = 1;
-
-// const appendPageNumber = (index) => {
-    //   const pageNumber = document.createElement("button");
-    //   pageNumber.className = "page-number";
-    //   pageNumber.innerHTML = index;
-    //   pageNumber.setAttribute("page-index", index);
-    //   pageNumber.setAttribute("aria-label", "Page " + index);
-
-    //   paginationNumbers.appendChild(pageNumber);
-    // };
-
-    // const getPaginationNumbers = () => {
-        //   for (let day = 1; day <= pageCount; day++) {
-            //     appendPageNumber(day);
-    //   }
-    // };
-
-    // const handleActivePageNumber = () => {
-        //   document.querySelectorAll(".page-number").forEach((button) => {
-            //     button.classList.remove("active");
-    //     const pageIndex = Number(button.getAttribute("page-index"));
-    //     if (pageIndex == currentPage) {
-        //       button.classList.add("active");
-        //     }
-        //   });
-        // };
-        
-        // const setCurrentPage = (pageNum) => {
-            //   currentPage = pageNum;
-    //   handleActivePageNumber();
-    
-    //   const prevRange = (pageNum - 1) * paginationLimit;
-    //   const currRange = pageNum * paginationLimit;
-    
-    //   listItems.forEach((item, index) => {
-    //     item.classList.add("hidden");
-    //     if (index >= prevRange && index < currRange) {
-        //       item.classList.remove("hidden");
-        //     }
-        //   });
-        // };
-        
-        // window.addEventListener("load", () => {
-            //   getPaginationNumbers();
-            //   setCurrentPage(1);
-            
-            //   document.querySelectorAll(".page-number").forEach((button) => {
-                //     const pageIndex = Number(button.getAttribute("page-index"));
-                
-                //     if (pageIndex) {
-                    //       button.addEventListener("click", () => {
-                        //         setCurrentPage(pageIndex);
-                        //       });
-                        //     }
-                        //   });
-                        // });
 }
                     
 function generateDates(year, month) {
@@ -382,8 +400,8 @@ function generateOffersCountChart(offersChart, offer_count, selectYear, selectMo
 }
 
 function generateAverageDiscountChart(discountsChart, average_discount) {
-    console.log(average_discount.map(row => row.drop_date));
-    console.log(average_discount.map(row => parseFloat(row.drop_percentage)));
+    // console.log(selectedCategory);
+    // console.log(selectedSubcategory);
     if(discountsChart)
     {
       discountChart = new Chart(discountsChart,
@@ -395,7 +413,7 @@ function generateAverageDiscountChart(discountsChart, average_discount) {
               {
                   borderColor: 'blue',
                   backgroundColor: 'white',
-                //   label: 'Displayed: ' + selectYear.value + ' ' + selectMonth.value,
+                  label: 'Displayed: ' + selectedCategory + ' ' + selectedSubcategory,
                   data: average_discount.map(row => parseFloat(row.drop_percentage)),
               }
             ]
@@ -462,6 +480,7 @@ function generateAverageDiscountChart(discountsChart, average_discount) {
                     title: {
                         display: true,
                         text: 'Number of offers',
+                        stepSize: 1,
                         font: {
                             color: 'black',
                             size : 12,
@@ -496,6 +515,75 @@ if(userId < 0){
     });
     // selectYear = document.getElementById('select-year');
     // selectMonth = document.getElementById('select-month');
+}
+
+
+// get uploaded files and save them
+async function submitProducts() {
+    const productFile = document.getElementById('product-file').files[0];
+    const priceFile = document.getElementById('price-file').files[0];
+    if(productFile && confirm("Are you sure you want to upload the products?")){
+        const productData = new FormData();
+        productData.append('productFile', productFile);
+        $.ajax({
+            type: "POST",
+            url: 'php/upload_products.php',
+            data: productData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+    else{
+        alert("Please select a product file");
+    }
+    if(priceFile){
+        const priceData = new FormData();
+        priceData.append('priceFile', priceFile);
+        $.ajax({
+            type: "POST",
+            url: 'php/upload_prices.php',
+            data: priceData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+    });
+    }
+}
+
+// get stores file and upload 
+async function submitStores() {
+    const storeFile = document.getElementById('store-file').files[0];
+    if(storeFile){
+        const storeData = new FormData();
+        storeData.append('storeFile', storeFile);
+        $.ajax({
+            type: "POST",
+            url: 'php/upload_stores.php',
+            data: storeData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+    });
+    }
+    else{
+        alert("Please select a store file");
+    }
 }
 
 

@@ -1,4 +1,8 @@
 //#region initilization
+var height = window.innerHeight + "px";
+var width = window.innerWidth + "px";
+document.body.style.height = height;
+document.body.style.width = width;
 
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
@@ -13,6 +17,7 @@ var offersList = [];
 var profileContainer;
 // let userId = parseInt(sessionStorage.getItem("userId"));
 var userId = -1; //comment this out when testing is done, uncomment line 14
+
 //#endregion
 
 //#region Icons
@@ -570,7 +575,6 @@ async function initializeMap() {
         filterStores(event.target.value, selectCategory.value);
     });
 }
-
 //#endregion
 
 async function adminDelete(offer_id){
@@ -613,7 +617,7 @@ async function adminDelete(offer_id){
         profileContainer.classList.remove("profile-container-vis");
         profileContainer.classList.add("profile-container-inv");
     }
-    });
+});
 
 //#endregion
 
