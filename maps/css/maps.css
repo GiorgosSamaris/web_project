@@ -33,15 +33,27 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-#display {
-    height: fit-content;
-    max-height: 95vh;
-    overflow-y: auto;
-}
-
 #page-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
+    
+}
+
+#display {
+    height: fit-content;
+    max-height: 95%;
+    /* height: 95%; */
+    overflow-y: auto;
+}
+
+#navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 5%;
+    max-height: 5%;
 }
 
 /* ======= Map Styling */
@@ -206,8 +218,6 @@ body {
 }
 
 .profile-container-vis {
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -354,13 +364,6 @@ body {
 }
 
 /* ======= Navigation ======= */
-#navigation {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 5vh;
-    max-height: 5vh;
-}
 
 .radio-label-container {
     flex: 1;    /*distributes available space equally among all children*/
