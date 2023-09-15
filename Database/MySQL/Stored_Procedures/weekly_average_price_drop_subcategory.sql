@@ -5,7 +5,7 @@ CREATE PROCEDURE weekly_average_price_drop_subcategory(IN subcat_id VARCHAR(128)
 BEGIN
 DECLARE done BOOLEAN DEFAULT FALSE;
 DECLARE date_iter DATE;
-DECLARE current_price_drop DECIMAL(5, 4) DEFAULT 0;
+DECLARE current_price_drop DECIMAL(8, 4) DEFAULT 0;
 DECLARE current_product_id BIGINT DEFAULT 0;
 DECLARE product_cursor CURSOR FOR SELECT product_id FROM product WHERE subcategory_id = subcat_id;
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
