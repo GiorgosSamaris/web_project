@@ -11,7 +11,7 @@ let offerChart;
 
 async function generateAdminDashboardContent() {
     profileContainer = document.getElementById('profile-container');
-    var profileContent = '';
+    let profileContent = '';
     let offer_count = await fetchOfferCount();
     let user_leaderboard = await fetchUserLeaderboard();
     let categories = await getCategories();
@@ -267,15 +267,11 @@ async function generateAdminDashboardContent() {
         selectedSubcategory = categoriesMerged.flatMap((category) => category.subcategories).find((subcategory) => subcategory.subcategory_id === selectedValue);
         
         if(selectedSubcategory) {
-            console.log(selectDate.value);
-            console.log(await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory'));
             const priceDropData = await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory');
             discountChart.data.labels = priceDropData.map(row => row.drop_date);
             discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
             discountChart.update();
         }else if(selectedCategory) {
-            console.log(selectDate.value);
-            console.log(await getPriceDrop(selectDate.value, selectedCategory.id, 'category'));
             const priceDropData = await getPriceDrop(selectDate.value, selectedCategory.id, 'category');
             discountChart.data.labels = priceDropData.map(row => row.drop_date);
             discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
@@ -496,7 +492,7 @@ function generateAverageDiscountChart(discountsChart, average_discount) {
   }
 }
 
-// admin dashboard button
+// admin dashboard navigation button
 if(userId < 0){
     const profileButton = document.getElementById("profile-button-label");
     profileButton.innerText = "Admin Dashboard";
@@ -518,7 +514,7 @@ if(userId < 0){
 }
 
 
-// get uploaded files and save them
+// get uploaded files and save them locally
 async function submitProducts() {
     const productFile = document.getElementById('product-file').files[0];
     const priceFile = document.getElementById('price-file').files[0];
@@ -561,7 +557,7 @@ async function submitProducts() {
     }
 }
 
-// get stores file and upload 
+// get stores file and save locally
 async function submitStores() {
     const storeFile = document.getElementById('store-file').files[0];
     if(storeFile){
@@ -586,25 +582,7 @@ async function submitStores() {
     }
 }
 
-
-async function deleteOffer(offer_id) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "POST",
-            url: 'php/delete_offer.php',
-            data: {
-                offer_id: offer_id
-            },
-            success: function (deleted) {
-                resolve(deleted);
-            },
-            error: function (error) {
-                reject(error);
-            }
-        });
-});
-}
-
+// gets all required info for the leaderboard
 async function fetchUserLeaderboard() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -619,7 +597,8 @@ async function fetchUserLeaderboard() {
         });
 });
 }
-// 4Y-2m-2d 2023-09-30
+
+// start_date: 4Y-2m-2d
 async function getPriceDrop(start_date, content_id, content_type){
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -639,6 +618,8 @@ async function getPriceDrop(start_date, content_id, content_type){
         });
 });
 }
+
+// returns offer_count, date tuple
 async function fetchOfferCount() {
     return new Promise((resolve, reject) => {
         $.ajax({

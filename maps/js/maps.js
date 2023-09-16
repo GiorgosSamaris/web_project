@@ -11,100 +11,101 @@ let userpos;
 let popupContent = '<div class="popup-container">';
 
 let mymap = L.map('mapid');
-var markersLayer = new L.LayerGroup().addTo(mymap); 
-var hiddenLayer = new L.LayerGroup(); 
-var offersList = []; 
-var profileContainer;
+let markersLayer = new L.LayerGroup().addTo(mymap); 
+let hiddenLayer = new L.LayerGroup(); 
+let offersList = []; 
+let profileContainer;
 // let userId = parseInt(sessionStorage.getItem("userId"));
-var userId = -1; //comment this out when testing is done, uncomment line 14
+let userId = 10; //comment this out when testing is done, uncomment line 14
 
 //#endregion
 
 //#region Icons
 
-var cashAndCarryIcon = L.icon({
+let cashAndCarryIcon = L.icon({
     iconUrl:'images/1cAc.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var arapis3A = L.icon({
+let arapis3A = L.icon({
     iconUrl:'images/3a.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]}
 );
 
-var ABbasilopoulos = L.icon({
+let ABbasilopoulos = L.icon({
     iconUrl:'images/ab.png',
     iconSize: [50, 82],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]}
 );
 
-var redIcon = L.icon({
+let redIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]}); 
 
-var greenIcon = L.icon({
+let greenIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var blueIcon = L.icon({
+let blueIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var orangeIcon = L.icon({
+let orangeIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var yellowIcon = L.icon({
+let yellowIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var violetIcon = L.icon({
+let violetIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var greyIcon = L.icon({
+let greyIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var blackIcon = L.icon({
+let blackIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
-var goldIcon = L.icon({
+let goldIcon = L.icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34]});
 
+    // bind icons to store names
 const storeIcons = {
     "3A": redIcon,
     "3A ARAPIS": redIcon,
@@ -186,7 +187,7 @@ function popupContentStores(feature, isClose, storeId, layer) {
     if (isClose === true) {
         popupContent += '<div class="button-container">';
         popupContent += '<button type="button" class="add-offer" id="add-offer-button" onclick="addOffer(' + storeId + ')"> Add Offer </button>';
-        popupContent += '<button type="submit" class="review-offer" onclick="exportOffers()"> Review </button>';
+        popupContent += '<button type="submit" class="review-offer" onclick="reviewOffers()"> Review </button>';
         popupContent += '</div>';
     }
     
@@ -241,6 +242,24 @@ async function fetchInventory(storeId) {
             }
         });
     });
+}
+// delete offer (admin)
+async function deleteOffer(offer_id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/delete_offer.php',
+            data: {
+                offer_id: offer_id
+            },
+            success: function (deleted) {
+                resolve(deleted);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
 }
 
 // get all info of categories for filtered search and admin dashboard
@@ -329,20 +348,20 @@ function fetchStores(resolve, reject) {
 
 // navigate to add offer
 async function addOffer(storeId){
-    sessionStorage.setItem("storeId", JSON.stringify(storeId));
     sessionStorage.setItem("userId", JSON.stringify(userId));
+    sessionStorage.setItem("storeId", JSON.stringify(storeId));
     sessionStorage.setItem("inventory", JSON.stringify(await fetchInventory(storeId)));
     window.location.href= "../addOffer/addOffer.html";
 }
 
 // navigate to review offer
-function exportOffers(){
+function reviewOffers(){
     sessionStorage.setItem("offers", JSON.stringify(offersList));
     sessionStorage.setItem("userId", JSON.stringify(userId));
     window.location.href= "../reviewOffer/review_offer.html";
 }
 
-
+// filter stores by offer category
 function filterCategories(selectedCategory){
     if(selectedCategory === ""){
         // remove all layers that do not have the selected store name
@@ -387,7 +406,7 @@ function filterCategories(selectedCategory){
 }
 
 
-// filter store
+// filter store name
 function filterStoreNames(selectedStore){
     if(selectedStore === ""){
         // add all hidden layers
@@ -470,7 +489,7 @@ async function initializeMap() {
                 // new
                 const categories = layer.feature.properties.distinct_categories;
                 const hasActiveOffers = layer.feature.properties.has_active_offers;
-                var currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
+                let currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
                 
 
                 // set pin icon
@@ -550,8 +569,8 @@ async function initializeMap() {
     
     
     
-    // store filter
-    var storeFilterBar = new L.Control.Search({
+    // store name filter
+    let storeFilterBar = new L.Control.Search({
         position: 'topleft'
     }); 
     storeFilterBar.onAdd = function() {
@@ -561,7 +580,7 @@ async function initializeMap() {
                         '</select>';
                         return div
         }
-    // populate store filter
+    // populate store name filter
     storeFilterBar.addTo(mymap);
     $('#store-search').empty();
     $('#store-search').append('<option value="">All Stores</option>');
@@ -577,6 +596,8 @@ async function initializeMap() {
 }
 //#endregion
 
+
+// garbage icon function
 async function adminDelete(offer_id){
     await deleteOffer(offer_id);
     document.getElementById(offer_id).remove();

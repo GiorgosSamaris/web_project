@@ -1,10 +1,10 @@
-var profileContent = "";
-var uppercase;
-var char;
-var numbers;
-var symbols;
-var requirements;
-var newUsername;
+let profileContent = "";
+let uppercase;
+let char;
+let numbers;
+let symbols;
+let requirements;
+let newUsername;
 let likeDislikeHistory;
 let userScore;
 let userTokens;
@@ -12,7 +12,7 @@ let offersSubmitted = [];
 function generateProfileContent() {
     const profileContainer = document.getElementById("profile-container");
     //user credentials  
-    var profileContent = '<div class="credentials-container">' +
+    profileContent = '<div class="credentials-container">' +
     '<label for="username" class="user-credentials">Type new username</label>' +
     '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
     '<button type="button" onclick="checkAndUpdateUsername($(\'#username\').val())">Change username</button>' + // Use escaped single quotes
@@ -85,13 +85,12 @@ function generateProfileContent() {
     };
 
     password.onblur = function () {
-        // checkRequirementsVisibility();
         requirements.id = "password-requirements-inv";
     };
 
     password.onkeyup = function () {
         // Validate characters
-        var char_num = /[a-z]/g;
+        let char_num = /[a-z]/g;
         if (password.value.match(char_num) && password.value.length >= 8) {
             char.classList.remove("invalid");
             char.classList.add("valid");
