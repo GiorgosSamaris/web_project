@@ -465,7 +465,7 @@ async function initializeMap() {
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
-    await fetchStores();
+    // await fetchStores(); // probably should not be called here
     const storesPath = 'json/stores.geojson';
     await fetch(storesPath).then(response => response.json()).then(data => {
         L.geoJson(data, {    //pulls data from GeoJSON file
