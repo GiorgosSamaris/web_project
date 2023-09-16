@@ -15,8 +15,8 @@ let markersLayer = new L.LayerGroup().addTo(mymap);
 let hiddenLayer = new L.LayerGroup(); 
 let offersList = []; 
 let profileContainer;
-// let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = 10; //comment this out when testing is done, uncomment line 14
+let userId = parseInt(sessionStorage.getItem("userId"));
+// let userId = 10; //comment this out when testing is done, uncomment line 14
 
 //#endregion
 
@@ -465,7 +465,7 @@ async function initializeMap() {
     userpos = new L.marker([testLat,testLon]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
-    await fetchStores();
+    // await fetchStores(); // probably should not be called here
     const storesPath = 'json/stores.geojson';
     await fetch(storesPath).then(response => response.json()).then(data => {
         L.geoJson(data, {    //pulls data from GeoJSON file
@@ -491,7 +491,7 @@ async function initializeMap() {
                 
                 // text to search for
                 if(address != "Unknown"){
-                    layer.feature.properties.searchProp = storeName + ', ' + address;
+                    layer.feature.properties.searchProp = storeName + ', ' + address + currStoreDist[0] + ' Km';
                 } else {
                     layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                 }
