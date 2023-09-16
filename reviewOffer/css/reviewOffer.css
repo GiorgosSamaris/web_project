@@ -43,7 +43,7 @@ ul{
     min-width: 20rem;
     max-width: 50rem;
     text-align: center;
-    overflow: auto;
+    /* overflow: auto; */
 }
 
 #list-container{

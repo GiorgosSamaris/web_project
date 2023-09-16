@@ -10,10 +10,19 @@
     max-height: 10rem;
     align-items: center;
     text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+#input-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 #product-data-edit-container input,
-#store-data-edit-container input{
+#store-data-edit-container input input{
     height: 100%;
     max-height: 5rem;
 }
@@ -58,12 +67,11 @@
     border: 1px solid black;
     background-color: antiquewhite;
     max-width: 45rem;
-    width:  fit-content;
+    width: 95%;
 }
 
-#average-discount-select-container label{
-    white-space: nowrap;
-}
+
+
 
 /* @media (max-width: 768px){
     input[type = "date"] {
