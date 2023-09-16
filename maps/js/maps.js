@@ -364,23 +364,12 @@ function reviewOffers(){
 // filter stores by offer category
 function filterCategories(selectedCategory){
     if(selectedCategory === ""){
-        // remove all layers that do not have the selected store name
-        markersLayer.eachLayer(function(layer) {
-            layer.eachLayer(function(innerLayer) {
-                if(!(innerLayer.feature.properties.store_name === selectedStore)){
-                    layer.removeLayer(innerLayer);
-                    hiddenLayer.addLayer(innerLayer);
-                }
-            });
-        });
-        // add all layers that have the selected store name
+        // add all hidden layers
         hiddenLayer.eachLayer(function(layer) {
-            if(layer.feature.properties.store_name === selectedStore){
-                hiddenLayer.removeLayer(layer);
-                markersLayer.eachLayer(function(markerLayer) {
-                    markerLayer.addLayer(layer);
-                });
-            }
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
         });
     }
     else{ 
