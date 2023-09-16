@@ -15,8 +15,8 @@ let markersLayer = new L.LayerGroup().addTo(mymap);
 let hiddenLayer = new L.LayerGroup(); 
 let offersList = []; 
 let profileContainer;
-// let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = 10; //comment this out when testing is done, uncomment line 14
+let userId = parseInt(sessionStorage.getItem("userId"));
+// let userId = 10; //comment this out when testing is done, uncomment line 14
 
 //#endregion
 
@@ -364,23 +364,12 @@ function reviewOffers(){
 // filter stores by offer category
 function filterCategories(selectedCategory){
     if(selectedCategory === ""){
-        // remove all layers that do not have the selected store name
-        markersLayer.eachLayer(function(layer) {
-            layer.eachLayer(function(innerLayer) {
-                if(!(innerLayer.feature.properties.store_name === selectedStore)){
-                    layer.removeLayer(innerLayer);
-                    hiddenLayer.addLayer(innerLayer);
-                }
-            });
-        });
-        // add all layers that have the selected store name
+        // add all hidden layers
         hiddenLayer.eachLayer(function(layer) {
-            if(layer.feature.properties.store_name === selectedStore){
-                hiddenLayer.removeLayer(layer);
-                markersLayer.eachLayer(function(markerLayer) {
-                    markerLayer.addLayer(layer);
-                });
-            }
+            hiddenLayer.removeLayer(layer);
+            markersLayer.eachLayer(function(markerLayer) {
+                markerLayer.addLayer(layer);
+            });
         });
     }
     else{ 
@@ -502,7 +491,7 @@ async function initializeMap() {
                 
                 // text to search for
                 if(address != "Unknown"){
-                    layer.feature.properties.searchProp = storeName + ', ' + address;
+                    layer.feature.properties.searchProp = storeName + ', ' + address + currStoreDist[0] + ' Km';
                 } else {
                     layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                 }
