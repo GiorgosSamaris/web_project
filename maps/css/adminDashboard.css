@@ -3,10 +3,16 @@
     margin: 0.5rem 0 ;
 }
 
+#leaderboard-container label {
+    font-size: large;
+    font-weight: 600;
+    border-bottom: 0.2rem solid var(--antiquewhite);
+}
+
 #product-data-edit-container,
 #store-data-edit-container{
-    /* height: 5%; */
-    width: 20%;
+    width: 80%;
+    max-width: 20rem;
     max-height: 10rem;
     align-items: center;
     text-align: center;
@@ -19,17 +25,19 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 0.5rem;
 }
 
 #product-data-edit-container input,
-#store-data-edit-container input input{
+#store-data-edit-container input{
     height: 100%;
     max-height: 5rem;
 }
 
 
 #offers-diagram-container,
-#average-discount-diagram-container{
+#average-discount-diagram-container,
+#leaderboard-container{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -44,7 +52,6 @@
     height: 50%;
     max-height: 45rem;
     max-width: 45rem;
-    margin: 0;
     background-color: antiquewhite;
     border-radius: 0.6rem;
     border: transparent;
@@ -54,28 +61,75 @@
 #offers-select-container{
     padding: 0.2rem;
     border-radius: 0.6rem;
-    border: 1px solid black;
-    max-width: inherit;
-    width: fit-content;
+    max-width: 35rem;
+    width: 95%;
     white-space: nowrap;
     background-color: antiquewhite;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+#offers-select-container select,
+#offers-select-container label{
+    margin-bottom: 0.2rem;
 }
 
 #average-discount-select-container{
     padding: 0.2rem;
     border-radius: 0.6rem;
-    border: 1px solid black;
     background-color: antiquewhite;
-    max-width: 45rem;
+    max-width: 35rem;
     width: 95%;
 }
 
+select {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: var(--medium);
+}
+
+option{
+    font-size: var(--medium);
+}
 
 
+#list-container{
+    width: 95%;
+    max-width: 35rem;
 
-/* @media (max-width: 768px){
-    input[type = "date"] {
-        font-size: 1rem;
-        padding: 0.1rem;
-    }
-} */
+}
+
+#page-selection-container{
+    display: inline;
+}
+
+#page-dropdown,
+#select-category{
+    text-align: center;
+}
+
+#leaderboard-list{
+    padding: 0;
+}
+
+#leaderboard-list-item{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    background-color: antiquewhite;
+    border-radius: 0.6rem;
+    margin: 0.2rem 0;
+    padding: 0.2rem;
+    color: black;
+    gap: 15%;   /*15% of the width of the container*/
+}
+
+#leaderboard-list-item-tokens-container *{
+    margin: 0.2rem 0;
+}

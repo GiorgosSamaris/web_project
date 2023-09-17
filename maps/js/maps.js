@@ -1,15 +1,6 @@
 //#region initilization
-var height;
-var width; 
-updateBodyHeightWidth();
-
-function updateBodyHeightWidth(){   //change body width and height to fit the screen
-    height = window.innerHeight + "px";
-    width = window.innerWidth + "px";
-    document.body.style.height = height;
-    document.body.style.width = width;
-}
-
+let height;
+let width; 
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
@@ -22,7 +13,15 @@ let hiddenLayer = new L.LayerGroup();
 let offersList = []; 
 let profileContainer;
 // let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = 10; //comment this out when testing is done, uncomment line 14
+let userId = -1; //comment this out when testing is done, uncomment line 14
+
+function updateBodyHeightWidth(){   //change body width and height to fit the screen
+    height = window.innerHeight + "px";
+    width = window.innerWidth + "px";
+    document.body.style.height = height;
+    document.body.style.width = width;
+}
+updateBodyHeightWidth();
 
 //#endregion
 
@@ -502,7 +501,7 @@ async function initializeMap() {
                     layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                 }
                 
-                if (currStoreDist[1] <= 70) {
+                if (currStoreDist[1] <= 50) {
                     // build popup for close stores
                     layer.on('click', async function () {
                         offersList = await fetchOffers(storeId);

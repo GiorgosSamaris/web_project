@@ -4,6 +4,7 @@ let selectDate;
 let selectedValue;
 let selectedCategory;
 let selectedSubcategory;
+let totalPages;
 const monthNames = ["January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"];
 let offerChart;
@@ -50,13 +51,17 @@ async function generateAdminDashboardContent() {
     //statistics container
     profileContent +=  '<div id ="offers-diagram-container">' +
                             '<span id = "offers-select-container">' +
-                                '<label for = "select-year">Select Year: </label>' +
-                                '<select id = "select-year" name = "select-year">' + 
-                                '</select>' +
-                                '<label for = "select-month">Select Month: </label>' +
-                                '<select id = "select-month" name = "select-month">' + 
-                                    '<option value = "All Months">All Months</option>' +
-                                '</select>' +
+                                '<div id = "select-year-container">' +
+                                    '<label for = "select-year" >Select Year: </label>' +
+                                    '<select id = "select-year" name = "select-year">' + 
+                                    '</select>' + 
+                                '</div>' + '&nbsp' +
+                                '<div id = "select-month-container">' +
+                                    '<label for = "select-month" id = "select-month-label">Select Month: </label>' +
+                                    '<select id = "select-month" name = "select-month">' + 
+                                        '<option value = "All Months">All Months</option>' +
+                                    '</select>' +
+                                '</div>' +
                             '</span>' +
                             '<canvas id="offers-chart"></canvas>' + 
                         '</div>' +
@@ -78,11 +83,10 @@ async function generateAdminDashboardContent() {
                             '<ul id = "leaderboard-list" aria-live = "polite">';
     profileContent += '</ul>' +
                         '<nav id = "page-selection-container">' + 
+                            '<button class = "navigation-button" id = "previous-button" title = "Previous Page" aria-label="Previous page"> \&lt\; Previous Page</button>' + 
                             '<select id="page-dropdown" title="Select Page" aria-label="Select Page"></select>' +
                             '</select>'+
-                            '<button class = "navigation-button" id = "previous-button" title = "Previous Page" aria-label="Previous page"> \&lt\; </button>' + 
-                            '<div id = "page-numbers">' + '</div>' +
-                            '<button class = "navigation-button" id = "next-button" title = "Previous Page" aria-label="Next page"> \&gt\; </button>' + 
+                            '<button class = "navigation-button" id = "next-button" title = "Previous Page" aria-label="Next page"> Next Page \&gt\;</button>' + 
                         '</nav>' + 
                     '</div>' +
                 '</div>';
@@ -98,7 +102,7 @@ async function generateAdminDashboardContent() {
     const leaderboardList = document.getElementById('leaderboard-list');
     const previousButton = document.getElementById('previous-button');
     const nextButton = document.getElementById('next-button');
-    const pageNumbers = document.getElementById('page-numbers');
+    // const pageNumbers = document.getElementById('page-numbers');
 
     selectDate = document.getElementById('select-date');
     selectYear = document.getElementById('select-year');
@@ -112,35 +116,35 @@ async function generateAdminDashboardContent() {
     
         for (let i = startIndex; i < endIndex && i < user_leaderboard.length; i++) {
             const user = user_leaderboard[i];
-            const listItem = document.createElement('li');
-            listItem.textContent =
-                'Username: ' +
-                user.username +
-                '\nLast month\'s tokens: ' +
-                user.last_months_tokens +
-                '\nOverall tokens: ' +
-                user.overall_tokens;
-            leaderboardList.appendChild(listItem);
-        }
-    }
+            leaderboardList.innerHTML += '<li id = "leaderboard-list-item">' + 
+                                            'Username: ' + user.username + 
+                                            '<div id = "leaderboard-list-item-tokens-container">' +
+                                                '\nLast month\'s tokens: ' + user.last_months_tokens + '<br>' + 
+                                                '\nOverall tokens: ' + user.overall_tokens +
+                                            '</div>' +
+                                        '</li>';
 
-    function updatePageNumbers() {
-        const totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
-        pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
-        previousButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage === totalPages;
+            
+            // listItem.textContent =
+            //         'Username: ' + user.username +
+            //         leaderboardListItemTokensDiv.innerHTML +
+            //             '\nLast month\'s tokens: ' + user.last_months_tokens +
+            //             '\nOverall tokens: ' + user.overall_tokens;
+            //         leaderboardListItemTokensDiv.innerHTML += '</div>';
+            // listItem.innerHTML += '</div>';
+
+            // leaderboardList.appendChild(listItem);
+        }
     }
     
     // Initial page display
     displayPage(currentPage);
-    updatePageNumbers();
     
     // Event listeners for navigation buttons
     previousButton.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             displayPage(currentPage);
-            updatePageNumbers();
             updatePageDropdown()
         }
     });
@@ -150,13 +154,12 @@ async function generateAdminDashboardContent() {
         if (currentPage < totalPages) {
             currentPage++;
             displayPage(currentPage);
-            updatePageNumbers();
             updatePageDropdown()
         }
     });
     
     function updatePageDropdown() {
-        const totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
+        totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
         const pageDropdown = document.getElementById('page-dropdown');
         pageDropdown.innerHTML = '';
         
@@ -169,6 +172,8 @@ async function generateAdminDashboardContent() {
     
         // Set the selected option to the current page
         pageDropdown.value = currentPage;
+        previousButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
     }
     
     // Event listener for page dropdown select change
@@ -178,7 +183,8 @@ async function generateAdminDashboardContent() {
         if (!isNaN(selectedPage) && selectedPage >= 1) {
             currentPage = selectedPage;
             displayPage(currentPage);
-            updatePageNumbers();
+            previousButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
         }
     });
     
@@ -294,14 +300,7 @@ function generateDates(year, month) {
     return labels;
 }
 
-function generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth) {      
-    
-    // const existingChart = Chart.getChart(offersChart);
-
-    // if(existingChart) {
-    //     existingChart.destroy();
-    // }
-    
+function generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth) {        
     if(offersChart)
     {
       offerChart = new Chart(offersChart,
