@@ -1,8 +1,14 @@
 //#region initilization
-var height = window.innerHeight + "px";
-var width = window.innerWidth + "px";
-document.body.style.height = height;
-document.body.style.width = width;
+var height;
+var width; 
+updateBodyHeightWidth();
+
+function updateBodyHeightWidth(){   //change body width and height to fit the screen
+    height = window.innerHeight + "px";
+    width = window.innerWidth + "px";
+    document.body.style.height = height;
+    document.body.style.width = width;
+}
 
 let testLat = 38.25673456255137;
 let testLon = 21.740706238205785;
@@ -619,7 +625,11 @@ async function adminDelete(offer_id){
     const mapButton = document.getElementById("tab1");
     const mapButtonLabel = document.getElementById("map-button-label");
     const mapContainer = document.getElementById("mapid");
-                
+    
+    window.addEventListener("resize", function(){
+        updateBodyHeightWidth();
+    });
+
     mapButton.addEventListener("click", function(){
     if(mapContainer.classList.contains("map-inv") && profileContainer.classList.contains("profile-container-vis")){
         mapContainer.classList.remove("map-inv");
