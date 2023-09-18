@@ -35,18 +35,28 @@ async function generateAdminDashboardContent() {
         return monthNames[monthValue - 1];
     }))];
     //product data container
-    profileContent = '<div id = "product-data-edit-container">' + 
-                    '<div id = "input-container">' +
-                        '<input type="file" id="product-file" name="product-file" accept=".json" />' + 
-                        '<input type="file" id="price-file" name="price-file" accept=".json" />' +
-                    '</div>' + 
-                    '<button type="button" class="submit-products" id="submit-products-button" onclick="submitProducts()"> Submit Products </button>'+
+    profileContent = '<div id = "data-input-container">' +
+                        '<div id = "product-data-edit-container">' + 
+                            '<div id = "input-container">' +
+                                '<div id = "product-input-container">' +
+                                    '<label id = "product-file-label" for = "product-file">Select a products  with categories file (Mandatory)</label>' +
+                                    '<input type="file" id="product-file" name="product-file" accept=".json" />' + 
+                                '</div>' +
+                                '<div id = "price-input-container">' +
+                                    '<label id = "price-file-label" for = "price-file">Select a prices file (Optional)</label>' +
+                                    '<input type="file" id="price-file" name="price-file" accept=".json" />' +
+                                '</div>' +    
+                            '</div>' + 
+                            '<button type="button" class="submit-products" id="submit-products-button" onclick="submitProducts()"> Submit Products </button>'+
+                        '</div>'+
+                        '<div id = "store-data-edit-container">' + 
+                            '<div id = "store-input-container">' +
+                                '<label id = "store-file-label" for = "store-file">Select a stores file (Optional)</label>' +
+                                '<input type="file" id="store-file" name="store-file" accept=".geojson" />' +
+                            '</div>' +
+                            '<button type="button" class="submit-stores" id="submit-stores-button" onclick="submitStores()"> Submit Stores </button>'+
+                        '</div>' +
                     '</div>';
-    //store data container
-    profileContent += '<div id = "store-data-edit-container">' + 
-                        '<input type="file" id="store-file" name="store-file" accept=".geojson" />' +
-                        '<button type="button" class="submit-stores" id="submit-stores-button" onclick="submitStores()"> Submit Stores </button>'+
-                        '</div>';
 
     //statistics container
     profileContent +=  '<div id ="offers-diagram-container">' +
@@ -93,7 +103,7 @@ async function generateAdminDashboardContent() {
     
     //profile content
     profileContainer.innerHTML = profileContent;
-    
+
     const offersChart = document.getElementById('offers-chart');
     const discountsChart = document.getElementById('average-discount-chart');
 
