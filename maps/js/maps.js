@@ -1,4 +1,4 @@
-//#region initilization
+//#region initilizationla
 let height;
 let width; 
 let testLat = 38.25673456255137;
@@ -6,7 +6,8 @@ let testLon = 21.740706238205785;
 // 38.25673456255137, 21.740706238205785  test
 let userpos;
 let popupContent = '<div class="popup-container">';
-
+let lat;
+let lng;
 let mymap = L.map('mapid');
 let markersLayer = new L.LayerGroup().addTo(mymap); 
 let hiddenLayer = new L.LayerGroup(); 
@@ -465,8 +466,8 @@ function filterStores(selecedStore, selectedCategory){
 
 // build map
 async function initializeMap() {
-    mymap.setView([testLat,testLon], 17);
-    userpos = new L.marker([testLat,testLon]).addTo(mymap); 
+    mymap.setView([lat,lng], 17);
+    userpos = new L.marker([lat,lng]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
     // await fetchStores(); // probably should not be called here
@@ -479,9 +480,8 @@ async function initializeMap() {
                 const storeLat = parseFloat(layer.feature.geometry.coordinates[1]);
                 const storeLon = parseFloat(layer.feature.geometry.coordinates[0]);
                 const address = layer.feature.properties.address;
-                // new
-                const categories = layer.feature.properties.distinct_categories;
-                const hasActiveOffers = layer.feature.properties.has_active_offers;
+                // const categories = layer.feature.properties.distinct_categories;
+                // const hasActiveOffers = layer.feature.properties.has_active_offers;
                 let currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
                 
 
@@ -596,28 +596,30 @@ async function adminDelete(offer_id){
     document.getElementById(offer_id).remove();
 }
 //#region user's location
-//get users location
-// if("geolocation" in navigator) {
-    //     //add prompt for user's location
-    //     navigator.geolocation.getCurrentPosition(  //get current position of user
-    //         (position) => {
-        //             lat = position.coords.latitude;
-        //             lng = position.coords.longitude;
-        //             initializeMap();
-        //         },
-        //         (error) => {
-            //             console.error("Error getting user location: ", error);
-            //         }
-            //         );
-            //     } else {
-                //         console.error("Geolocation is not supported by this browser");
-                //         initializeMap();
-                //     }
-                // let empty = [];
-                //#endregion
-                
-    mymap.setView([38.2462420, 21.7350847], 16);
+
+function geolocationSuccess(position){
+    console.log("User location: ", position);
+    lat = position.coords.latitude;
+    lng = position.coords.longitude;
     initializeMap();
+}
+
+function geolocationError(error){
+    console.error("Error code: " + error.code + "; Error message: " + error.message);
+}
+
+//get users location
+if("geolocation" in navigator) {
+    //add prompt for user's location
+    navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError, {enableHighAccuracy: true});
+} else {
+    console.error("Geolocation is not supported by this browser");
+    initializeMap();
+}
+//#endregion
+                
+    // mymap.setView([38.2462420, 21.7350847], 16);
+    // initializeMap();
                 
                 //#region Switch tabs
     const mapButton = document.getElementById("tab1");
