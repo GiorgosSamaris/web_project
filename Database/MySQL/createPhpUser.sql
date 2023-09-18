@@ -23,3 +23,5 @@ GRANT INSERT ON gocart.temp_store TO 'phpClient'@'localhost';
 GRANT INSERT ON gocart.temp_price TO 'phpClient'@'localhost';
 GRANT SELECT ON gocart.store TO 'phpClient'@'localhost';
 grant execute on gocart.* to 'phpClient'@'localhost';
+GRANT INSERT ON gocart.* TO 'phpClient'@'localhost';
+GRANT ALL ON gocart.* TO 'phpClient'@'localhost';

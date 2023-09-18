@@ -12,8 +12,10 @@ let markersLayer = new L.LayerGroup().addTo(mymap);
 let hiddenLayer = new L.LayerGroup(); 
 let offersList = []; 
 let profileContainer;
+// let isAdmin = (sessionStorage.getItem("isAdmin") === "true");
 // let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = -1; //comment this out when testing is done, uncomment line 14
+let userId = 301; //comment this out when testing is done, uncomment line 16
+let isAdmin = true; //comment this out when testing is done, uncomment line 15
 
 function updateBodyHeightWidth(){   //change body width and height to fit the screen
     height = window.innerHeight + "px";

@@ -1,6 +1,6 @@
 <?php
-    include 'localhostConn.php';
-    // include 'azureConn.php';
+    // include 'localhostConn.php';
+    include 'azureConn.php';
 
     // $conn = mysqli_init();
     // mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
@@ -33,7 +33,7 @@
             $added_prod_id = true;
         }
         //create the csv file and open it for writing
-        $csvPath = "/var/lib/mysql-files/products.csv";
+        $csvPath = "uploads/products.csv";
         $filePointer = fopen($csvPath, "w");
         
 
@@ -66,8 +66,8 @@
         $categories = $jsonData["categories"];
     
         //create the csv file and open it for writing
-        $csvPathCat = "/var/lib/mysql-files/categories.csv";
-        $csvPathSubCat = "/var/lib/mysql-files/sub_categories.csv";
+        $csvPathCat = "uploads/categories.csv";
+        $csvPathSubCat = "uploads/sub_categories.csv";
         $filePointerCat = fopen($csvPathCat, "w");
         $filePointerSubCat = fopen($csvPathSubCat, "w");
     
@@ -89,8 +89,6 @@
                 fputs($filePointerSubCat, ($s["uuid"]."|"));
                 fputs($filePointerSubCat, ($c["id"]."|".$s["name"]."\n"));    
             }
-            
-            
         }
         fclose($filePointerCat);
         fclose($filePointerSubCat);
@@ -102,7 +100,7 @@
         $products = $jsonData["data"];
         
         //create the csv file and open it for writing
-        $csvPath = "/var/lib/mysql-files/prices.csv";
+        $csvPath = "uploads/prices.csv";
         $filePointer = fopen($csvPath, "w");
 
 
@@ -131,7 +129,7 @@
         $stores = $jsonData["features"];
         
         //create the csv file and open it for writing
-        $csvPath = "/var/lib/mysql-files/stores.csv";
+        $csvPath = "uploads/stores.csv";
         $filePointer = fopen($csvPath, "w");
         
         
@@ -185,7 +183,7 @@
     {
         echo "Inserted Categories: \n";
         $statement = 
-        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/categories.csv'
+        "LOAD DATA LOCAL INFILE  'uploads/categories.csv'
         INTO TABLE temp_category
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
@@ -207,7 +205,7 @@
     {
         echo "Inserted subcategories: \n";
         $statement = 
-        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/sub_categories.csv'
+        "LOAD DATA LOCAL INFILE  'uploads/sub_categories.csv'
         INTO TABLE temp_subcategory
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
@@ -220,16 +218,16 @@
         {
             echo "Error occured during subcategory insert: $e\n";
         }
-        
+
     }
-    
+
     if($added_prod == true)
     {
         if($added_prod_id == true)
         {
             echo "Inserted Products with id: \n";
             $statement = 
-            "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv' 
+            "LOAD DATA LOCAL INFILE 'uploads/products.csv' 
             INTO TABLE temp_product
             FIELDS TERMINATED BY '|'
             LINES TERMINATED BY '\n'
@@ -238,8 +236,7 @@
             
             try{
                 $cat_insert = $conn->query($statement);
-                if($cat_insert==1)
-                    unlink('/uploads/products.json');
+                // unlink('uploads/products.json'); 
             }
             catch (mysqli_sql_exception $e)
             {
@@ -250,7 +247,7 @@
         {
             echo "Inserted Products without id: \n";
             $statement = 
-            "LOAD DATA LOCAL INFILE '/var/lib/mysql-files/products.csv' 
+            "LOAD DATA LOCAL INFILE 'uploads/products.csv' 
             INTO TABLE temp_product
             FIELDS TERMINATED BY '|'
             LINES TERMINATED BY '\n'
@@ -259,8 +256,7 @@
             
             try{
                 $cat_insert = $conn->query($statement);
-                if($cat_insert==1)
-                    unlink('/uploads/products.json');
+                // unlink('uploads/products.json');    
             }
             catch (mysqli_sql_exception $e)
             {
@@ -274,7 +270,7 @@
     if($added_price == true)
     {
         $statement = 
-        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/prices.csv' IGNORE
+        "LOAD DATA LOCAL INFILE  'uploads/prices.csv' IGNORE
         INTO TABLE temp_price
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
@@ -282,8 +278,8 @@
     
         try{
             $cat_insert = $conn->query($statement);
-            if($cat_insert==1)
-                unlink('/uploads/prices.json');
+
+            // unlink('uploads/prices.json');
         }
         catch (mysqli_sql_exception $e)
         {
@@ -294,7 +290,7 @@
     if($added_store == true)
     {
         $statement = 
-        "LOAD DATA LOCAL INFILE  '/var/lib/mysql-files/stores.csv' 
+        "LOAD DATA LOCAL INFILE  'uploads/stores.csv' 
         INTO TABLE temp_store
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'
@@ -302,8 +298,7 @@
     
         try{
             $cat_insert = $conn->query($statement);
-            if($cat_insert==1)
-                unlink('/uploads/stores.geojson');
+            // unlink('uploads/stores.geojson');
         }
         catch (mysqli_sql_exception $e)
         {
@@ -311,64 +306,4 @@
         }
 
     }
-
-    // //Call store procedures for temp table merge to main
-    // if($added_prod)
-    // {
-    //     $statement = "CALL products_temp_merge();";
-    
-    //     try{
-    //         $cat_insert = $conn->query($statement);
-    //     }
-    //     catch (mysqli_sql_exception $e)
-    //     {
-    //         echo "Error occured during product insert: $e\n";
-    //     }
-    
-    //     if($cat_insert!=1)
-    //         echo "Stored procedure for product insertion failed";
-    //     else
-    // }
-    
-    
-    
-    // if($added_price)
-    // {
-    //     $statement = "CALL products_price_temp_merge();";
-        
-    //     try{
-    //         $price_insert = $conn->query($statement);
-    //     }
-    //     catch (mysqli_sql_exception $e)
-    //     {
-    //         echo "Error occured during price insert: $e\n";
-    //     }
-        
-    //     if($price_insert!=1)
-    //         echo "Stored procedure for price insertion failed";
-    //     else
-    //         unlink('/uploads/prices.json');
-    // }
-    
-    // if($added_store)
-    // {
-    //     $statement = "CALL store_temp_merge();";
-
-    //     try{
-    //         $store_insert = $conn->query($statement);
-    //         if($cat_insert!=1)
-    //         echo "Stored procedure for store insertion failed";
-    //     }
-    //     catch (mysqli_sql_exception $e)
-    //     {
-    //         echo "Error occured during store insert: $e\n";
-            
-    //     }
-
-    //     if($store_insert!=1)
-    //         echo "Stored procedure for store insertion failed";
-    //     else
-    //         unlink('/uploads/store.geojson');
-    // }
-
     ?>

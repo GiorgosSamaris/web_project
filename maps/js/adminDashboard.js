@@ -492,7 +492,7 @@ function generateAverageDiscountChart(discountsChart, average_discount) {
 }
 
 // admin dashboard navigation button
-if(userId < 0){
+if(isAdmin){
     const profileButton = document.getElementById("profile-button-label");
     profileButton.innerText = "Admin Dashboard";
     const profileContainer = document.getElementById("profile-container");
@@ -520,7 +520,7 @@ async function submitProducts() {
     if(productFile && confirm("Are you sure you want to upload the products?")){
         const productData = new FormData();
         productData.append('productFile', productFile);
-        $.ajax({
+        await $.ajax({
             type: "POST",
             url: 'php/upload_products.php',
             data: productData,
@@ -533,26 +533,36 @@ async function submitProducts() {
                 console.log(error);
             }
         });
-    }
-    else{
-        alert("Please select a product file");
-    }
-    if(priceFile){
-        const priceData = new FormData();
-        priceData.append('priceFile', priceFile);
-        $.ajax({
+        if(priceFile){
+            const priceData = new FormData();
+            priceData.append('priceFile', priceFile);
+            await $.ajax({
+                type: "POST",
+                url: 'php/upload_prices.php',
+                data: priceData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+        });
+        }
+        await $.ajax({
             type: "POST",
-            url: 'php/upload_prices.php',
-            data: priceData,
-            processData: false,
-            contentType: false,
+            url: 'php/merge_products.php',
             success: function (response) {
                 console.log(response);
             },
             error: function (error) {
                 console.log(error);
             }
-    });
+        });
+    }
+    else{
+        alert("Please select a product file");
     }
 }
 
@@ -562,7 +572,7 @@ async function submitStores() {
     if(storeFile){
         const storeData = new FormData();
         storeData.append('storeFile', storeFile);
-        $.ajax({
+        await $.ajax({
             type: "POST",
             url: 'php/upload_stores.php',
             data: storeData,
@@ -575,6 +585,18 @@ async function submitStores() {
                 console.log(error);
             }
     });
+        await $.ajax({
+            type: "POST",
+            url: 'php/merge_stores.php',
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+
+        });
+        fetchStores();
     }
     else{
         alert("Please select a store file");

@@ -46,10 +46,12 @@ $(document).ready(function () {
                     $("#response").html(response.message);
                     if (response.type === "customer") {
                         sessionStorage.setItem("userId", response.user_id);
+                        sessionStorage.setItem("isAdmin", false);
                         window.location.href = "/maps/maps.html";
                     }
                     if (response.type === "admin") {
-                        sessionStorage.setItem("userId", -1); //since no customer has a negative id
+                        sessionStorage.setItem("userId", response.user_id);
+                        sessionStorage.setItem("isAdmin", true);
                         window.location.href = "/maps/maps.html";
                     }
                 } else if (response.status === "fail") {

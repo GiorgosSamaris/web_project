@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (move_uploaded_file($storeTmpName, $storeDest)) {
             echo "store uploaded successfully.";
-            // call php script to parse json and insert into database
+            shell_exec('php jsonUploader.php uploads/store.geojson');
         } else {
             echo "Error moving file: ";
         }

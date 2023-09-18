@@ -39,7 +39,7 @@ BEGIN
         ELSEIF (EXISTS(SELECT * FROM category WHERE category.name != current_category_name AND category.category_id = current_category_id)) THEN
             -- different name same id already exists on a different record, so generate a new id and insert
             SELECT category_id FROM category WHERE category.name != current_category_name AND category.category_id = current_category_id INTO old_category_id;
-            SET current_category_id = SUBSTR(MD5(RAND()), 1, 32);
+            SET current_category_id = SUBSTR(MD5(RAND()), 1, 30);
             UPDATE temp_subcategory SET temp_subcategory.category_id = current_category_id WHERE temp_subcategory.category_id = old_category_id;
             INSERT INTO category (`name`, `category_id`) VALUES (current_category_name, current_category_id);
         ELSE
