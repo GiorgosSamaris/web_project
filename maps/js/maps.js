@@ -13,7 +13,7 @@ let hiddenLayer = new L.LayerGroup();
 let offersList = []; 
 let profileContainer;
 // let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = -1; //comment this out when testing is done, uncomment line 14
+let userId = 100; //comment this out when testing is done, uncomment line 14
 
 function updateBodyHeightWidth(){   //change body width and height to fit the screen
     height = window.innerHeight + "px";
@@ -201,7 +201,6 @@ function popupContentStores(feature, isClose, storeId, layer) {
     
     return popupContent;
 }
-
 
 function userStoreDistance(lat1, lon1 , lat2, lon2) {
     //using the haversine Formula
