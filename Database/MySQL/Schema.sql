@@ -1,7 +1,7 @@
 
-  DROP SCHEMA IF EXISTS GoCart;
-  CREATE SCHEMA GoCart;
-  USE GoCart;
+  DROP SCHEMA IF EXISTS gocart;
+  CREATE SCHEMA gocart;
+  USE gocart;
 
   --
   -- Table structure for table `User`
@@ -26,8 +26,8 @@
   CREATE TABLE customer (
     customer_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
     email VARCHAR(45) NOT NULL,
-    overall_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-    last_months_tokens SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    overall_tokens INT UNSIGNED NOT NULL DEFAULT 0,
+    last_months_tokens INT UNSIGNED NOT NULL DEFAULT 0,
     current_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     overall_score SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY  (customer_id),
@@ -166,8 +166,35 @@
     INDEX(customer_id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+  CREATE TABLE temp_category (
+    category_id VARCHAR(32) NOT NULL,
+    name VARCHAR(60) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE OR REPLACE VIEW temp_product AS SELECT subcategory_id,name FROM product;
+  CREATE TABLE temp_subcategory (
+    subcategory_id VARCHAR(32) NOT NULL,
+    category_id VARCHAR(32) NOT NULL,
+    name VARCHAR(80) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE OR REPLACE VIEW temp_price AS SELECT product_id, price_date, average_price FROM price_history;
+  CREATE TABLE temp_product (
+    product_id MEDIUMINT UNSIGNED NOT NULL,
+    subcategory_id VARCHAR(32) NOT NULL,
+    name VARCHAR(128) NOT NULL  
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE temp_price (
+    product_id MEDIUMINT UNSIGNED NOT NULL,
+    price_date DATE NOT NULL,
+    average_price DECIMAL(4,2) UNSIGNED NOT NULL DEFAULT 0
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+  CREATE TABLE temp_store (
+    store_name VARCHAR(27) NOT NULL DEFAULT 'Unknown',
+    longitude DECIMAL(11,8) NOT NULL,
+    latitude DECIMAL(10,8) NOT NULL,
+    map_id VARCHAR(16) NOT NULL,
+    address VARCHAR(40) NOT NULL DEFAULT 'Unknown'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

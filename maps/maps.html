@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <!-- required -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -16,32 +17,33 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css" />
     <script src="https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js"></script>
     <script src="js/leaflet-search.js"></script>
-    <!-- ------------------------------------------------ -->
 
     <!-- font-awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
-    <!-- ------------ -->
+
+    <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="css/maps.css">
-    <script src="json/stores.js"></script>
-
+    <link rel="stylesheet" href="css/adminDashboard.css">
     <title>Maps</title>
 </head>
 <body>
     <div id="page-container">
         <div id="display">
-            <div id="mapid" class="map-vis"></div>
-            <div id="profile-container" class = "profile-container-inv">
-                <label for="username">Username</label>
-                <input type="text" name="username">
-                <label for="password">Password</label>
-                <input type="password" name="password">
+            <div id="mapid" class="map-vis">
             </div>
+            <div id="profile-container" class = "profile-container-inv"></div>
         </div>
         <div id="navigation">
-            <!-- <button id="map">Map</button>
-            <button id="profile">Profile</button> -->
             <div class="radio-label-container">
                 <input type="radio" name="tabs" class="tabs-radio" id="tab1">
                 <label for="tab1" class="tab-label active" id="map-button-label">Map</label>
@@ -53,5 +55,7 @@
         </div>
     </div>
     <script src="js/maps.js"></script>  
+    <script src="js/adminDashboard.js"></script>
+    <script src="js/userProfile.js"></script>
 </body>
 </html>

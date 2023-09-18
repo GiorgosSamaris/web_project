@@ -16,7 +16,7 @@ include(dirname(__DIR__).'/../azureConnection/azureConn.php');
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $store_id = $_POST['storeId'] ?? '';
     // $store_id = 1;
-    $store_inventory = $conn->prepare("SELECT p.name as product, s.name as subcategory, c.name as category, i.inventory_price as price 
+    $store_inventory = $conn->prepare("SELECT p.product_id as product_id, p.name as product, s.name as subcategory, c.name as category, i.inventory_price as price 
                                 FROM product as p INNER JOIN subcategory as s ON p.subcategory_id = s.subcategory_id 
                                 INNER JOIN category as c ON s.category_id = c.category_id 
                                 INNER JOIN inventory as i ON p.product_id = i.product_id WHERE i.store_id = ?;

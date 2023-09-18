@@ -1,20 +1,61 @@
+:root{
+    --antiquewhite: antiquewhite;
+    --background: #46a094;
+    --radius: 0.6rem;
+    --medium: medium;
+}
+
+input{
+    text-align: center;
+}
+
+.like-dislike-history-container label,
+.user-score-container label,
+.user-tokens-container label,
+.offers-submitted-container label {
+    font-size: large;
+    font-weight: 600;
+    border-bottom: 0.2rem solid var(--antiquewhite);
+}
+
+.user-score-container p,
+.user-tokens-container p{
+    font-size: var(--medium);
+    font-weight: 600;
+    color: black
+}
+
+
 body {
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
 #page-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
+    
+}
+
+#display {
+    height: fit-content;
+    max-height: 95%;
+    overflow-y: auto;
+}
+
+#navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 5%;
+    max-height: 5%;
 }
 
 /* ======= Map Styling */
-/* #mapid { 
-    height: 95vh; 
-    width: 100%;
-} */
-
 .map-vis{
     height: 95vh; 
     width: 100%;
@@ -25,6 +66,24 @@ body {
 }
 
 /* ======= Search Plugin ======= */
+#category-search,
+#store-search{
+    background-color: white;
+    border-radius: 0.6rem;
+    padding: 0.2rem;
+    outline: none;
+    border: none;
+    font-size: var(--medium);
+    width: 10rem;
+}
+
+
+
+#store-search option,
+#category-search option{
+    white-space: normal;
+}
+
 .leaflet-control-search .search-tip {
     white-space: normal;
     width: 6rem;
@@ -32,19 +91,25 @@ body {
 /* ======= Popup Content ======= */
 .leaflet-popup-content-wrapper {
     box-shadow: none;
-    /* background: none; */
+    background: var(--background);
 }
 
 .popup-container {
     text-align: center;
     display: block;
-    background-color: antiquewhite;
+    background-color: var(--background);
     border-radius: 0.6rem;
+    height: fit-content;
+}
+
+.description {
+    font-size: large;
+    font-weight: 600;
 }
 
 .offers-container{
     width: fit-content;
-    height: 11.6rem;
+    height: 10rem;
     overflow: auto;
     text-align: center;
     list-style-type: none;
@@ -52,8 +117,25 @@ body {
 }
 
 .offer-container{
-    border: 1px solid black;
+    /* border: 1px solid black; */
+    margin: 0.3rem auto;
     border-radius: 0.6rem;
+    background-color: var(--antiquewhite);
+    font-size: var(--medium);
+}
+#garbage-btn{
+    background-color: transparent;
+    border: none;
+}
+
+#garbage-container{
+    display: flex;
+    justify-content: flex-end;
+}
+
+#garbage{
+    margin-bottom: 1rem;
+    margin-right: 1.8rem;
 }
 
 .add-offer, .review-offer{
@@ -68,17 +150,37 @@ body {
 }
 
 .button-container{
+    margin: 0.5rem auto;
+    padding: 0;
     background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /*The first element is tied to the start of the element and the last to the end of the element*/
 }
 
 .button-container button {
-    margin-bottom: 0.3rem;
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    background-color: var(--antiquewhite);
+    font-size: large;
+    font-weight:600;
+    cursor: pointer;
 }
 
 .date-likes-dislikes {
     display: inline;
 }
 
+.dropdown-container-vis{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dropdown-container-inv{
+    display: none;
+}
 
 /* ======= Icons ======= */
 .fa-thumbs-up {
@@ -98,6 +200,13 @@ body {
 }
 
 /* ======= Profile Styling */
+#Title{
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.4rem 0;
+}
+
 .profile-container-inv{
     display: none;
 }
@@ -107,16 +216,147 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 95vh;
+    background-color: var(--background);
+    overflow-y: auto;
+}
+
+#password-requirements-inv {
+    display: none;
+}
+
+#password-requirements-vis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: medium;
+    justify-content: center;
+    margin: 1rem;
+    border: 0.15rem solid black;
+    border-radius: 0.4rem;
+    background-color: antiquewhite;
+    height: 10%;
+    width: 90%;
+    max-width: 15rem;
+    text-align: center;
+}
+
+#password-requirements-vis p {
+    margin: clamp(0.3rem, 0.5rem, 0.7rem) 0;
+}
+
+.valid {
+    color: green;
+}
+
+.invalid {
+    color: red;
+}
+
+
+.credentials-container, 
+.offers-submitted-container, 
+.like-dislike-history-container, 
+.user-score-container, 
+.user-tokens-container {
+    margin-top: 0.5rem;
+}
+
+.credentials-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 35rem;
+    height: 15%;
+    width: 50%;
+}
+
+.credentials-container input{
+    border-radius: 0.6rem;
+    background-color: var(--antiquewhite);
+    width: 100%;
+    height: 20%;
+    font-size: var(--medium);
+    outline: none;
+}
+
+
+.credentials-container label{
+    font-size: large;
+    font-weight: 600;
+}
+
+.credentials-container button{
+    margin: 0.5rem 0;
+    padding: 0.3rem;
+    font-size: var(--medium);
+    background-color: var(--antiquewhite);
+    border-radius: var(--radius);
+}
+
+.credentials-container button:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.offers-submitted-container{
+    text-align: center;
+    width: 70%;
+    max-width: 35rem;
+}
+
+.offers-submitted-container ul{
+    max-height: 30vh;
+    overflow-y: auto;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.offers-submitted-container li{
+    font-size: var(--medium);
+    font-weight: 600;
+    background-color: var(--antiquewhite);
+    border-radius: 0.6rem;
+    margin: 0.3rem auto;
+    padding: 0.3rem;
+    color: black;
+    text-align: center;
+
+    /* white-space: pre-wrap; */
+}
+
+.like-dislike-history-container {
+    text-align: center;
+    width: 70%;
+    max-width: 35rem;
+}
+
+.like-dislike-history-container ul{
+    max-height: 30vh;
+    overflow-y: auto;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.like-dislike-history-container li {
+    font-size: var(--medium);
+    font-weight: 600;
+    background-color: var(--antiquewhite);
+    border-radius: 0.6rem;
+    margin: 0.3rem auto;
+    padding: 0.3rem;
+    color: black;
+    text-align: center;
+}
+
+.user-score-container{
+    text-align: center;
+}
+
+.user-tokens-container{
+    text-align: center;
 }
 
 /* ======= Navigation ======= */
-#navigation {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 5vh;
-}
 
 .radio-label-container {
     flex: 1;    /*distributes available space equally among all children*/
