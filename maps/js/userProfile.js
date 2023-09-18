@@ -3,6 +3,8 @@ let uppercase;
 let char;
 let numbers;
 let symbols;
+let eye;
+let password;
 let requirements;
 let newUsername;
 let likeDislikeHistory;
@@ -17,8 +19,10 @@ function generateProfileContent() {
     '<input type="text" class="user-credentials" id="username" value="' + username[0].username + '">' +
     '<button type="button" onclick="checkAndUpdateUsername($(\'#username\').val())">Change username</button>' + // Use escaped single quotes
     '<label for="password" class="user-credentials">Type new password</label>' +
-    '<input type="password" class="user-credentials" id="password">' +
-    // <i class="fa-regular fa-eye-slash fa-lg" id="eye"></i> to be added
+    '<div id ="password-container">' +
+        '<input type="password" class="user-credentials" id="password">' +
+        '<i class="fa-regular fa-eye-slash fa-lg" id="eye"></i>' +
+    '</div>' +
     '<div id ="password-requirements-inv">' +
     '<h3 id="message_h3">Password must contain:</h3>' +
     '<p id="characters" class="invalid"><b>At least 8 characters</b></p>' +
@@ -73,12 +77,25 @@ function generateProfileContent() {
 
     profileContainer.innerHTML = profileContent;
 
-    const password = document.getElementById("password");
+    password = document.getElementById("password");
     requirements = document.getElementById("password-requirements-inv");
     char = document.getElementById("characters");
     uppercase = document.getElementById("uppercase");
     symbol = document.getElementById("symbol");
     vnumber = document.getElementById("number");
+    eye = document.getElementById("eye");
+
+    eye.addEventListener("click", function () {
+        if (password.type === "password") {
+            password.type = "text";
+            eye.classList.remove("fa-eye-slash");
+            eye.classList.add("fa-eye");
+        } else {
+            password.type = "password";
+            eye.classList.remove("fa-eye");
+            eye.classList.add("fa-eye-slash");
+        }
+    });
 
     password.onfocus = function () {
         checkRequirementsVisibility();

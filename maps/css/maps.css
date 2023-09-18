@@ -44,7 +44,6 @@ body {
 #display {
     height: fit-content;
     max-height: 95%;
-    /* height: 95%; */
     overflow-y: auto;
 }
 
@@ -67,20 +66,7 @@ body {
 }
 
 /* ======= Search Plugin ======= */
-
-.filter-container{
-    width: 20%;
-}
-
-#category-search{
-    background-color: white;
-    border-radius: 0.6rem;
-    padding: 0.2rem;
-    outline: none;
-    border: none;
-    font-size: var(--medium);
-}
-
+#category-search,
 #store-search{
     background-color: white;
     border-radius: 0.6rem;
@@ -88,6 +74,14 @@ body {
     outline: none;
     border: none;
     font-size: var(--medium);
+    width: 10rem;
+}
+
+
+
+#store-search option,
+#category-search option{
+    white-space: normal;
 }
 
 .leaflet-control-search .search-tip {
@@ -226,6 +220,34 @@ body {
     overflow-y: auto;
 }
 
+#password-container{
+    position: relative;
+    border: transparent;
+    border-radius: 0.4rem;
+    /* margin: 0 10rem 0.5rem;
+    padding: 2%; */
+    width: 100%;
+    background-color: antiquewhite;
+}
+
+#password-container input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+#password-container i {
+    position: absolute;
+    right: 2%;  /* 2% of the parent's width from the right edge of the parent */
+    top: 50%;   /* moves the element's edge by 50% of the parent's height */
+    transform: translateY(-50%);    /* moves the element up by 50% of its own height */
+    cursor: pointer;   
+    
+}
+
 #password-requirements-inv {
     display: none;
 }
@@ -241,7 +263,6 @@ body {
     border-radius: 0.4rem;
     background-color: antiquewhite;
     height: 10%;
-    /* max-height: 10rem; */
     width: 90%;
     max-width: 15rem;
     text-align: center;
