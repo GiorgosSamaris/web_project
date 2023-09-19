@@ -14,8 +14,8 @@ let hiddenLayer = new L.LayerGroup();
 let offersList = []; 
 let profileContainer;
 let isAdmin = sessionStorage.getItem("isAdmin");
-// let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = 100; //comment this out when testing is done, uncomment line 14
+let userId = parseInt(sessionStorage.getItem("userId"));
+// let userId = 100; //comment this out when testing is done, uncomment line 14
 
 function updateBodyHeightWidth(){   //change body width and height to fit the screen
     height = window.innerHeight + "px";
