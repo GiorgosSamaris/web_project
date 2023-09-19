@@ -67,6 +67,15 @@ label{
     background-color: antiquewhite;
 }
 
+.register-btn{
+    padding: 2%;
+    border-radius: 0.4rem;
+    border: transparent;
+    margin: 1rem;
+    font-size: larger;
+    background-color: rgb(212, 200, 185);
+}
+
 #response{
     font-size: larger;
     font-weight: bold;
