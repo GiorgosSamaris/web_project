@@ -13,6 +13,7 @@ let markersLayer = new L.LayerGroup().addTo(mymap);
 let hiddenLayer = new L.LayerGroup(); 
 let offersList = []; 
 let profileContainer;
+let isAdmin = sessionStorage.getItem("isAdmin");
 // let userId = parseInt(sessionStorage.getItem("userId"));
 let userId = 100; //comment this out when testing is done, uncomment line 14
 

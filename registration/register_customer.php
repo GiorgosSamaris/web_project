@@ -46,9 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $reg_cust->bind_param("sss", $username, $email, $password);
     
         if ($reg_cust->execute()) {
+            $reg_cust = $reg_cust->get_result();
+            $reg_cust = $reg_cust->fetch_assoc();
             $response = array(
                 'status' => 'success',
-                'message' => "Registration successful! Welcome, $username!"
+                'message' => "Registration successful! Welcome, $username!",
+                'userId' => $reg_cust['user_id'],
             );
         } else {
             $response = array(

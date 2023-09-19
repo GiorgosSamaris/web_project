@@ -93,6 +93,8 @@ $(document).ready(function () {
         console.log(response);
         if (JSON.parse(response).status === "success") {
           $("#response").html(JSON.parse(response).message);
+          sessionStorage.setItem("userId", JSON.parse(response).userId);
+          sessionStorage.setItem("isAdmin", false);
           window.location.href = "/maps/maps.html"; 
         } else if (JSON.parse(response).status === "fail") {
           $("#response").html(JSON.parse(response).message);
