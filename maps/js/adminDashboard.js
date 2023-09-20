@@ -129,6 +129,7 @@ async function generateAdminDashboardContent() {
             leaderboardList.innerHTML += '<li id = "leaderboard-list-item">' + 
                                             'Username: ' + user.username + 
                                             '<div id = "leaderboard-list-item-tokens-container">' +
+                                                '\nOverall Score: ' + user.overall_score +  '<br>' +
                                                 '\nLast month\'s tokens: ' + user.last_months_tokens + '<br>' + 
                                                 '\nOverall tokens: ' + user.overall_tokens +
                                             '</div>' +
