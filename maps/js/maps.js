@@ -482,7 +482,7 @@ async function initializeMap() {
                 const address = layer.feature.properties.address;
                 // const categories = layer.feature.properties.distinct_categories;
                 // const hasActiveOffers = layer.feature.properties.has_active_offers;
-                let currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
+                let currStoreDist = userStoreDistance(lat, lng, storeLat, storeLon);
                 
 
                 // set pin icon
