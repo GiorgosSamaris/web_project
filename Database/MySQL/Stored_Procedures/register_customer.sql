@@ -7,5 +7,6 @@ CREATE PROCEDURE register_customer(IN usrnm VARCHAR(45), IN email VARCHAR(45), I
 BEGIN
 INSERT INTO user( `username`,`password`) VALUES(usrnm, passwrd);
 INSERT INTO customer(`customer_id`, `email`) VALUES(LAST_INSERT_ID(), email);
+SELECT LAST_INSERT_ID() AS user_id;
 END$
 DELIMITER ;

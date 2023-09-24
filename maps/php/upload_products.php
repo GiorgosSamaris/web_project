@@ -1,4 +1,5 @@
 <?php
+// include('../../Database/php/jsonUploader.php');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productFile = $_FILES['productFile'];
 
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (move_uploaded_file($productTmpName, $productDest)) {
             echo "products uploaded successfully.";
-            // call php script to parse json and insert into database
+            shell_exec('php jsonUploader.php uploads/products.json');
         } else {
             echo "Error moving files: ";
         }

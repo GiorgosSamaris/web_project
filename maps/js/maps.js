@@ -13,9 +13,9 @@ let markersLayer = new L.LayerGroup().addTo(mymap);
 let hiddenLayer = new L.LayerGroup(); 
 let offersList = []; 
 let profileContainer;
-// let userId = parseInt(sessionStorage.getItem("userId"));
-let userId = 100; //comment this out when testing is done, uncomment line 14
-
+var isAdmin = (sessionStorage.getItem("isAdmin")=== "true");
+var userId = parseInt(sessionStorage.getItem("userId"));
+// let userId = 100; //comment this out when testing is done, uncomment line 14
 function updateBodyHeightWidth(){   //change body width and height to fit the screen
     height = window.innerHeight + "px";
     width = window.innerWidth + "px";
@@ -182,7 +182,7 @@ function popupContentStores(feature, isClose, storeId, layer) {
             "In stock: " + offer.in_stock + '<br>' +
             ((offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0) ? 
              '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>') +
-            (userId < 0 ? 
+            (isAdmin ? 
              '<div id="garbage-container"><button id="garbage-btn" onclick="adminDelete(' + offer.offer_id + ')">' +
              '<i class="fa-solid fa-trash fa-xl" id="garbage" style="color: #ad0000;"></i></button></div>' : '') +
             '</li></div>';
@@ -470,7 +470,7 @@ async function initializeMap() {
     userpos = new L.marker([lat,lng]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
-    // await fetchStores(); // probably should not be called here
+    // await fetchStores(); 
     const storesPath = 'json/stores.geojson';
     await fetch(storesPath).then(response => response.json()).then(data => {
         L.geoJson(data, {    //pulls data from GeoJSON file
@@ -482,7 +482,7 @@ async function initializeMap() {
                 const address = layer.feature.properties.address;
                 // const categories = layer.feature.properties.distinct_categories;
                 // const hasActiveOffers = layer.feature.properties.has_active_offers;
-                let currStoreDist = userStoreDistance(testLat, testLon, storeLat, storeLon);
+                let currStoreDist = userStoreDistance(lat, lng, storeLat, storeLon);
                 
 
                 // set pin icon
@@ -499,7 +499,6 @@ async function initializeMap() {
                 } else {
                     layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                 }
-                
                 if (currStoreDist[1] <= 50) {
                     // build popup for close stores
                     layer.on('click', async function () {
@@ -618,10 +617,7 @@ if("geolocation" in navigator) {
 }
 //#endregion
                 
-    // mymap.setView([38.2462420, 21.7350847], 16);
-    // initializeMap();
-                
-                //#region Switch tabs
+    //#region Switch tabs
     const mapButton = document.getElementById("tab1");
     const mapButtonLabel = document.getElementById("map-button-label");
     const mapContainer = document.getElementById("mapid");

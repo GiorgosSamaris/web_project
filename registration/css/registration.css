@@ -60,6 +60,13 @@ label{
     background-color: antiquewhite;
 }
 
+.login-btn {
+    padding: 2%;
+    border-radius: 0.4rem;
+    margin: 1rem;
+    font-size: smaller;
+    background-color: antiquewhite;
+}
 
 #password-requirements-inv {
     display: none;

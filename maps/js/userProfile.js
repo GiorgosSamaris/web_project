@@ -294,7 +294,7 @@ async function changePassword(newPassword) {
     });
 }
 
-if(userId > 0){
+if(!isAdmin){
     const profileButton = document.getElementById("tab2");
     profileContainer = document.getElementById("profile-container");
     profileButton.addEventListener("click", async function(){

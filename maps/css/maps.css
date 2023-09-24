@@ -42,9 +42,9 @@ body {
 }
 
 #display {
-    height: fit-content;
-    max-height: 95%;
+    height: 95%;
     overflow-y: auto;
+    background-color: var(--background);
 }
 
 #navigation {
