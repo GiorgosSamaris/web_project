@@ -182,7 +182,7 @@ function popupContentStores(feature, isClose, storeId, layer) {
             "In stock: " + offer.in_stock + '<br>' +
             ((offer.price_decrease_last_day_avg > 0 || offer.price_decrease_last_week_avg > 0) ? 
              '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>') +
-            (userId < 0 ? 
+            (isAdmin ? 
              '<div id="garbage-container"><button id="garbage-btn" onclick="adminDelete(' + offer.offer_id + ')">' +
              '<i class="fa-solid fa-trash fa-xl" id="garbage" style="color: #ad0000;"></i></button></div>' : '') +
             '</li></div>';
@@ -470,7 +470,7 @@ async function initializeMap() {
     userpos = new L.marker([lat,lng]).addTo(mymap); 
     userpos.bindPopup("You're here!").openPopup();
     markersLayer.clearLayers();
-    // await fetchStores(); // probably should not be called here
+    // await fetchStores(); 
     const storesPath = 'json/stores.geojson';
     await fetch(storesPath).then(response => response.json()).then(data => {
         L.geoJson(data, {    //pulls data from GeoJSON file
