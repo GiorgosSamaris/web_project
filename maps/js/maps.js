@@ -499,7 +499,6 @@ async function initializeMap() {
                 } else {
                     layer.feature.properties.searchProp = storeName + ', ' + currStoreDist[0] + ' Km';
                 }
-                
                 if (currStoreDist[1] <= 50) {
                     // build popup for close stores
                     layer.on('click', async function () {
@@ -618,10 +617,7 @@ if("geolocation" in navigator) {
 }
 //#endregion
                 
-    // mymap.setView([38.2462420, 21.7350847], 16);
-    // initializeMap();
-                
-                //#region Switch tabs
+    //#region Switch tabs
     const mapButton = document.getElementById("tab1");
     const mapButtonLabel = document.getElementById("map-button-label");
     const mapContainer = document.getElementById("mapid");

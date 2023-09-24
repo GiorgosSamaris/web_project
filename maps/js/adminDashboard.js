@@ -170,14 +170,14 @@ async function generateAdminDashboardContent() {
     });
     
     function updatePageDropdown() {
-        totalPages = Math.ceil(user_leaderboard.length / itemsPerPage);
-        const pageDropdown = document.getElementById('page-dropdown');
+        totalPages = Math.ceil(user_leaderboard.length / itemsPerPage); // Calculate total number of pages
+        const pageDropdown = document.getElementById('page-dropdown');  // Get the page dropdown element
         pageDropdown.innerHTML = '';
         
-        for (let i = 1; i <= totalPages; i++) {
+        for (let i = 1; i <= totalPages; i++) { // Add an option for each page
             const option = document.createElement('option');
             option.value = i;
-            option.textContent = `Page ${i}`;
+            option.textContent = `Page ${i}`;   // Set the option text to the page number
             pageDropdown.appendChild(option);
         }
     
@@ -190,8 +190,8 @@ async function generateAdminDashboardContent() {
     // Event listener for page dropdown select change
     const pageDropdown = document.getElementById('page-dropdown');
     pageDropdown.addEventListener('change', () => {
-        const selectedPage = parseInt(pageDropdown.value);
-        if (!isNaN(selectedPage) && selectedPage >= 1) {
+        const selectedPage = parseInt(pageDropdown.value); // Get the selected page number
+        if (!isNaN(selectedPage) && selectedPage >= 1) { // If the selected page is valid
             currentPage = selectedPage;
             displayPage(currentPage);
             previousButton.disabled = currentPage === 1;
@@ -227,21 +227,21 @@ async function generateAdminDashboardContent() {
 
     selectMonth.addEventListener('change', function(event){
         if(event.target.value != 'All Months')
-        {const selectedYear = selectYear.value;
-            const selectedMonth = monthNames.indexOf(selectMonth.value) + 1;
-            const dateLabels = generateDates(selectedYear, selectedMonth);
+        {
+            const selectedYear = selectYear.value;  //gets the selected year
+            const selectedMonth = monthNames.indexOf(selectMonth.value) + 1; //gets the selected month
+            const dateLabels = generateDates(selectedYear, selectedMonth); //generates an array of dates for the selected month
 
             const countLabels = dateLabels.map((date) => {  //maps the dateLabels array to an array of offer counts
                 const offer = offer_count.find((row) => row.offer_date === '2023-' + date);   //finds the row with the same date as the current date in the loop
                 if(offer) {
-                    
                     return parseInt(offer.offer_count);
                 } else {
                     return 0;
                 }
             });
-            offerChart.data.labels = dateLabels;
-            offerChart.data.datasets[0].data = countLabels;
+            offerChart.data.labels = dateLabels;    //sets the labels and data of the chart to the new values
+            offerChart.data.datasets[0].data = countLabels; 
             offerChart.data.datasets[0].label = 'Displayed: ' + selectedYear + ' ' + selectMonth.value;
             offerChart.update();
         } else if(event.target.value === 'All Months'){
@@ -263,13 +263,16 @@ async function generateAdminDashboardContent() {
             const priceDropData = await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory');
             discountChart.data.labels = priceDropData.map(row => row.drop_date);
             discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.data.datasets[0].label = 'Displayed: ' +  selectedSubcategory.name + ' ' + 'Week: ' + updateLegend(selectDate.value);
             discountChart.update();
         }else if(selectedCategory) {
             console.log(selectDate.value);
             console.log(await getPriceDrop(selectDate.value, selectedCategory.id, 'category'));
+
             const priceDropData = await getPriceDrop(selectDate.value, selectedCategory.id, 'category');
             discountChart.data.labels = priceDropData.map(row => row.drop_date);
             discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.data.datasets[0].label = 'Displayed: ' + selectedCategory.name + ' ' + 'Week: ' + updateLegend(selectDate.value);
             discountChart.update();
         }
         else {
@@ -285,13 +288,15 @@ async function generateAdminDashboardContent() {
         
         if(selectedSubcategory) {
             const priceDropData = await getPriceDrop(selectDate.value, selectedSubcategory.subcategory_id, 'subcategory');
-            discountChart.data.labels = priceDropData.map(row => row.drop_date);
-            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.data.labels = priceDropData.map(row => row.drop_date);    //sets new y values
+            discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));    //sets new x values    
+            discountChart.data.datasets[0].label = 'Displayed: ' + selectedSubcategory.name + ' ' + 'Week: ' + updateLegend(selectDate.value);    //sets new legend
             discountChart.update();
         }else if(selectedCategory) {
             const priceDropData = await getPriceDrop(selectDate.value, selectedCategory.id, 'category');
             discountChart.data.labels = priceDropData.map(row => row.drop_date);
             discountChart.data.datasets[0].data = priceDropData.map(row => parseFloat(row.drop_percentage));
+            discountChart.data.datasets[0].label = 'Displayed: ' + selectedCategory.name + ' ' + 'Week: ' + updateLegend(selectDate.value);
             discountChart.update();
         }
         else {
@@ -304,11 +309,17 @@ function generateDates(year, month) {
     const labels = [];
     const daysInMonth = new Date(year, month, 0).getDate(); //gets the number of days in the month by getting the date of the last day of the month
     for (let day = 1; day <= daysInMonth; day++) {
-        const dateString =  month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');
+        const dateString =  month.toString().padStart(2, '0') + '-' + day.toString().padStart(2, '0');  //creates a date string in the format MM-DD
         labels.push(dateString);
         //padStart adds a 0 in front of the number if it is less than 10 (e.g. 1 -> 01)
     }
     return labels;
+}
+
+function updateLegend(start_date) {
+    end_date = new Date(start_date);
+    end_date.setDate(end_date.getDate() + 7);
+    return start_date + ' - ' + end_date.toISOString().substring(5, 10);    
 }
 
 function generateOffersCountChart(offersChart, offer_count, selectYear, selectMonth) {        
@@ -419,7 +430,7 @@ function generateAverageDiscountChart(discountsChart, average_discount) {
               {
                   borderColor: 'blue',
                   backgroundColor: 'white',
-                  label: 'Displayed: ' + selectedCategory + ' ' + selectedSubcategory,
+                  label: 'Displayed: ' + 'Αντισηπτικά' + ' ' + 'Week: ' + updateLegend(selectDate.value),
                   data: average_discount.map(row => parseFloat(row.drop_percentage)),
               }
             ]
