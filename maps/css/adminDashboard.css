@@ -14,7 +14,8 @@
     margin: 1rem 0 ;
 }
 
-#store-data-edit-container{
+#store-data-edit-container,
+#delete-data-container{
     border-top: 2px solid black ;
 }
 
@@ -41,7 +42,8 @@
 }
 
 #product-data-edit-container,
-#store-data-edit-container{
+#store-data-edit-container,
+#delete-data-container{
     width: 100%;
     max-width: 20rem;
     max-height: 10rem;
@@ -49,6 +51,20 @@
     text-align: center;
     display: flex;
     flex-direction: row;
+}
+
+#delete-data-container{
+    justify-content: center;
+    gap: 3rem;
+    padding: 0.5rem 0;
+}
+
+#delete-data-container button{
+    background-color: crimson;
+    color: black;
+    font-weight: bold;
+    border: transparent;
+    border-radius: 0.4rem;
 }
 
 #input-container{

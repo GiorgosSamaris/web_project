@@ -56,6 +56,10 @@ async function generateAdminDashboardContent() {
                             '</div>' +
                             '<button type="button" class="submit-stores" id="submit-stores-button" onclick="submitStores()"> Submit Stores </button>'+
                         '</div>' +
+                        '<div id = "delete-data-container">' + 
+                            '<button type="button" class="delete-products" id="delete-products-button" onclick="deleteProducts()"> Purge Products </button>'+
+                            '<button type="button" class="delete-stores" id="delete-stores-button" onclick="deleteStores()"> Purge Stores </button>'+
+                        '</div>' +
                     '</div>';
 
     //statistics container
