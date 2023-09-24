@@ -27,8 +27,8 @@ OPEN product_cursor;
         SET date_iter = start_date;
         WHILE date_iter <= DATE_ADD(start_date, INTERVAL 6 DAY) DO
             SELECT AVG(offer_price) FROM offer WHERE product_id = current_product_id AND DATE(creation_date) = date_iter INTO current_price_drop;
-            SELECT (average_price - current_price_drop)/average_price FROM price_history WHERE product_id = current_product_id AND price_date = date_iter INTO current_price_drop;
             IF (current_price_drop IS NOT NULL) THEN
+                SELECT (average_price - current_price_drop)/average_price FROM price_history WHERE product_id = current_product_id AND price_date = date_iter INTO current_price_drop;
                 INSERT INTO temp_results (`product_id`, `price_drop`, `price_date`) VALUES (current_product_id, current_price_drop, date_iter);
             END IF;
             SET date_iter = DATE_ADD(date_iter, INTERVAL 1 DAY);

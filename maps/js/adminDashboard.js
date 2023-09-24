@@ -57,8 +57,8 @@ async function generateAdminDashboardContent() {
                             '<button type="button" class="submit-stores" id="submit-stores-button" onclick="submitStores()"> Submit Stores </button>'+
                         '</div>' +
                         '<div id = "delete-data-container">' + 
-                            '<button type="button" class="delete-products" id="delete-products-button" onclick="deleteProducts()"> Purge Products </button>'+
-                            '<button type="button" class="delete-stores" id="delete-stores-button" onclick="deleteStores()"> Purge Stores </button>'+
+                            '<button type="button" class="delete-products" id="delete-products-button" onclick="purgeProducts()"> Purge Products </button>'+
+                            '<button type="button" class="delete-stores" id="delete-stores-button" onclick="purgeStores()"> Purge Stores </button>'+
                         '</div>' +
                     '</div>';
 
@@ -674,6 +674,36 @@ async function fetchOfferCount() {
             url: 'php/fetch_offer_count.php',
             success: function (offers) {
                 resolve(offers);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
+
+async function purgeStores() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/purge_stores.php',
+            success: function (deleted) {
+                resolve(deleted);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+});
+}
+
+async function purgeProducts() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: 'php/purge_products.php',
+            success: function (deleted) {
+                resolve(deleted);
             },
             error: function (error) {
                 reject(error);
