@@ -1,6 +1,6 @@
 <?php
     // include 'localhostConn.php';
-    include 'azureConn.php';
+    include(dirname(__DIR__).'/../azureConnection/azureConn.php');
 
     // $conn = mysqli_init();
     // mysqli_ssl_set($conn,NULL,NULL, (__DIR__)."/cacert-2023-05-30.pem", NULL, NULL);
